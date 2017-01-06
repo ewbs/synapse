@@ -10,6 +10,7 @@ Thumbs.db
 
 # Spécifique Laravel
 /bootstrap/compiled.php
+/composer.lock
 
 # Spécifique IDE
 # PHPStorm
