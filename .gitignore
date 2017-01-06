@@ -13,12 +13,14 @@ Thumbs.db
 
 # Spécifique IDE
 # PHPStorm
-.idea/
+/.idea/
+#Netbeans
+/.project
 
 # Configuration des environnements
-app/config/local-jda/
-app/config/prod/
-app/config/test/
-app/config/local-mgr/
-app/config/valid/
-/.project
+/app/config/local-jda/
+/app/config/prod/
+/app/config/test/
+/app/config/local-mgr/
+/app/config/valid/
+/vendor/
