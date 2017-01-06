@@ -1,8 +1,5 @@
 <?php
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\MessageBag;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Database\Eloquent\Builder;
 class DemarcheController extends ModelController {
 	
 	/**
@@ -626,16 +623,17 @@ class DemarcheController extends ModelController {
 	protected function getLinks(ManageableModel $demarche) {
 		return [];
 	}
-
-
-
+	
+	/**
+	 * Génération de la liste des démarches en excel
+	 * 
+	 * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\RedirectResponse
+	 */
 	public function postExport() {
-
-
 		try {
 			$multipleSeparator = PHP_EOL;
 			$demarches_ids = Input::has('demarches_ids') ? explode(',', Input::get('demarches_ids')) : [0];
-
+			
 			$columns = [
 				'nostra_demarches.id',
 				'nostra_demarches.title',
@@ -657,37 +655,54 @@ class DemarcheController extends ModelController {
 				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_TODO."'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_todo" ),
 				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_PROGRESS."' THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_progress" ),
 				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_DONE."'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_done" ),
-				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_GIVENUP."'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_givenup" )
+				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_GIVENUP."'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_givenup" ),
+				DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT eforms.title), '{$multipleSeparator}', '') AS eforms"),
+				DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nostra_forms.title), '{$multipleSeparator}', '') AS nostra_forms"),
+				DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nostra_documents.title), '{$multipleSeparator}', '') AS nostra_documents"),
 			];
-
-
+			
 			$aNostraDemarches =
 			NostraDemarche
 				::leftjoin('demarches', 'demarches.nostra_demarche_id', '=', 'nostra_demarches.id')
+				
 				->leftjoin('ewbsActions', 'ewbsActions.demarche_id', '=', 'demarches.id')
 				->leftjoin('v_lastrevisionewbsaction', 'v_lastrevisionewbsaction.ewbs_action_id', '=', 'ewbsActions.id')
+				
 				->leftjoin('nostra_demarche_nostra_public', 'nostra_demarches.id', '=', 'nostra_demarche_nostra_public.nostra_demarche_id')
 				->leftjoin('nostra_publics', 'nostra_publics.id', '=', 'nostra_demarche_nostra_public.nostra_public_id')
-				->leftjoin ( 'nostra_demarche_nostra_thematiqueabc', 'nostra_demarches.id', '=', 'nostra_demarche_nostra_thematiqueabc.nostra_demarche_id' )
-				->leftjoin ( 'nostra_thematiquesabc', 'nostra_thematiquesabc.id', '=', 'nostra_demarche_nostra_thematiqueabc.nostra_thematiqueabc_id' )
-				->leftjoin ( 'nostra_demarche_nostra_thematiqueadm', 'nostra_demarches.id', '=', 'nostra_demarche_nostra_thematiqueadm.nostra_demarche_id' )
-				->leftjoin ( 'nostra_thematiquesadm', 'nostra_thematiquesadm.id', '=', 'nostra_demarche_nostra_thematiqueadm.nostra_thematiqueadm_id' )
-				->leftjoin ( 'administration_demarche', 'demarches.id', '=', 'administration_demarche.demarche_id' )
-				->leftjoin ( 'administrations', 'administrations.id', '=', 'administration_demarche.administration_id' )
-				->leftjoin('demarche_demarchePiece', 'demarche_demarchePiece.demarche_id', '=', 'demarches.id')
-				->leftjoin('demarche_demarcheTask', 'demarche_demarcheTask.demarche_id', '=', 'demarches.id')
+				
+				->leftjoin('nostra_demarche_nostra_thematiqueabc', 'nostra_demarches.id', '=', 'nostra_demarche_nostra_thematiqueabc.nostra_demarche_id' )
+				->leftjoin('nostra_thematiquesabc', 'nostra_thematiquesabc.id', '=', 'nostra_demarche_nostra_thematiqueabc.nostra_thematiqueabc_id' )
+				
+				->leftjoin('nostra_demarche_nostra_thematiqueadm', 'nostra_demarches.id', '=', 'nostra_demarche_nostra_thematiqueadm.nostra_demarche_id' )
+				->leftjoin('nostra_thematiquesadm', 'nostra_thematiquesadm.id', '=', 'nostra_demarche_nostra_thematiqueadm.nostra_thematiqueadm_id' )
+				
+				->leftjoin('administration_demarche', 'demarches.id', '=', 'administration_demarche.demarche_id' )
+				->leftjoin('administrations', 'administrations.id', '=', 'administration_demarche.administration_id' )
+				
+				->leftjoin('v_lastrevisiondemarcheeform', 'v_lastrevisiondemarcheeform.demarche_id', '=', 'demarches.id')
+				->leftjoin('eforms', 'eforms.id', '=', 'v_lastrevisiondemarcheeform.eform_id')
+				->whereNull('v_lastrevisiondemarcheeform.deleted_at')
+				
+				->leftjoin('nostra_demarche_nostra_form', 'nostra_demarche_nostra_form.nostra_demarche_id', '=', 'demarches.nostra_demarche_id')
+				->leftjoin('nostra_forms', 'nostra_forms.id', '=', 'nostra_demarche_nostra_form.nostra_form_id')
+				->whereNull('nostra_forms.deleted_at')
+				
+				->leftjoin('nostra_demarche_nostra_document', 'nostra_demarche_nostra_document.nostra_demarche_id', '=', 'demarches.nostra_demarche_id')
+				->leftjoin('nostra_documents', 'nostra_documents.id', '=', 'nostra_demarche_nostra_document.nostra_document_id')
+				->whereNull('nostra_documents.deleted_at')
+				
 				->whereIn('nostra_demarches.id', $demarches_ids)
 				->groupBy(['nostra_demarches.id', 'demarches.id'])
 				->get($columns);
-
-
+			
 			$objPHPExcel = xlsexport_getNewHandler ();
 			$line = 1; // ligne dans Excel
 			$objPHPExcel->setActiveSheetIndex ( 0 );
 			$worksheet = $objPHPExcel->getActiveSheet ();
 
 			// STYLES GLOBAUX
-			foreach ( range ( 'A', 'U' ) as $columnID ) {
+			foreach ( range ( 'A', 'W' ) as $columnID ) {
 				$worksheet->getColumnDimension ( $columnID )->setAutoSize ( true );
 			}
 			$objPHPExcel->getDefaultStyle ()->getFont ()->setName ( 'Arial' );
@@ -715,7 +730,7 @@ class DemarcheController extends ModelController {
 			$worksheet->getCell ( 'D1' )->setValue ( 'Public(s)' );
 			$worksheet->getCell ( 'E1' )->setValue ( 'Thématique(s) usager' );
 			$worksheet->getCell ( 'F1' )->setValue ( 'Thématique(s) administration' );
-
+			
 			$worksheet->getCell ( 'G1' )->setValue ( 'Simplifié' );
 			$worksheet->getCell ( 'H1' )->setValue ( 'Version allemande' );
 			$worksheet->getCell ( 'I1' )->setValue ( 'Type' );
@@ -730,9 +745,12 @@ class DemarcheController extends ModelController {
 			$worksheet->getCell ( 'R1' )->setValue ( 'Commentaire' );
 			$worksheet->getCell ( 'S1' )->setValue ( 'Taxonomie');
 			$worksheet->getCell ( 'T1' )->setValue ( 'Volume');
-
-			$worksheet->getStyle ( 'A1:T1' )->getFont ()->setBold ( true );
-
+			$worksheet->getCell ( 'U1' )->setValue ( 'Formulaires');
+			$worksheet->getCell ( 'V1' )->setValue ( 'Formulaires NOSTRA');
+			$worksheet->getCell ( 'W1' )->setValue ( 'Documents NOSTRA');
+			
+			$worksheet->getStyle ( 'A1:W1' )->getFont ()->setBold ( true );
+			
 			// CONTENU
 			$calculatedGains = Demarche::getAllCalculatedGains ();
 			foreach ( $aNostraDemarches as $nostraDemarche ) {
@@ -753,7 +771,7 @@ class DemarcheController extends ModelController {
 							$nostraDemarche->$gainName = $calculatedGains [$nostraDemarche->demarche_id]->$gainName;
 						}
 					}
-
+					
 					$worksheet->getStyle ( "A$line" )->applyFromArray ( $styles ['white_on_blue'] );
 					$worksheet->getCell ( "A$line" )->setValue ( "oui" );
 					$worksheet->getCell ( "B$line" )->setValue ( $nostraDemarche->demarche_completeid );
@@ -770,7 +788,7 @@ class DemarcheController extends ModelController {
 					$worksheet->getCell ( "N$line" )->setValue ( $nostraDemarche->gain_potential_administration );
 					$worksheet->getCell ( "O$line" )->setValue ( $nostraDemarche->gain_real_citizen );
 					$worksheet->getCell ( "P$line" )->setValue ( $nostraDemarche->gain_real_administration );
-
+					
 					if ($globalActionsState = EwbsAction::globalState ( $nostraDemarche )) {
 						$value = Lang::get ( "admin/ewbsactions/messages.state.{$globalActionsState}" ) . ' :';
 						foreach(EwbsActionRevision::states() as $state)
@@ -781,7 +799,7 @@ class DemarcheController extends ModelController {
 						$cell->getStyle ()->applyFromArray ( $styles [EwbsActionRevision::stateToClass ( $globalActionsState )] )->getAlignment ()->setWrapText ( true );
 					}
 					$worksheet->getCell ( "R$line" )->setValue ( $nostraDemarche->demarche_comment )->getStyle ()->getAlignment ()->setWrapText ( true );
-
+					
 					/*
 					 * Taxonomie
 					 */
@@ -789,14 +807,16 @@ class DemarcheController extends ModelController {
 					if ($nostraDemarche->demarche_id) {
 						$worksheet->getCell ( "S$line" )->setValue ( implode($multipleSeparator, Demarche::find($nostraDemarche->demarche_id)->tags()->lists('name')) )->getStyle ()->getAlignment ()->setWrapText ( true );
 					}
-
+					
 					$worksheet->getCell ( "T$line" )->setValue ( $nostraDemarche->volume )->getStyle ()->getAlignment ()->setWrapText ( true );
-
+					$worksheet->getCell ( "U$line" )->setValue ( $nostraDemarche->eforms )->getStyle ()->getAlignment ()->setWrapText ( true );
+					$worksheet->getCell ( "V$line" )->setValue ( $nostraDemarche->nostra_forms )->getStyle ()->getAlignment ()->setWrapText ( true );
+					$worksheet->getCell ( "W$line" )->setValue ( $nostraDemarche->nostra_documents )->getStyle ()->getAlignment ()->setWrapText ( true );
 				}
 				else {
 					$worksheet->getCell ( "A$line" )->setValue ( "non" );
 				}
-
+				
 				$worksheet->getCell ( "C$line" )->setValue ( $nostraDemarche->title );
 				$worksheet->getCell ( "D$line" )->setValue ( $nostraDemarche->publics )->getStyle ()->getAlignment ()->setWrapText ( true );
 				$worksheet->getCell ( "E$line" )->setValue ( $nostraDemarche->thematiquesabc )->getStyle ()->getAlignment ()->setWrapText ( true );
@@ -804,17 +824,17 @@ class DemarcheController extends ModelController {
 				$worksheet->getCell ( "G$line" )->setValue ( $nostraDemarche->simplified ? "oui" : "non" );
 				$worksheet->getCell ( "H$line" )->setValue ( $nostraDemarche->german_version ? "oui" : "non" );
 				$worksheet->getCell ( "I$line" )->setValue ( $nostraDemarche->type );
-
+				
 				// hauteur de ligne en auto (car pas mal de texte dans certaines cellules)
 				$worksheet->getRowDimension ( $line )->setRowHeight ( - 1 );
 			}
 			$worksheet->getStyle ( "M2:P{$line}" )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00 );
-
+			
 			$fileName = 'synapse-export-demarches-' . uniqid () . '.xlsx';
 			$file = public_path () . '/temp/' . $fileName;
 			$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel2007' );
 			$objWriter->save ( $file );
-
+			
 			$response = Response::download ( $file, $fileName, ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']);
 			ob_end_clean ();
 			return $response;
@@ -823,158 +843,7 @@ class DemarcheController extends ModelController {
 			Log::error ( $e );
 			return Redirect::secure ( $this->getModel ()->routeGetIndex () )->with ( 'error', Lang::get ( 'admin/demarches/messages.export.baderror' ) . '<pre>' . $e->getMessage () . '</pre>' );
 		}
-
 	}
-
-	
-	/**
-	 *
-	 * METHODE DEPRECIEE ET NORMALEMENT PLUS APPELLEE (n'existe plus dans aucune route)
-	 *
-	 * Export des démarches
-	 *
-	 * Cela peut sembler bizarre, mais on ne va pas rapatrier un tableau de démarches.
-	 * On va chercher un tableau de NostraDemarche en fait !
-	 * Pour rappel, une Demarche est l'extension d'une NostraDemarche
-	 *
-	 * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
-	 */
-	/*public function getExport() {
-		try {
-			$aNostraDemarches = $this->getDataSql ( PHP_EOL );
-			
-			$objPHPExcel = xlsexport_getNewHandler ();
-			$line = 1; // ligne dans Excel
-			$objPHPExcel->setActiveSheetIndex ( 0 );
-			$worksheet = $objPHPExcel->getActiveSheet ();
-			
-			// STYLES GLOBAUX
-			foreach ( range ( 'A', 'U' ) as $columnID ) {
-				$worksheet->getColumnDimension ( $columnID )->setAutoSize ( true );
-			}
-			$objPHPExcel->getDefaultStyle ()->getFont ()->setName ( 'Arial' );
-			$objPHPExcel->getDefaultStyle ()->getFont ()->setSize ( 9 );
-			
-			// couleur des éléments a mettre en évidence
-			$styles = [
-				'white_on_blue' => [
-					'font' => ['color' => ['rgb' => 'FFFFFF']],
-					'fill' => [
-						'type' => PHPExcel_Style_Fill::FILL_SOLID,
-						'color' => ['rgb' => '4E9DFF']
-					]
-				],
-				'default' => ['font' => ['color' => ['rgb' => '333333']]],
-				'primary' => ['font' => ['color' => ['rgb' => '337ab7']]],
-				'success' => ['font' => ['color' => ['rgb' => '5cb85c']]],
-				'warning' => ['font' => ['color' => ['rgb' => 'f0ad4e']]]
-			];
-			
-			// TITRES DANS EXCEL
-			$worksheet->getCell ( 'A1' )->setValue ( 'Documenté' );
-			$worksheet->getCell ( 'B1' )->setValue ( 'ID' );
-			$worksheet->getCell ( 'C1' )->setValue ( 'Nom' );
-			$worksheet->getCell ( 'D1' )->setValue ( 'Public(s)' );
-			$worksheet->getCell ( 'E1' )->setValue ( 'Thématique(s) usager' );
-			$worksheet->getCell ( 'F1' )->setValue ( 'Thématique(s) administration' );
-			
-			$worksheet->getCell ( 'G1' )->setValue ( 'Simplifié' );
-			$worksheet->getCell ( 'H1' )->setValue ( 'Version allemande' );
-			$worksheet->getCell ( 'I1' )->setValue ( 'Type' );
-			$worksheet->getCell ( 'J1' )->setValue ( 'Administrations impliquées' );
-			$worksheet->getCell ( 'K1' )->setValue ( 'Périmètre eWBS' );
-			$worksheet->getCell ( 'L1' )->setValue ( 'Usage e-Form' );
-			$worksheet->getCell ( 'M1' )->setValue ( 'Gain potentiel usager' );
-			$worksheet->getCell ( 'N1' )->setValue ( 'Gain potentiel administration' );
-			$worksheet->getCell ( 'O1' )->setValue ( 'Gain effectif usager' );
-			$worksheet->getCell ( 'P1' )->setValue ( 'Gain effectif administration' );
-			$worksheet->getCell ( 'Q1' )->setValue ( 'Actions' );
-			$worksheet->getCell ( 'R1' )->setValue ( 'Commentaire' );
-			$worksheet->getCell ( 'S1' )->setValue ( 'Taxonomie');
-			
-			$worksheet->getStyle ( 'A1:S1' )->getFont ()->setBold ( true );
-			
-			// CONTENU
-			$calculatedGains = Demarche::getAllCalculatedGains ();
-			foreach ( $aNostraDemarches as $nostraDemarche ) {
-				/*@var NostraDemarche $nostraDemarche
-				$line ++; // on commencera donc en ligne 2 : ceci est le compteur de position générale
-				if (isset ( $nostraDemarche->demarche_id )) {
-					$lastRevision = Demarche::getLastDemarcheRevision ( $nostraDemarche->demarche_id ); // TODO Voir si pas moyen de récupérer cela au niveau de la requête principale, pour éviter de faire cette requête pour chaque nostraDemarche
-					foreach ( [
-						'gain_potential_administration',
-						'gain_real_administration',
-						'gain_potential_citizen',
-						'gain_real_citizen'
-					] as $gainName ) {
-						if ($lastRevision && $lastRevision->$gainName) {
-							$nostraDemarche->$gainName = $lastRevision->$gainName;
-						}
-						else if (array_has ( $calculatedGains, $nostraDemarche->demarche_id )) {
-							$nostraDemarche->$gainName = $calculatedGains [$nostraDemarche->demarche_id]->$gainName;
-						}
-					}
-						
-					$worksheet->getStyle ( "A$line" )->applyFromArray ( $styles ['white_on_blue'] );
-					$worksheet->getCell ( "A$line" )->setValue ( "oui" );
-					$worksheet->getCell ( "B$line" )->setValue ( $nostraDemarche->demarche_completeid );
-					$worksheet->getCell ( "J$line" )->setValue ( $nostraDemarche->administrations )->getStyle ()->getAlignment ()->setWrapText ( true );
-					if ($nostraDemarche->demarche_ewbs) {
-						$worksheet->getStyle ( "K$line" )->applyFromArray ( $styles ['white_on_blue'] );
-						$worksheet->getCell ( "K$line" )->setValue ( "oui" );
-					}
-					else {
-						$worksheet->getCell ( "K$line" )->setValue ( "non" );
-					}
-					$worksheet->getCell ( "L$line" )->setValue ( $nostraDemarche->demarche_eform_usage . '%' );
-					$worksheet->getCell ( "M$line" )->setValue ( $nostraDemarche->gain_potential_citizen );
-					$worksheet->getCell ( "N$line" )->setValue ( $nostraDemarche->gain_potential_administration );
-					$worksheet->getCell ( "O$line" )->setValue ( $nostraDemarche->gain_real_citizen );
-					$worksheet->getCell ( "P$line" )->setValue ( $nostraDemarche->gain_real_administration );
-					
-					if ($globalActionsState = EwbsAction::globalState ( $nostraDemarche )) {
-						$value = Lang::get ( "admin/ewbsactions/messages.state.{$globalActionsState}" ) . ' :';
-						foreach(EwbsActionRevision::states() as $state)
-							if ($count=$nostraDemarche->getAttribute("count_state_{$state}"))
-								$value .= PHP_EOL . Lang::choice ( "admin/ewbsactions/messages.wording.{$state}", $count);
-						$cell = $worksheet->getCell ( "Q$line" )->setValue ( $value );
-						$cell->getHyperlink ()->setUrl ( route ( 'demarchesActionsGetIndex', $nostraDemarche->demarche_id ) );
-						$cell->getStyle ()->applyFromArray ( $styles [EwbsActionRevision::stateToClass ( $globalActionsState )] )->getAlignment ()->setWrapText ( true );
-					}
-					$worksheet->getCell ( "R$line" )->setValue ( $nostraDemarche->demarche_comment )->getStyle ()->getAlignment ()->setWrapText ( true );
-					
-				}
-				else {
-					$worksheet->getCell ( "A$line" )->setValue ( "non" );
-				}
-				
-				$worksheet->getCell ( "C$line" )->setValue ( $nostraDemarche->title );
-				$worksheet->getCell ( "D$line" )->setValue ( $nostraDemarche->publics )->getStyle ()->getAlignment ()->setWrapText ( true );
-				$worksheet->getCell ( "E$line" )->setValue ( $nostraDemarche->thematiquesabc )->getStyle ()->getAlignment ()->setWrapText ( true );
-				$worksheet->getCell ( "F$line" )->setValue ( $nostraDemarche->thematiquesadm )->getStyle ()->getAlignment ()->setWrapText ( true );
-				$worksheet->getCell ( "G$line" )->setValue ( $nostraDemarche->simplified ? "oui" : "non" );
-				$worksheet->getCell ( "H$line" )->setValue ( $nostraDemarche->german_version ? "oui" : "non" );
-				$worksheet->getCell ( "I$line" )->setValue ( $nostraDemarche->type );
-				
-				// hauteur de ligne en auto (car pas mal de texte dans certaines cellules)
-				$worksheet->getRowDimension ( $line )->setRowHeight ( - 1 );
-			}
-			$worksheet->getStyle ( "M2:P{$line}" )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00 );
-			
-			$fileName = 'synapse-export-demarches-' . uniqid () . '.xlsx';
-			$file = public_path () . '/temp/' . $fileName;
-			$objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel2007' );
-			$objWriter->save ( $file );
-				
-			$response = Response::download ( $file, $fileName, ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']);
-			ob_end_clean ();
-			return $response;
-		}
-		catch ( Exception $e ) {
-			Log::error ( $e );
-			return Redirect::secure ( $this->getModel ()->routeGetIndex () )->with ( 'error', Lang::get ( 'admin/demarches/messages.export.baderror' ) . '<pre>' . $e->getMessage () . '</pre>' );
-		}
-	} */
 	
 	/**
 	 * *********************************************************************************************************
