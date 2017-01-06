@@ -1,0 +1,23 @@
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Spécifique Laravel
+/bootstrap/compiled.php
+
+# Spécifique IDE
+# PHPStorm
+.idea/
+
+# Configuration des environnements
+app/config/local-jda/
+app/config/prod/
+app/config/test/
+app/config/local-mgr/
+app/config/valid/
