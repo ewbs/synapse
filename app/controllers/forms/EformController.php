@@ -62,9 +62,6 @@ class EformController extends TrashableModelController {
 				$query->select(DB::raw('COALESCE(nostra_form_id,0)'))->from('eforms');
 			})->count();
 		}
-
-		$this->setReturnTo();
-
 		return View::make ('admin/forms/eforms/list',$data);
 	}
 	

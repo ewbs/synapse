@@ -36,6 +36,7 @@ abstract class ModelController extends BaseController {
 	 * @return View
 	 */
 	public final function getIndex() {
+		$this->setReturnTo();
 		return $this->getList();
 	}
 	

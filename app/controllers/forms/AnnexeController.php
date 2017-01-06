@@ -43,7 +43,6 @@ class AnnexeController extends TrashableModelController {
 	 * @see ModelController::getList()
 	 */
 	protected function getList($onlyTrashed=false) {
-		$this->setReturnTo();
 		return View::make ('admin/forms/annexes/list', ['trash'=>$onlyTrashed]);
 	}
 	

@@ -43,10 +43,6 @@ class IdeaController extends TrashableModelController {
 	 * @see ModelController::getList()
 	 */
 	protected function getList($onlyTrashed=false) {
-
-		// on sauve la route en cours pour gérer les retour à la liste
-		$this->setReturnTo();
-
 		return View::make ('admin/ideas/list', array('trash'=>$onlyTrashed));
 	}
 

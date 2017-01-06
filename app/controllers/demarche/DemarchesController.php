@@ -85,10 +85,6 @@ class DemarcheController extends ModelController {
 	 * @see ModelController::getList()
 	 */
 	protected function getList() {
-
-		// on sauve la route en cours pour gérer les retour à la liste
-		$this->setReturnTo();
-		
 		$aRegions = Region::all ();
 		$aPublics = NostraPublic::root()->get();
 		return View::make ( 'admin/demarches/list', compact ( 'aRegions', 'aPublics' ) );
