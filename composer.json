@@ -1,18 +1,20 @@
 {
-    "name": "andrew13/Laravel-4-Bootstrap-Starter-Site",
-    "description": "Laravel 4 Starter Site",
-    "keywords": ["laravel", "Starter Site"],
-    "license": "MIT",
+    "name": "ewbs/Synapse",
+    "description": "Suivi des projets et actions de simplif en Wallonie et Fédération Wallonie-Bruxelles",
+    "keywords": ["laravel", "ewbs", "synapse", "simplif"],
+    "license": "GNU/GPL",
     "authors": [
+        {
+            "name": "Julian Davreux",
+            "homepage": "http://www.ensemblesimplifions.be"
+        },
+        {
+            "name": "Michel Grenson",
+            "homepage": "http://www.defimedia.be"
+        },
         {
             "name": "Andrew Elkins",
             "homepage": "http://www.andrewelkins.com"
-        }
-    ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@github.com:npmweb/laravel-health-check"
         }
     ],
     "require": {
