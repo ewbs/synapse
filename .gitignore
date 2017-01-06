@@ -21,3 +21,4 @@ app/config/prod/
 app/config/test/
 app/config/local-mgr/
 app/config/valid/
+/.project
