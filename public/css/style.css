@@ -3784,6 +3784,10 @@ h1:first-child {
 .select2-results li .meta .line3 {
   color: #aaa;
 }
+.select2-results li.select2-results__option--highlighted[aria-selected] .meta .line2,
+.select2-results li.select2-results__option--highlighted[aria-selected] .meta .line3 {
+  color: white;
+}
 /*Slider*/
 .slider.slider-vertical {
   margin-right: 13px;
