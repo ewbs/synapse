@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\MessageBag;
 class DemarcheController extends ModelController {
 	
 	/**
