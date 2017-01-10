@@ -2927,9 +2927,9 @@ div.dataTables_length label select {
   position: relative;
   outline: none;
   background: white;
-  background: -webkit-linear-gradient(top, #dfe8ec 0%, white 8%) 0 0px;
-  background: -moz-linear-gradient(top, #dfe8ec 0%, white 8%) 0 0px;
-  background: linear-gradient(center top, #dfe8ec 0%, white 8%) 0 0px;
+  background: -webkit-linear-gradient(top, #dfe8ec 0%, #ffffff 8%) 0 0px;
+  background: -moz-linear-gradient(top, #dfe8ec 0%, #ffffff 8%) 0 0px;
+  background: linear-gradient(center top, #dfe8ec 0%, #ffffff 8%) 0 0px;
   -webkit-background-size: 100% 30px;
   -moz-background-size: 100% 30px;
   -ms-background-size: 100% 30px;
@@ -3735,6 +3735,11 @@ h1:first-child {
 .select2-container-active .select2-choices {
   box-shadow: none;
 }
+.select2-container--default .select2-results__group {
+  padding: 10px 6px;
+  background-color: lightgrey;
+  color: #333;
+}
 .select2-container .select2-choice .select2-arrow {
   width: 30px;
   background-color: #FFFFFF;
@@ -3771,7 +3776,7 @@ h1:first-child {
   float: left;
 }
 .select2-results li .meta .line1.title {
-  font-weight: bold;
+  font-weight: 600;
 }
 .select2-results li .meta .line2 {
   color: #777;
