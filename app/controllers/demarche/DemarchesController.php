@@ -1549,7 +1549,7 @@ class DemarcheController extends ModelController {
 			->whereNull('v_lastrevisioneforms.deleted_at')
 			->whereIn('nostra_forms.id', $aLinkedNostraForms)
 			->orderby('title')
-			->select(['eforms.id', DB::raw('COALESCE(nostra_forms.title, eforms.title) AS title'), 'v_lastrevisioneforms.current_state_id', 'v_lastrevisioneforms.next_state_id'])->get();
+			->select(['eforms.id', DB::raw('COALESCE(nostra_forms.title, eforms.title) AS title'), 'nostra_forms.nostra_id as nostra_id', 'v_lastrevisioneforms.current_state_id', 'v_lastrevisioneforms.next_state_id'])->get();
 			// et ici on prend l'ensemble des autres formulaires
 			$aEforms=Eform
 			::whereRaw("eforms.id NOT IN(SELECT eform_id FROM v_lastrevisiondemarcheeform WHERE demarche_id={$demarche->id} AND deleted_at IS NULL)")
@@ -1558,10 +1558,9 @@ class DemarcheController extends ModelController {
 			->whereNull('v_lastrevisioneforms.deleted_at')
 			->whereNotIn('nostra_forms.id', $aLinkedNostraForms)
 			->orderby('title')
-			->select(['eforms.id', DB::raw('COALESCE(nostra_forms.title, eforms.title) AS title'), 'v_lastrevisioneforms.current_state_id', 'v_lastrevisioneforms.next_state_id'])->get();
-
+			->select(['eforms.id', DB::raw('COALESCE(nostra_forms.title, eforms.title) AS title'), 'nostra_forms.nostra_id as nostra_id', 'v_lastrevisioneforms.current_state_id', 'v_lastrevisioneforms.next_state_id'])->get();
 		}
-		
+		$states=DemarchePieceState::allKeyById();
 		return View::make ( 'admin/demarches/components/eforms/modal-manage', compact ( 'demarche', 'demarche_eform', 'aEforms', 'aSuggestedEforms', 'errors', 'states' ) );
 	}
 	
