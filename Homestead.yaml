@@ -2,8 +2,8 @@
 ip: "192.168.10.10"
 memory: 2048
 cpus: 1
-hostname: html
-name: html
+hostname: homestead
+name: homestead
 provider: virtualbox
 
 authorize: ~/ssh/homestead.pub # linux : ~/.ssh/id_rsa.pub

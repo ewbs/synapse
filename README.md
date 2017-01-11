@@ -35,6 +35,16 @@ Si vous n'en possédez pas encore, exécuter la commande suivante :
     ssh-keygen -t rsa -C "you@homestead"
     
 Si vous êtes sous Windows, vous pouvez utiliser GitBash ou Puttygen pour générer une clé.
+
+### 1.1.4 Récupération du code
+
+Cloner le repository dans le dossier "html" sans créer de sous dossier. Pour cela, ajouter un point en fin de la commande *git clone*.
+
+    git clone https://github.com/ewbs/synapse.git .
+    
+### 1.1.5 Edition de la configuration
+
+Editez le fichier *Homestead.yaml* présent à la racine du code (dans "html" donc).
     
     
 

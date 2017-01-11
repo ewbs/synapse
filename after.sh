@@ -36,7 +36,7 @@ if [ ! -f /usr/local/synapse_installed ]; then
     echo '... Préparation de la DB avec des données de test'
     php artisan migrate --seed
     echo '... Importation des données Nostra'
-    php artisan cron:importFromNostraV2
+    php artisan cron:importFromNostraV2 &
     echo '... Création du cron mailer'
     crontab -l | { cat; echo "* * * * * /usr/bin/php /home/vagrant/html/artisan queue:work async > /dev/null"; } | crontab -
     sudo service cron restart
