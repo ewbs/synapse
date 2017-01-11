@@ -2,7 +2,26 @@
 Synapse : Outil de suivi des projets et actions de simplification administrative en Wallonie et Fédération Wallonie-Bruxelles
 
 #Sommaire
-[ A ECRIRE ]
+
+1. Instructions d'installation
+    - 1.1. Sous Vagrant (conseillé)
+        - 1.1.1. Prérequis
+        - 1.1.2. Création de la structure de fichiers
+        - 1.1.3. Génération des clés SSH
+        - 1.1.4. Récupération du code
+        - 1.1.5. Edition de la configuration
+        - 1.1.6. Démarrage de la VM
+        - 1.1.7. Go!
+    - 1.2. Dans un environnement existant
+2. Utilisation de l'environnement
+    - 2.1. Répertoires partagés
+        - 2.1.1. /html
+        - 2.1.2. /storage
+    - 2.2. Accès SSH
+    - 2.3.Forwards de ports
+3. Licence
+4. Informations additionnelles
+        
 
 # 1. Instructions d'installation
 
@@ -27,7 +46,7 @@ La structure de dossier doit être la suivante
         /html
         /storage
         
-### 1.1.3 Génération des clés SSH
+### 1.1.3. Génération des clés SSH
 
 Lorsque la VM Vagrant sera lancée, vous pourrez vous y connecter en SSH à l'aide d'une clé privée.
 Si vous n'en possédez pas encore, exécuter la commande suivante :
@@ -36,13 +55,13 @@ Si vous n'en possédez pas encore, exécuter la commande suivante :
     
 Si vous êtes sous Windows, vous pouvez utiliser GitBash ou Puttygen pour générer une clé.
 
-### 1.1.4 Récupération du code
+### 1.1.4. Récupération du code
 
 Cloner le repository dans le dossier "html" sans créer de sous dossier. Pour cela, ajouter un point en fin de la commande *git clone*.
 
     git clone https://github.com/ewbs/synapse.git .
     
-### 1.1.5 Edition de la configuration
+### 1.1.5. Edition de la configuration
 
 #### Homestead.yaml
 
@@ -100,7 +119,7 @@ Vous devez définir ceci dans le fichier *hosts* de votre machine.
 
     192.168.10.10 synapse.app
     
-### 1.1.6 Démarrage de la VM
+### 1.1.6. Démarrage de la VM
 
 Déplacez vous dans le réperoire "html" et exécutez la commande
 
@@ -108,7 +127,7 @@ Déplacez vous dans le réperoire "html" et exécutez la commande
     
 Vagrant va télécharger une box de base et installer l'application.
 
-### 1.1.7 Go!
+### 1.1.7. Go!
 
 Lancez un navigateur et consultez :
 
@@ -122,19 +141,19 @@ Vous pouvez vous connecter avec les credentials admin/admin.
 
 # 2. Utilisation de l'environnement
 
-## 2.1 Répertoires partagés
+## 2.1. Répertoires partagés
 
 Vos dossiers "html" et "storage" sont montés dans la VM. Toute modification est bidirectionnelle.
 
-### 2.1.1 /html
+### 2.1.1. /html
 
 Contient le code applicatif. Vous pouvez y démarrer un projet avec votre IDE favori et commencer à coder.
 
-### 2.1.2 /storage
+### 2.1.2. /storage
 
 Contient tous les fichiers générés par l'application, y compris les logs.
 
-## 2.2 Accès SSH
+## 2.2. Accès SSH
 
 Depuis le répertoire "html", lance
 
@@ -148,7 +167,7 @@ Le login a utiliser est **vagrant**.
 **Remarque importante:** sous windows, la clé pourrait être refusée.
 Pour corriger le problème, suivez ce tuto : http://www.cnx-software.com/2012/07/20/how-use-putty-with-an-ssh-private-key-generated-by-openssh/
 
-## 2.3 Forwards de ports
+## 2.3. Forwards de ports
 
 Plusieurs ports sont forwardés de l'hôte vers la VM :
 
