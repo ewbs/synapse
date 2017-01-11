@@ -42,8 +42,7 @@ Si vous êtes sous Windows, vous pouvez utiliser GitBash ou Puttygen pour géné
 
 [A ECRIRE ]
 
-
-
+git clone https://github.com/ewbs/synapse.git .  (avec point)
 hosts --> ip machine synapse.app
 vagrant up
 vagrant ssh donnera les params de connexion (pour putty) --> window : http://www.cnx-software.com/2012/07/20/how-use-putty-with-an-ssh-private-key-generated-by-openssh/
