@@ -42,6 +42,10 @@ if [ ! -f /usr/local/synapse_installed ]; then
     sudo service cron restart
     echo '... Démarrage de Synapse'
     php artisan up
+    echo '+-------------------------------------------------------------------+'
+    echo '   L import des données Nostra est en cours'
+    echo '   Elles seront disponibles dans quelques minutes'
+    echo '+-------------------------------------------------------------------+'
 
 
     #

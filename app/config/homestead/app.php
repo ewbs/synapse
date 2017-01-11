@@ -21,7 +21,7 @@ return array (
 
 		
 		'nostra'=>[
-			'mail'=>'julian@gotoandplay.be'
+			'mail'=>'mail@host.com'
 		],
 )
 ;

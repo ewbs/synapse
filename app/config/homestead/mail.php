@@ -60,7 +60,7 @@ return array(
 	*/
 
 	'from' => array (
-				'address' => 'bouffleap@gmail.com',
+				'address' => 'identifiant@gmail.com',
 				'name' => 'Synapse (dev)'
 		),
 
@@ -88,7 +88,7 @@ return array(
 	|
 	*/
 
-	'username' => 'bouffleapp@gmail.com',
+	'username' => 'identifiant@gmail.com',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -101,6 +101,6 @@ return array(
 	|
 	*/
 
-	'password' => 'bouffle_123'
+	'password' => 'motdepasse'
 )
 ;
