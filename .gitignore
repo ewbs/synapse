@@ -18,6 +18,7 @@ Thumbs.db
 #Netbeans
 /.project
 /.buildpath
+/.settings/
 
 # Configuration des environnements
 /app/config/local-jda/
