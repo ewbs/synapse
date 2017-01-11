@@ -21,9 +21,9 @@ class UsersSeeder extends Seeder {
 						'updated_at' => new DateTime () 
 				),
 				array ( // 3
-						'username' => 'bernard',
-						'email' => 'bernard.dubuisson@ensemblesimplifions.be',
-						'password' => Hash::make ( 'bernard' ),
+						'username' => 'admin',
+						'email' => 'jda@ensemblesimplifions.be',
+						'password' => Hash::make ( 'admin' ),
 						'confirmed' => 1,
 						'confirmation_code' => md5 ( microtime () . Config::get ( 'app.key' ) ),
 						'created_at' => new DateTime (),

@@ -31,6 +31,11 @@ $env = $app->detectEnvironment ( array (
 		'local-mgr' => array (
 			'BRUL-CHQGFC2' 
 		),
+        'homestead' => array(
+                'html',
+                'vagrant',
+                'homestead'
+        ),
 		'test' => array (
 				'st5234v',
 				'st5234v.test.wallonie.be',
