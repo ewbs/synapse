@@ -11,6 +11,7 @@ Thumbs.db
 # Spécifique Laravel
 /bootstrap/compiled.php
 /composer.lock
+/vendor/
 
 # Spécifique IDE
 # PHPStorm
@@ -26,4 +27,7 @@ Thumbs.db
 /app/config/test/
 /app/config/local-mgr/
 /app/config/valid/
-/vendor/
+
+#spécifique Vagrant
+/.vagrant/
+

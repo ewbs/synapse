@@ -1,13 +1,14 @@
 <?php
 use Illuminate\Database\Migrations\Migration;
 class ConfideSetupEwbsUsersTable extends Migration {
-	
+
 	/**
 	 * Run the migrations.
 	 *
 	 * @return void
 	 */
 	public function up() {
+
 		// Creates the users table
 		Schema::create ( 'users', function ($table) {
 			$table->increments ( 'id' );
@@ -17,8 +18,8 @@ class ConfideSetupEwbsUsersTable extends Migration {
 			$table->string ( 'confirmation_code' );
 			$table->string ( 'remember_token' )->nullable ();
 			$table->boolean ( 'confirmed' )->default ( false );
-			$table->timestamps ();
-			$table->softDeletes ();
+            $table->timestamps ();
+            $table->softDeletes();
 		} );
 		
 		// Creates password reminders table
@@ -27,6 +28,7 @@ class ConfideSetupEwbsUsersTable extends Migration {
 			$table->string ( 'token' );
 			$table->timestamp ( 'created_at' );
 		} );
+
 	}
 	
 	/**
