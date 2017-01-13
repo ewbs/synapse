@@ -127,5 +127,6 @@ class PermissionsRolesSeeder extends Seeder {
 		$adminRoleId=Role::where(array('name'=>'admin'))->first()->id;
 		User::where ( 'username', '=', 'julian'   )->first()->attachRole( $adminRoleId );
 		User::where ( 'username', '=', 'mgrenson' )->first()->attachRole( $adminRoleId );
+		User::where ( 'username', '=', 'admin' )->first()->attachRole( $adminRoleId );
 	}
 }
