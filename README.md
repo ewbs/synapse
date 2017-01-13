@@ -193,3 +193,5 @@ Synapse est basé sur le Startersite de Andrew Welkins (https://github.com/andre
 
 Les scripts Vagrant sont basés et utilise la vagrant box de Laravel/Homestead 
 https://github.com/laravel/homestead
+
+Les logos de l'application sont disponibles sur Github : https://github.com/ewbs/synapse-logo
