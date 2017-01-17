@@ -17,6 +17,39 @@
             "homepage": "http://www.andrewelkins.com"
         }
     ],
+    "repositories":{
+        "laravel-async-queue":{
+            "type": "package",
+            "package": {
+                "name": "ewbs/laravel-async-queue",
+                "description": "Async queue with more possibilities",
+                "version": "0.3",
+                "source": {
+                    "url": "https://github.com/ewbs/laravel-async-queue.git",
+                    "type": "git",
+                    "reference": "0.3"
+                },
+                "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.x|5.0.x",
+        "illuminate/console": "4.x|5.0.x"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-4": {
+            "Barryvdh\\Queue\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.3-dev"
+        }
+    }
+            }
+        }
+    },
     "require": {
         "laravel/framework": "~4.2",
         "zizaco/confide": "~4.0",
@@ -24,7 +57,7 @@
         "bllim/datatables": "~1.3",
         "phpoffice/phpexcel": "dev-master",
         "barryvdh/laravel-debugbar": "~1.8",
-        "barryvdh/laravel-async-queue": "0.3",
+        "ewbs/laravel-async-queue": "0.3",
         "artdarek/gravatarer": "dev-master",
         "guzzlehttp/guzzle": "~5.0"
     },
