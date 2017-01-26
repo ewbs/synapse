@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-	<meta charset="utf-8" />
-	<title>@section('title') Synapse @show</title> 
-	@section('meta_keywords')
-	<meta name="keywords" content="" />
-	@show @section('meta_author')
-	<meta name="author" content="Julian Davreux (eWBS)" />
-	@show @section('meta_description')
+	<title>@section('title') Synapse @show</title>
 	<meta name="description" content="" />
-	@show
+	<meta name="keywords" content="" />
+	<meta name="author" content="Julian Davreux (eWBS)" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,400italic,700,800' rel='stylesheet' type='text/css'>
-	<link href='https://fonts.googleapis.com/css?family=Raleway:300,200,100' rel='stylesheet' type='text/css'>
+	<meta charset="utf-8" />
+	
+	<link rel="shortcut icon" href="{{{ secure_asset('favicon.ico') }}}"/>
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,400italic,700,800' rel='stylesheet' type='text/css'/>
+	<link href='https://fonts.googleapis.com/css?family=Raleway:300,200,100' rel='stylesheet' type='text/css'/>
 	{{ HTML::style('js/bootstrap/dist/css/bootstrap.min.css') }}
+	
 	{{ HTML::style('fonts/font-awesome-4/css/font-awesome.min.css') }}
 	{{ HTML::style('js/jquery.nanoscroller/nanoscroller.css') }}
 	{{ HTML::style('js/jquery.datatables/bootstrap-adapter/css/datatables.css') }}
@@ -35,9 +33,6 @@
 	<![endif]-->
 
 	{{ HTML::style('css/style.css') }}
-
-	<link rel="shortcut icon" href="{{{ secure_asset('favicon.ico') }}}">
-
 	{{ HTML::script('js/jquery.js') }}
 </head>
 
@@ -76,7 +71,6 @@
 					@endif
 				</ul>
 			</div>
-			<!-- /navbar-collapse -->
 		</div>
 	</div>
 	
@@ -135,9 +129,8 @@
 				'slider':true
 			});
 		});
-		<?php /* synapseGlobal_BaseURL = {{Config::get('app.url')}} */ ?>
 	</script>
 
 	@yield('scripts')
-	</body>
+</body>
 </html>
