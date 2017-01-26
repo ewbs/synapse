@@ -247,10 +247,17 @@ if ($modelInstance) {
 									<?php
 									// recherche de l'élément à selectionner
 									$selectedNostraDemarches = [];
-									if ($modelInstance)
-										$selectedNostraDemarches = $aSelectedNostraDemarches; //passée par le controlleur (voir function getManage());
 									if (Input::old('nostra_demarches'))
 										$selectedNostraDemarches = Input::old('nostra_demarches');
+									else {
+										if ($modelInstance)
+											$selectedNostraDemarches = $aSelectedNostraDemarches; //passée par le controlleur (voir function getManage());
+										
+										// Lier le projet à une démarche passée en paramètre (on vient alors d'une démarche que l'on souhaitait lier à ce projet)
+										$demarchetolink=Input::get('demarchetolink'); 
+										if($demarchetolink && !in_array($demarchetolink, $selectedNostraDemarches))
+											array_push($selectedNostraDemarches, $demarchetolink);
+									}
 									?>
 									<select class="select2" multiple name="nostra_demarches[]" id="nostra_demarches" data-haspost="{{Input::old('formsubmit')}}">
 										@foreach($aNostraDemarches as $demarche)

@@ -218,8 +218,9 @@ class IdeaController extends TrashableModelController {
 
 			$aSelectedTags = $modelInstance->tags->lists('id');
 
-			return $this->makeDetailView($modelInstance, 'admin/ideas/manage', compact ( 	'ewbsMembers', 'aRegions', 'aSelectedAdministrations', 'aGovernements', 'aSelectedMinisters', 'aNostraDemarches', 'aNostraPublics',
-																							'aSelectedNostraPublics', 'aSelectedNostraDemarches', 'availableStates', 'aTaxonomy', 'aSelectedTags', 'returnTo' ) );
+			return $this->makeDetailView($modelInstance, 'admin/ideas/manage',
+				compact ('ewbsMembers', 'aRegions', 'aSelectedAdministrations', 'aGovernements', 'aSelectedMinisters', 'aNostraDemarches', 'aNostraPublics',
+				         'aSelectedNostraPublics', 'aSelectedNostraDemarches', 'availableStates', 'aTaxonomy', 'aSelectedTags', 'returnTo' ) );
 		}
 		return View::make ( 'admin/ideas/manage', compact ( 'modelInstance', 'ewbsMembers', 'aRegions', 'aGovernements', 'aTaxonomy', 'aNostraDemarches', 'aNostraPublics', 'returnTo' ) );
 	}

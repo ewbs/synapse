@@ -23,8 +23,6 @@ if(!isset($manage)) $manage=false;
                 @endforeach
             </ul>
         @endif
-        @if ($manage)
-            <a class="btn btn-primary servermodal" href="{{route('demarchesIdeasGetLink', $modelInstance->id)}}">Lier la démarche à un projet</a>
-        @endif
+        <a class="btn btn-primary servermodal" href="{{route('demarchesIdeasGetLink', $modelInstance->id)}}">Lier la démarche à un projet</a>
     </div>
 </div>
