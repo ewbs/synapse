@@ -83,7 +83,7 @@
 	<div id="cl-wrapper" class="@if (Auth::check()) fixed-menu @endif">
 		@if (Auth::check()) @include('site.layouts.sidebar') @endif
 		@yield('aside')
-		<div class="container-fluid" id="pcont">
+		<div class="{{ isset($notFluid) ? 'container':'container-fluid' }}" {{ isset($notFluid) ? '':'id="pcont"' }}>
 			@include('notifications')
 			@yield('content')
 			<div class="cl-mcont">
