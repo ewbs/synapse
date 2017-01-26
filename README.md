@@ -38,9 +38,9 @@ Il n'est donc pas nécessaire d'installer un serveur web, php ou un SGBD sur vot
 
 ### 1.1.2. Création de la structure de fichier
 
-Crééz un répertoire (le nom importe peu) sur votre machine hôte. Par exemple "synapse".
-Dans ce répertoire, crééz deux sous répertoires "html" et "storage" (respectez ces noms, tout en minuscule sinon vous devrez adapter les scripts Vagrant vous même).
-La structure de dossier doit être la suivante
+Créez un répertoire (le nom importe peu) sur votre machine hôte. Par exemple "synapse".
+Dans ce répertoire, créez deux sous répertoires "html" et "storage" (respectez ces noms, tout en minuscule sinon vous devrez adapter les scripts Vagrant vous même).
+La structure de dossier doit être la suivante :
 
     /synapse
         /html
@@ -57,7 +57,7 @@ Si vous êtes sous Windows, vous pouvez utiliser GitBash ou Puttygen pour géné
 
 ### 1.1.4. Récupération du code
 
-Cloner le repository dans le dossier "html" sans créer de sous dossier. Pour cela, ajouter un point en fin de la commande *git clone*.
+Clonez le repository dans le dossier "html" sans créer de sous dossier. Pour cela, ajoutez un point en fin de la commande *git clone*.
 
     git clone https://github.com/ewbs/synapse.git .
     
@@ -101,7 +101,7 @@ Les modifications sont bidirectionnelles (hote <--> vm).
 
 #### html/app/config/homestead/app.php
 
-Définissez un récepteur pour les mails de demande "nostra"
+Définissez un récepteur pour les mails de demande "nostra" :
 
     'nostra'=>[
     		'mail'=>'mail@host.com'
@@ -109,8 +109,7 @@ Définissez un récepteur pour les mails de demande "nostra"
     
 #### html/app/config/homestead/mail.php
 
-Définissez un mailrelay pour l'envoi de mails depuis l'application
-Suivez les instructions présentes dans le fichier.
+Définissez un mailrelay pour l'envoi de mails depuis l'application. Suivez les instructions présentes dans le fichier.
 
 #### Fichier hosts
 
@@ -121,7 +120,7 @@ Vous devez définir ceci dans le fichier *hosts* de votre machine.
     
 ### 1.1.6. Démarrage de la VM
 
-Déplacez vous dans le réperoire "html" et exécutez la commande
+Déplacez-vous dans le réperoire "html" et exécutez la commande :
 
     vagrant up
     
@@ -155,7 +154,7 @@ Contient tous les fichiers générés par l'application, y compris les logs.
 
 ## 2.2. Accès SSH
 
-Depuis le répertoire "html", lance
+Depuis le répertoire "html", lancez :
 
     vagrant ssh
     
@@ -191,7 +190,7 @@ http://www.ensemblesimplifions.be
 
 Synapse est basé sur le Startersite de Andrew Welkins (https://github.com/andrewelkins/Laravel-4-Bootstrap-Starter-Site)
 
-Les scripts Vagrant sont basés et utilise la vagrant box de Laravel/Homestead 
+Les scripts Vagrant exploitent la vagrant box de Laravel/Homestead
 https://github.com/laravel/homestead
 
 Les logos de l'application sont disponibles sur Github : https://github.com/ewbs/synapse-logo

@@ -240,7 +240,7 @@ class IdeaController extends TrashableModelController {
 		$idea->doc_source_page = Input::get ( 'doc_source_page' );
 		$idea->doc_source_link = Input::get ( 'doc_source_link' );
 		$idea->transversal = Input::has ( 'transversal' ) ? 1 : 0;
-		$idea->ewbs_member_id = Input::get ( 'ewbs_contact' );
+		$idea->ewbs_member_id = StringHelper::getStringOrNull(Input::get ( 'ewbs_contact'));
 		if($create) $idea->user_id = $this->getLoggedUser()->id;
 		// pour prioritary, on regarde si l'utilisateur peut modifier la valeur
 		if ($this->getLoggedUser()->can ( 'ideas_manage' ) && ! $this->getLoggedUser()->hasRestrictionsByAdministrations ()) {

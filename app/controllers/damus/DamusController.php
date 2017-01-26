@@ -356,11 +356,12 @@ class DamusController extends BaseController {
 	public function nostraGetDemarche($nostra_id) {
 		try {
 			$client=new GuzzleHttp\Client();
-			$res=$client->get(Config::get ( 'app.nostra_demarche_link' ) . $nostra_id);
+			$res=$client->get(str_replace('{{demarcheId}}', $nostra_id, Config::get ( 'app.nostraV2_demarcheDetail' )));
 			$demarche=$res->json()['fiche'][0];
 			return View::make('admin/damus/nostra/modal-demarche', compact('demarche'));
 		}
 		catch(Exception $e) {
+			Log::error($e);
 			return View::make('notifications', ['error'=>Lang::get('general.baderror',['exception'=>$e->getMessage()])]);
 		}
 	}

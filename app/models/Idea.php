@@ -40,7 +40,6 @@ class Idea extends TrashableModel {
 		return [
 			'name' => 'required|min:3',
 			'description' => 'required|min:5',
-			'ewbs_contact' => 'required|integer|min:1',
 			'nostra_publics' => 'required_without:nostra_demarches'
 		];
 	}

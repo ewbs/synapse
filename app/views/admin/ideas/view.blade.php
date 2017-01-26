@@ -254,8 +254,8 @@ $ideaState = $modelInstance->getLastStateModification ()->ideaState;
 					<div class="content">
 						<p><span class="fa fa-user"></span> Créé par <strong>{{$modelInstance->user->username}}</strong> ({{HTML::mailto($modelInstance->user->email)}})</p>
 						<p><span class="fa fa-calendar"></span> Le {{DateHelper::datetime($modelInstance->created_at)}}</p>
-						<p><span class="fa fa-users"></span> Relais eWBS <strong>{{$modelInstance->ewbsMember->firstname}} {{$modelInstance->ewbsMember->lastname}}</strong></p>
-						<p><span class="fa fa-users"></span> Contact <strong>{{$modelInstance->ext_contact}}</strong></p>
+						@if($modelInstance->ewbs_member_id)<p><span class="fa fa-users"></span> Relai eWBS <strong>{{$modelInstance->ewbsMember->firstname}} {{$modelInstance->ewbsMember->lastname}}</strong></p>@endif
+						@if($modelInstance->ext_contact)<p><span class="fa fa-users"></span> Contact <strong>{{$modelInstance->ext_contact}}</strong></p>@endif
 					</div>
 				</div>
 			</div>
