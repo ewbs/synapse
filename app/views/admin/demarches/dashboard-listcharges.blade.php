@@ -16,6 +16,7 @@
 			<div class="col-md-12">
 				<div class="block-flat">
 					<div class="header">
+						<div class="pull-right"><a id="demarcheExport" href="javascript:void(0);" class="btn btn-small btn-default"><i class="glyphicon glyphicon-download"></i> Exporter au format XLS</a></div>
 						<h3>Mes charges administratives</h3>
 					</div>
 					<div class="content">
@@ -151,6 +152,7 @@
 									<th>Tâches</th>
 									<th>Gains pot. usager</th>
 									<th>Gains pot. admin</th>
+									<th></th>
 								</tr>
 								</thead>
 								<tbody>
@@ -167,6 +169,12 @@
 				<span class="fa fa-info-circle"></span> Votre liste de démarches est filtrée sur : {{$txtUserFiltersAdministration}}
 			</div>
 		</div>
+		
+		{{-- ce fomulaire invisible sert à l'export des démarches (la page d'export est appelée en POST --}}
+		<form class="hidden" id="formExportDemarches" method="post" action="{{route('demarchesPostExport')}}" target="_blank">
+			<input type="hidden" id="_token" name="_token" value="{{{ csrf_token() }}}"/>
+			<input type="hidden" id="demarches_ids" name="demarches_ids" value=""/>
+		</form>
 
 @stop
 
@@ -181,10 +189,20 @@
 
 				var $tableDemarches = $('#datatable').dataTable( {
 					"aoColumnDefs": [
-						{ "sClass": "text-right", "aTargets": [ 3, 4, 5, 6 ] }
+						{ "sClass": "text-right", "aTargets": [ 3, 4, 5, 6 ] },
+						{ 'bVisible': false, 'aTargets': [7] }
 					],
 					"aaSorting" : [[0, "desc"]],
 					"sAjaxSource": ajaxUrl,
+				});
+
+				/*
+				 * Gestion de l'export
+				 */
+				$("#demarcheExport").click( function () {
+					var ids = $tableDemarches.fnGetColumnData(7);
+					$("input#demarches_ids").val(ids);
+					$("form#formExportDemarches").submit();
 				});
 
 			});

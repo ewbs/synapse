@@ -140,6 +140,7 @@ class DemarcheController extends ModelController {
 			DB::raw ('v_demarchegains.gain_potential_administration AS gpc'),
 
 			DB::raw ( "CASE WHEN demarches.id IS NOT NULL THEN demarches.created_at ELSE NULL END AS demarche_created_at" ),									// pour afficher l'id complet ?
+			'nostra_demarches.id AS nostra_demarche_id', //ne pas changer de place : c'est envoyé à la vue puis caché
 		];
 
 		$builder = NostraDemarche
