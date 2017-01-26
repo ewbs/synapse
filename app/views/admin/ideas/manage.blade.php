@@ -364,18 +364,13 @@ if ($modelInstance) {
 
 							<!-- relai ewbs -->
 							<?php
-							// recherche de l'élément à selectionner
-							$selectedMember = 0;
-							if ($modelInstance)
-								$selectedMember = $modelInstance->ewbs_member_id;
-							if (Input::old('ewbs_contact'))
-								$selectedMember = Input::old('ewbs_contact');
+							$selectedMember = Input::old('ewbs_contact', $modelInstance ? $modelInstance->ewbs_member_id : null);
 							?>
 							<strong>Relai eWBS</strong>
 							<div class="form-group {{{ $errors->has('ewbs_contact') ? 'has-error' : '' }}}">
 								<div class="col-md-12">
 									<select class="form-control" name="ewbs_contact" id="ewbs_contact">
-										<option value="-1"></option>
+										<option></option>
 										@foreach($ewbsMembers as $ewbsmember)
 											<option value="{{$ewbsmember->id}}"{{ $selectedMember== $ewbsmember->id ? ' selected': '' }}>{{strtoupper($ewbsmember->lastname)}} {{$ewbsmember->firstname}}</option>
 										@endforeach
