@@ -98,7 +98,7 @@ abstract class ManageableModel extends Ardent {
 	 * @return string
 	 */
 	public static function formatId($id, $pad_length=5, $prefix='#') {
-		if($id) return $prefix . str_pad($id, 5, "0", STR_PAD_LEFT);
+		if($id) return $prefix . str_pad($id, $pad_length, "0", STR_PAD_LEFT);
 		return '';
 	}
 	
