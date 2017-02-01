@@ -1,12 +1,5 @@
-@extends('site.layouts.default')
-
-{{-- Web site Title --}}
-@section('title')
-    Bienvenue sur Synapse
-    @parent
-@stop
-
-{{-- Content --}}
+@extends('site.layouts.container-fluid')
+@section('title')Mes filtres @stop
 @section('content')
     <div class="cl-mcont">
 

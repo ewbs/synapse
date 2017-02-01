@@ -9,6 +9,7 @@ abstract class BaseController extends Controller {
 	private $loggedUser;
 	const SESSION_RETURNTO_ROUTENAME = 'baseCtrl_returnTo_routeName'; //nom de la variable de session utilisée par les fonctionnalités de returnTo;
 	
+	private $section;
 	/**
 	 * Initialisation
 	 *
@@ -23,6 +24,46 @@ abstract class BaseController extends Controller {
 		
 		// Charger le menu sidebar
 		$this->buildSidebarMenu();
+		
+		$this->section=$this->getSection();
+		View::share('section', $this->section);
+		View::share('sectionIcon', $this->getSectionIcon($this->section));
+	}
+	
+	/**
+	 * Associe une section à la route courante
+	 * 
+	 * @return string
+	 */
+	public final function getSection() {
+		$section=str_replace('admin/', '', Route::current()->getUri());
+		$slash=strpos($section, '/');
+		if($slash)
+			$section=substr($section, 0, strpos($section, '/'));
+		return $section;
+	}
+	
+	/**
+	 * Associe une icône font-awesome à une section
+	 * 
+	 * @param string $section
+	 * @return string
+	 */
+	public final function getSectionIcon($section){
+		switch($section) {
+			case 'contact'     :return 'envelope';
+			case 'dashboard'   :return 'area-chart';
+			case 'ideas'       :return 'lightbulb-o';
+			case 'demarches'   :return 'briefcase';
+			case 'ewbsactions' :return 'magic';
+			case 'eforms'      :return 'wpforms';
+			case 'pieces'      :
+			case 'tasks'       :return 'clipboard';
+			case 'damus'       :return 'connectdevelop';
+			case 'taxonomy'    :return 'tag';
+			case 'ewbsservices':return 'wrench';
+			default            :return '';
+		}
 	}
 	
 	
@@ -124,29 +165,34 @@ abstract class BaseController extends Controller {
 		$menu=[
 			[ // Dashboard
 				'label'      => Lang::get ( 'admin/dashboard/messages.menu' ),
+				'section'    => 'dashboard',
 				'route'      => 'adminDashboardGetIndex',
 				'icon'       => 'area-chart',
 			],
 			[ // Projets de simplif
 				'label'      => Lang::get ( 'admin/ideas/messages.menu' ),
+				'section'    => 'ideas',
 				'route'      => 'ideasGetIndex',
 				'icon'       => 'lightbulb-o',
 				'permission' => 'ideas_display',
 			],
 			[ // Démarches
 				'label'      => Lang::get ( 'admin/demarches/messages.menu' ),
+				'section'    => 'demarches',
 				'route'      => 'demarchesGetIndex',
 				'icon'       => 'briefcase',
 				'permission' => 'demarches_display',
 			],
 			[ // Actions
 				'label'      => Lang::get ( 'admin/ewbsactions/messages.menu' ),
+				'section'    => 'ewbsactions',
 				'route'      => 'ewbsactionsGetIndex',
 				'icon'       => 'magic',
 				'permission' => 'ewbsactions_display',
 			],
 			[ // Formulaires
 				'label'     => Lang::get ( 'admin/eforms/messages.supermenu' ),
+				'section'    => 'eforms',
 				'icon'      => 'wpforms',
 				'permission'=> 'formslibrary_display',
 				'submenu'   => [
@@ -161,6 +207,7 @@ abstract class BaseController extends Controller {
 			],
 			[ // Pièces et données
 				'label'      => Lang::get ( 'admin/pieces/messages.supermenu' ),
+				'section'    => 'pieces',
 				'icon'       => 'clipboard',
 				'permission' => 'pieces_tasks_display',
 				'submenu'    => [
@@ -182,11 +229,13 @@ abstract class BaseController extends Controller {
 			[ // Damus
 				'label'      => Lang::get ( 'admin/damus/messages.menu' ),
 				'route'      => 'damusGetIndex',
+				'section'    => 'damus',
 				'icon'       => 'connectdevelop',
 				'permission' => 'damus_manage',
 			],
 			[ // Taxonomie
 				'label'		 => Lang::get ('admin/taxonomy/messages.menu' ),
+				'section'    => 'taxonomy',
 				'icon'		 => 'tag',
 				'permission' => 'taxonomy_display',
 				'submenu'	 => [
@@ -212,6 +261,7 @@ abstract class BaseController extends Controller {
 			],
 			[ // Admin
 				'label'      => Lang::get ( 'general.admin' ),
+				'section'    => 'admin',
 				'icon'       => 'cog',
 				'permission' => ['administrations_manage', 'ewbsmembers_manage', 'manage_roles', 'manage_users', 'jobs_manage'],
 				'submenu'    => [
@@ -244,6 +294,7 @@ abstract class BaseController extends Controller {
 			],
 			[ // Corbeille
 				'label'      => Lang::get ( 'general.trash' ),
+				'section'    => 'trash',
 				'icon'       => 'trash-o',
 				'submenu'    => [
 					[

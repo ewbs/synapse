@@ -13,8 +13,6 @@
 {{ HTML::style('js/jquery.ui/jquery-ui-1.10.4.custom.min.css') }}
 @stop
 
-@section('bodyclass')test @stop
-
 @section('wrapper')
 {{-- navbar --}}
 <div id="head-nav" class="navbar navbar-default navbar-fixed-top">
@@ -39,7 +37,7 @@
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 						{{Gravatarer::make( ['email' => Auth::user()->email, 'size' => 30, 'secured' => true] )->html()}}{{{ Auth::user()->username }}} <b class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li><a href="{{{ URL::secure('user') }}}">Mes infos</a></li>
+						<li><a href="{{{ URL::secure('user') }}}">Mon profil</a></li>
 						<li><a href="{{ route('UserGetFilters') }}">Mes filtres</a></li>
 						<li class="divider"></li>
 						<li><a href="{{{ URL::secure('user/logout') }}}">Déconnexion</a></li>
@@ -56,17 +54,7 @@
 <div id="cl-wrapper" class="@if (Auth::check()) fixed-menu @endif">
 	@if (Auth::check()) @include('site.layouts.sidebar') @endif
 	@yield('aside')
-	<div class="{{ isset($notFluid) ? 'container':'container-fluid' }}" {{ isset($notFluid) ? '':'id="pcont"' }}>
-		@include('notifications')
-		@yield('content')
-		<div class="cl-mcont">
-			<hr/>
-			<p class="muted">
-				Synapse est développé par <a href="http://www.ensemblesimplifions.be" target="_blank">eWBS</a><br />
-				<small>Propulsé par <a href="http://www.laravel.com/" target="_blank">Laravel</a> | Mis en forme par <a href="http://getbootstrap.com/" target="_blank">Bootstrap</a> | Version {{Config::get('app.version')}}{{Config::getEnvironment()=='production'?'':'-'.Config::getEnvironment()}}</small>
-			</p>
-		</div>
-	</div>
+	@yield('container')
 </div>
 @stop
 

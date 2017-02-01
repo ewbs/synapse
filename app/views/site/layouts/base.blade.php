@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-	<title>@section('title')Synapse  - @show</title>
+	<title>Synapse - {{strip_tags($__env->yieldContent('title', 'L\'outil de pilotage des idées et projets de simplification administrative'))}}</title>
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
 	<meta name="author" content="Julian Davreux (eWBS)" />
@@ -28,9 +28,13 @@
 
 <body class="@yield('bodyclass')">
 	@yield('wrapper')
+	
 	{{ HTML::script('js/bootstrap/dist/js/bootstrap.min.js') }}
+	
 	@yield('layoutscripts')
+	
 	{{ HTML::script('js/behaviour/general.js') }}
+	
 	<script type="text/javascript">
 		$(document).ready(function(){
 			App.init({
@@ -44,6 +48,7 @@
 			});
 		});
 	</script>
+	@yield('containerscripts')
 	@yield('scripts')
 </body>
 </html>

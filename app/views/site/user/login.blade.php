@@ -1,9 +1,6 @@
 @extends('site.layouts.base')
-
 @section('title')Login @stop
-
 @section('bodyclass')texture @stop
-
 @section('wrapper')
 <div id="cl-wrapper" class="login-container">
 	<div class="middle-login">
