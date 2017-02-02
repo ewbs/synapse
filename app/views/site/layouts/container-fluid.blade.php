@@ -22,7 +22,7 @@
 	</div>
 	<div class="cl-mcont">
 		@yield('content')
+		@include('site.layouts.partial.footer')
 	</div>
-	@include('site.layouts.partial.footer')
 </div>
 @stop

@@ -55,9 +55,7 @@
 				</form>
 			</div>
 		</div>
-		<div class="text-center out-links">
-			<a href="http://www.ensemblesimplifions.be" target="_blank">eWBS 2015</a>
-		</div>
+		@include('site.layouts.partial.footer')
 	</div>
 </div>
 @stop
