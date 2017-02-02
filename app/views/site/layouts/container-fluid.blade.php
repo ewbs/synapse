@@ -1,4 +1,4 @@
-@extends('site.layouts.default')
+@extends('site.layouts.wrapper')
 @section('container')
 <div class="container-fluid" id="pcont">
 	@include('notifications')

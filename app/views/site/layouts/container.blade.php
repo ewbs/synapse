@@ -1,4 +1,4 @@
-@extends('site.layouts.default')
+@extends('site.layouts.wrapper')
 @section('container')
 @include('notifications')
 <div class="cl-mcont">
