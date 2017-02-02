@@ -62,7 +62,7 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<a class="btn btn-cancel" href="{{{ $nostraForm->routeGetIndex() }}}">Annuler</a>
+						<a class="btn btn-cancel" href="{{{ $nostraForm->routeGetIndex() }}}">{{Lang::get('button.cancel')}}</a>
 						<button type="submit" class="btn btn-primary">{{Lang::get('button.save')}}</button>
 					</div>
 				</form>

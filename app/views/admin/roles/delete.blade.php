@@ -21,8 +21,7 @@
 					<!-- Form Actions -->
 					<div class="form-group">
 						<div class="controls">
-							<a class="btn btn-cancel"
-								href="{{{ URL::secure('admin/roles') }}}">Annuler</a>
+							<a class="btn btn-cancel" href="{{{ URL::secure('admin/roles') }}}">{{Lang::get('button.cancel')}}</a>
 							<button type="submit" class="btn btn-danger">Confirmer la suppression</button>
 						</div>
 					</div>

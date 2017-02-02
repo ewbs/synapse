@@ -256,8 +256,8 @@
 			<div class="content no-padding">
 				<div class="form-group no-padding no-margin">
 					<div class="col-md-12">
+						<a class="btn btn-lg" href="{{ $modelInstance ? $modelInstance->routeGetView() : (isset($returnTo) && $returnTo ? route($returnTo) : $model->routeGetIndex()) }}">{{Lang::get('button.cancel')}}</a>
 						<button type="submit" class="btn btn-primary btn-lg">{{Lang::get('button.save')}}</button>
-						<a class="btn btn-link btn-lg" href="{{ $modelInstance ? $modelInstance->routeGetView() : (isset($returnTo) && $returnTo ? route($returnTo) : $model->routeGetIndex()) }}">{{Lang::get('button.cancel')}}</a>
 					</div>
 				</div>
 			</div>

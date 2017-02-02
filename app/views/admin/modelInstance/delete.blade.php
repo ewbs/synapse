@@ -40,7 +40,7 @@
 					<input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
 					<p>{{ Lang::get ('admin/'.$model->getModelLabel().'/messages.delete.detail', ['name'=>$modelInstance->name()]) }}</p>
 					<div class="controls">
-						<a class="btn btn-cancel" href="{{ $modelInstance->hasView()?$modelInstance->routeGetView():$modelInstance->routeGetIndex() }}">Annuler</a>
+						<a class="btn btn-cancel" href="{{ $modelInstance->hasView()?$modelInstance->routeGetView():$modelInstance->routeGetIndex() }}">{{Lang::get('button.cancel')}}</a>
 						<button type="submit" class="btn btn-danger">Confirmer la suppression</button>
 					</div>
 				</form>

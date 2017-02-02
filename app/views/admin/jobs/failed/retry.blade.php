@@ -16,7 +16,7 @@ $payload=json_decode($job->payload,true);
 			<input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
 			<div class="form-group">
 				<div class="controls">
-					<a class="btn btn-cancel" href="{{ route('failedjobsGetView', $job->id) }}">Annuler</a>
+					<a class="btn btn-cancel" href="{{ route('failedjobsGetView', $job->id) }}">{{Lang::get('button.cancel')}}</a>
 					<button type="submit" class="btn btn-primary">Confirmer la réinsertion</button>
 				</div>
 			</div>

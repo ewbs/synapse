@@ -22,7 +22,7 @@
 					<div class="form-group">
 						<div class="controls">
 							<a class="btn btn-cancel"
-								href="{{{ URL::secure('admin/users') }}}">Annuler</a>
+								href="{{{ URL::secure('admin/users') }}}">{{Lang::get('button.cancel')}}</a>
 							<button type="submit" class="btn btn-danger">Confirmer la
 								suppression</button>
 						</div>

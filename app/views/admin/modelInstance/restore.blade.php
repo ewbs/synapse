@@ -19,7 +19,7 @@
 					<!-- Form Actions -->
 					<div class="form-group">
 						<div class="controls">
-							<a class="btn btn-cancel" href="{{ $modelInstance->routeGetTrash() }}">Annuler</a>
+							<a class="btn btn-cancel" href="{{ $modelInstance->routeGetTrash() }}">{{Lang::get('button.cancel')}}</a>
 							<button type="submit" class="btn btn-primary">Confirmer la restauration</button>
 						</div>
 					</div>
@@ -27,7 +27,7 @@
 				</form>
 				@else
 					@error(Lang::get('general.restore.noright'))
-					<a class="btn btn-cancel" href="{{ $modelInstance->routeGetTrash() }}">Annuler</a>
+					<a class="btn btn-cancel" href="{{ $modelInstance->routeGetTrash() }}">{{Lang::get('button.cancel')}}</a>
 				@endif
 			</div>
 		</div>

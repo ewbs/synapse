@@ -16,7 +16,7 @@
 						Vous allez supprimer le fichier SCM Light envoyé le <strong>{{DateHelper::datetime( $scmFile->created_at, true )}}</strong>. Cette opération est irréversible.
 					</p>
 					<div class="controls">
-						<a class="btn btn-cancel" href="{{ route('demarchesGetDownload', $scmFile->demarche_id) }}">Annuler</a>
+						<a class="btn btn-cancel" href="{{ route('demarchesGetDownload', $scmFile->demarche_id) }}">{{Lang::get('button.cancel')}}</a>
 						<button type="submit" class="btn btn-danger">Confirmer la suppression</button>
 					</div>
 				</form>

@@ -226,12 +226,12 @@ if(!$edit && !$fromTriggerUpdate) {
 					@endif
 				</div>
 				<div class="modal-footer">
-					<button type="submit" name="action" value="save" class="btn btn-primary">{{ ($edit ? 'Editer' : 'Ajouter') }} l'action</button>
 					@if($fromTriggerUpdate)
 					<button class="btn btn-default" type="submit" name="action" value="cancel">Non merci</button>
 					@else
-					<button class="btn btn-default" type="button" data-dismiss="modal">Annuler</button>
+					<button class="btn btn-default" type="button" data-dismiss="modal">{{Lang::get('button.cancel')}}</button>
 					@endif
+					<button type="submit" name="action" value="save" class="btn btn-primary">{{Lang::get('button.save')}}</button>
 				</div>
 			</form>
 		</div>

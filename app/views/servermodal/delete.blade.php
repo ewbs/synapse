@@ -20,8 +20,8 @@
 			<div class="modal-footer">
 				<form method="post" autocomplete="off" action="{{ $url }}">
 					<input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
-					<button type="submit" name="action" value="delete" class="btn btn-danger">{{Lang::get('button.delete')}}</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">{{Lang::get('button.cancel')}}</button>
+					<button type="submit" name="action" value="delete" class="btn btn-danger">{{Lang::get('button.delete')}}</button>
 				</form>
 			</div>
 		</div>

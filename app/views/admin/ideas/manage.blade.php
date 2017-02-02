@@ -45,8 +45,9 @@ if ($modelInstance) {
 							<li>{{$ideaState->name == 'ABANDONNEE' ? Lang::get('admin/ideas/states.label-ABANDONNEE') : Lang::get('admin/ideas/states.ABANDONNEE')}}</li>
 							@if (isset($availableStates))
 								<li class="pull-right">
+									<a href="javascript:void(0);" id="state-button-cancel" class="btn btn-danger btn-xs pull-right">{{Lang::get('button.cancel')}}</a>
 									<a href="javascript:void(0);" id="state-button-modify" class="btn btn-primary btn-xs pull-right">Modifier l'état</a>
-									<a href="javascript:void(0);" id="state-button-cancel" class="btn btn-danger btn-xs pull-right">Annuler</a>
+									
 								</li>
 							@endif
 						</ol>
@@ -435,8 +436,8 @@ if ($modelInstance) {
 			<div class="content no-padding">
 				<div class="form-group no-padding no-margin">
 					<div class="col-md-12">
+						<a class="btn btn-lg" href="{{ $modelInstance ? $modelInstance->routeGetView() : (isset($returnTo) && $returnTo ? route($returnTo) : $model->routeGetIndex()) }}">{{Lang::get('button.cancel')}}</a>
 						<button type="submit" class="btn btn-primary btn-lg">{{Lang::get('button.save')}}</button>
-						<a class="btn btn-link btn-lg" href="{{ $modelInstance ? $modelInstance->routeGetView() : (isset($returnTo) && $returnTo ? route($returnTo) : $model->routeGetIndex()) }}">{{Lang::get('button.cancel')}}</a>
 					</div>
 				</div>
 			</div>
