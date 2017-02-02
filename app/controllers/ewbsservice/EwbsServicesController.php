@@ -107,7 +107,8 @@ class EwbsServicesController extends TrashableModelController {
 		$modelInstance->description = Input::get ( 'description' );
 
 		$modelInstance->save();
-		$modelInstance->tags()->sync(Input::get('tags'));
+		$tags=Input::get('tags');
+		if($tags) $modelInstance->tags()->sync($tags);
 
 		return true;
 	}
