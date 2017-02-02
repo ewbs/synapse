@@ -79,25 +79,5 @@
         <a class="btn btn-warning" href="{{route('damusGetRequestDemarche',$modelInstance->nostraDemarche->demarche->id)}}"><i class="fa fa-bug" aria-hidden="true"></i>Signaler une erreur</a>
     @endif
 </p>
-{{-- Modale montrant le contenu complet d'une démarche. Par défaut, elle donne un message d'erreur ... qui sera remplacé par le contenu de la démarche si l'appel AJAX à NOSTRA a réussi --}}
-<?php //TODO : A supprimer lorsque le détail via servermodal sera fini ?>
-<div class="modal fade noAuto" id="modal-complete-record" tabindex="-1" role="dialog" aria-labelledby="modalCompleteTitle" data-nostra-url="{{URL::secure('api/v1/damus/demarche')}}/{{$modelInstance->nostraDemarche->nostra_id}}">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title" id="modalCompleteTitle">Erreur de communication avec Nostra</h4>
-            </div>
-            <div class="modal-body" id="modalCompleteBody">
-                <p>Nostra est actuellement injoignable et il est impossible de retrouver le contenu complet de cette démarche.</p>
-                <p>Veuillez réessayer plus tard.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-            </div>
-        </div>
-    </div>
-</div></div>
+</div>
 </div>
