@@ -48,7 +48,7 @@
 						{{Gravatarer::make( ['email' => Auth::user()->email, 'size' => 30, 'secured' => true] )->html()}}{{{ Auth::user()->username }}} <b class="caret"></b></a>
 					<ul class="dropdown-menu">
 						<li><a href="{{route('userGetIndex')}}">Mon profil</a></li>
-						<li><a href="{{ route('UserGetFilters') }}">Mes filtres</a></li>
+						<li><a href="{{ route('userGetFilters') }}">Mes filtres</a></li>
 						<li class="divider"></li>
 						<li><a href="{{route('userGetLogout')}}">Déconnexion</a></li>
 					</ul>
