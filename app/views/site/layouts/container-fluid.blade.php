@@ -1,3 +1,15 @@
+<?php 
+/**
+ * Template définissant le container (contenu au sein du wrapper) en mode fluide, qui inclut :
+ * - les notifications
+ * - le page-head (titre + fonctions de navigation de l'élément courant [=features])
+ * - le footer
+ * 
+ * Le template prévoit qu'un template qui l'étend puisse compléter les sections :
+ * - title (titre de la page en partie centrale, mais aussi utilisé par base.blade pour le title du head)
+ * - content (le contenu de la page)
+ */
+?>
 @extends('site.layouts.wrapper')
 @section('container')
 <div class="container-fluid" id="pcont">

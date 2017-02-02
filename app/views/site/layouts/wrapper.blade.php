@@ -1,6 +1,16 @@
+<?php 
+/**
+ * Template définissant le wrapper (contenu du body) qui inclut :
+ * - la navbar
+ * - la sidebar
+ * - et délègue l'affichage du container à un template qui l'étendra
+ * 
+ * Le template prévoit qu'un template qui l'étend puisse compléter la section "wrapper".
+ */
+?>
 @extends('site.layouts.base')
 
-@section('layoutstyles')
+@section('wrapperstyles')
 {{ HTML::style('js/jquery.nanoscroller/nanoscroller.css') }}
 {{ HTML::style('js/jquery.datatables/bootstrap-adapter/css/datatables.css') }}
 {{ HTML::style('js/bootstrap.switch/bootstrap-switch.css')}}
@@ -53,12 +63,11 @@
 
 <div id="cl-wrapper" class="@if (Auth::check()) fixed-menu @endif">
 	@if (Auth::check()) @include('site.layouts.sidebar') @endif
-	@yield('aside')
 	@yield('container')
 </div>
 @stop
 
-@section('layoutscripts')
+@section('wrapperscripts')
 {{ HTML::script('js/jquery.ui/jquery-ui.js') }}
 {{ HTML::script('js/jquery.ui/jquery-ui-1.10.4.custom.min.js') }}
 {{ HTML::script('js/jquery.nanoscroller/jquery.nanoscroller.js') }}
