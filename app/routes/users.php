@@ -1,7 +1,6 @@
 <?php
 
-//FIXME choses bizarres à éclaircir : routes en double, procédure de reset password qui semble ne pas fonctionner (manque un partial-template appelé par une méthode de confide,...)
-//FIX de manière temporaire. Il faut revoir l'ensemble des routes liées à Confide car c'est le bordel (jda - 2016-04-12)
+// TODO Remettre de l'ordre dans ces routes, et retirer le dispatch au controleur (car vu que tous les appels de route sont nommés il ne devrait plus servir à rien)
 
 // User reset routes
 Route::get('users/reset_password/{token}', ['as'=>'userGetReset', 'uses' => 'UserController@getReset']);
