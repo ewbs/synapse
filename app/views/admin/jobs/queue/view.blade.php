@@ -31,7 +31,7 @@ $payload=json_decode($job->payload,true);
 				<p>{{$payload['data']['view']}}</p>
 				<ul>
 				@foreach($payload['data']['data'] as $key=>$value)
-					<li>{{$key}} : {{$value}}</li>
+					<li>{{$key}} : {{print_r($value,true)}}</li>
 				@endforeach
 				</ul>
 				<hr/>
