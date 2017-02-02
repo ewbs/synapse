@@ -31,6 +31,15 @@ class AdminRolesController extends BaseController {
 	}
 	
 	/**
+	 *
+	 * {@inheritDoc}
+	 * @see BaseController::getSection()
+	 */
+	protected function getSection(){
+		return 'roles';
+	}
+	
+	/**
 	 * Display a listing of the resource.
 	 *
 	 * @return Response

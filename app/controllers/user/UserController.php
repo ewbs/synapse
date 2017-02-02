@@ -6,6 +6,15 @@ class UserController extends BaseController {
 	
 	/**
 	 *
+	 * {@inheritDoc}
+	 * @see BaseController::getSection()
+	 */
+	protected function getSection(){
+		return 'users';
+	}
+	
+	/**
+	 *
 	 * @var UserRepository
 	 */
 	protected $userRepo;

@@ -9,7 +9,6 @@ abstract class BaseController extends Controller {
 	private $loggedUser;
 	const SESSION_RETURNTO_ROUTENAME = 'baseCtrl_returnTo_routeName'; //nom de la variable de session utilisée par les fonctionnalités de returnTo;
 	
-	private $section;
 	/**
 	 * Initialisation
 	 *
@@ -22,26 +21,18 @@ abstract class BaseController extends Controller {
 		$this->loggedUser = Auth::user ();
 		View::share('loggedUser', $this->loggedUser);
 		
+		View::share('sectionIcon', $this->getSectionIcon($this->getSection()));
+
 		// Charger le menu sidebar
 		$this->buildSidebarMenu();
-		
-		$this->section=$this->getSection();
-		View::share('section', $this->section);
-		View::share('sectionIcon', $this->getSectionIcon($this->section));
 	}
 	
 	/**
-	 * Associe une section à la route courante
+	 * Section courante
 	 * 
 	 * @return string
 	 */
-	public final function getSection() {
-		$section=str_replace('admin/', '', Route::current()->getUri());
-		$slash=strpos($section, '/');
-		if($slash)
-			$section=substr($section, 0, strpos($section, '/'));
-		return $section;
-	}
+	protected abstract function getSection();
 	
 	/**
 	 * Associe une icône font-awesome à une section
@@ -192,30 +183,34 @@ abstract class BaseController extends Controller {
 			],
 			[ // Formulaires
 				'label'     => Lang::get ( 'admin/eforms/messages.supermenu' ),
-				'section'    => 'eforms',
+				'section'   => 'formslibrary',
 				'icon'      => 'wpforms',
 				'permission'=> 'formslibrary_display',
 				'submenu'   => [
 					[
 						'label'     => Lang::get ( 'admin/annexes/messages.menu' ),
+						'section'   => 'annexes',
 						'route'     => 'annexesGetIndex',
 					],[
 						'label'     => Lang::get ( 'admin/eforms/messages.menu' ),
+						'section'   => 'eforms',
 						'route'     => 'eformsGetIndex',
 					]
 				],
 			],
 			[ // Pièces et données
 				'label'      => Lang::get ( 'admin/pieces/messages.supermenu' ),
-				'section'    => 'pieces',
+				'section'    => 'components',
 				'icon'       => 'clipboard',
 				'permission' => 'pieces_tasks_display',
 				'submenu'    => [
 					[
 						'label'      => Lang::get ( 'admin/pieces/messages.menu' ),
+						'section'    => 'pieces',
 						'route'      => 'piecesGetIndex',
 					],[
 						'label'      => Lang::get ( 'admin/tasks/messages.menu' ),
+						'section'    => 'tasks',
 						'route'      => 'tasksGetIndex',
 					],/*[
 						'label'      => Lang::get ( 'admin/piecesrates/messages.menu' ),
@@ -228,33 +223,37 @@ abstract class BaseController extends Controller {
 			],
 			[ // Damus
 				'label'      => Lang::get ( 'admin/damus/messages.menu' ),
-				'route'      => 'damusGetIndex',
 				'section'    => 'damus',
+				'route'      => 'damusGetIndex',
 				'icon'       => 'connectdevelop',
 				'permission' => 'damus_manage',
 			],
 			[ // Taxonomie
-				'label'		 => Lang::get ('admin/taxonomy/messages.menu' ),
+				'label'      => Lang::get ('admin/taxonomy/messages.menu' ),
 				'section'    => 'taxonomy',
-				'icon'		 => 'tag',
+				'icon'       => 'tag',
 				'permission' => 'taxonomy_display',
 				'submenu'	 => [
 					[
-						'label'		=> Lang::get( 'admin/taxonomy/messages.menu-categories' ),
-						'route'		=> 'taxonomycategoriesGetIndex',
+						'label'      => Lang::get( 'admin/taxonomy/messages.menu-categories' ),
+						'section'    => 'taxonomycategories',
+						'route'      => 'taxonomycategoriesGetIndex',
 					],
 					[
-						'label'		=> Lang::get( 'admin/taxonomy/messages.menu-tags' ),
-						'route'		=> 'taxonomytagsGetIndex',
+						'label'      => Lang::get( 'admin/taxonomy/messages.menu-tags' ),
+						'section'    => 'taxonomytags',
+						'route'      => 'taxonomytagsGetIndex',
 					],
 					[
-						'label'		=> Lang::get( 'admin/taxonomy/messages.menu-synonyms' ),
-						'route'		=> 'taxonomyGetSynonyms',
+						'label'      => Lang::get( 'admin/taxonomy/messages.menu-synonyms' ),
+						'section'    => 'taxonomysynonyms',
+						'route'      => 'taxonomyGetSynonyms',
 					],
 				],
 			],
 			[ // Catalogue de services
 				'label'      => Lang::get ( 'admin/ewbsservices/messages.menu' ),
+				'section'    => 'ewbsservices',
 				'route'      => 'ewbsservicesGetIndex',
 				'icon'       => 'wrench',
 				'permission' => 'servicescatalog_display',
@@ -267,26 +266,32 @@ abstract class BaseController extends Controller {
 				'submenu'    => [
 					[
 						'label'      => Lang::get ( 'admin/administrations/messages.menu' ),
+						'section'    => 'administrations',
 						'route'      => 'administrationsGetIndex',
 						'permission' => 'administrations_manage',
 					],[
 						'label'      => Lang::get ( 'admin/ewbsmembers/messages.menu' ),
+						'section'    => 'ewbsmembers',
 						'route'      => 'ewbsmembersGetIndex',
 						'permission' => 'manage_users',
 					],[
 						'label'      => Lang::get ( 'admin/jobs/messages.jobs' ),
+						'section'    => 'jobs',
 						'route'      => 'jobsGetIndex',
 						'permission' => 'jobs_manage',
 					],[
 						'label'      => Lang::get ( 'admin/jobs/messages.failedjobs' ),
+						'section'    => 'failedjobs',
 						'route'      => 'failedjobsGetIndex',
 						'permission' => 'jobs_manage',
 					],[
 						'label'      => Lang::get ( 'admin/roles/messages.menu' ),
+						'section'    => 'roles',
 						'route'      => 'rolesGetIndex',
 						'permission' => 'manage_roles',
 					],[
 						'label'      => Lang::get ( 'admin/users/messages.menu' ),
+						'section'    => 'users',
 						'route'      => 'usersGetIndex',
 						'permission' => 'manage_users',
 					],
@@ -299,49 +304,60 @@ abstract class BaseController extends Controller {
 				'submenu'    => [
 					[
 						'label'      => Lang::get ( 'admin/ewbsactions/messages.title' ),
+						'section'    => 'ewbsActions-trash',
 						'route'      => 'ewbsActionsGetTrash',
 						'permission' => 'ewbsActions_display',
 					],[
 						'label'      => Lang::get ( 'admin/annexes/messages.menu' ),
+						'section'    => 'annexes-trash',
 						'route'      => 'annexesGetTrash',
 						'permission' => 'formslibrary_display',
 					],[
 						'label'      => Lang::get ( 'admin/administrations/messages.menu' ),
+						'section'    => 'administrations-trash',
 						'route'      => 'administrationsGetTrash',
 						'permission' => 'administrations_manage',
 					],[
 						'label'      => Lang::get ( 'admin/eforms/messages.menu' ),
+						'section'    => 'eforms-trash',
 						'route'      => 'eformsGetTrash',
 						'permission' => 'formslibrary_display',
 					],[
 						'label'      => Lang::get ( 'admin/ideas/messages.menu' ),
+						'section'    => 'ideas-trash',
 						'route'      => 'ideasGetTrash',
 						'permission' => 'ideas_display',
 					],[
 						'label'      => Lang::get ( 'admin/ewbsmembers/messages.menu' ),
+						'section'    => 'ewbsmembers-trash',
 						'route'      => 'ewbsmembersGetTrash',
 						'permission' => 'manage_users',
 					],[
 						'label'      => Lang::get ( 'admin/pieces/messages.menu' ),
+						'section'    => 'pieces-trash',
 						'route'      => 'piecesGetTrash',
 						'permission' => 'pieces_tasks_display',
 					],[
 						'label'      => Lang::get ( 'admin/tasks/messages.menu' ),
+						'section'    => 'tasks-trash',
 						'route'      => 'tasksGetTrash',
 						'permission' => 'pieces_tasks_display',
 					],
 					[
 						'label'      => Lang::get ( 'admin/taxonomy/messages.menu-categories-trash' ),
+						'section'    => 'taxonomycategories-trash',
 						'route'      => 'taxonomycategoriesGetTrash',
 						'permission' => 'taxonomy_display',
 					],
 					[
 						'label'      => Lang::get ( 'admin/taxonomy/messages.menu-tags-trash' ),
+						'section'    => 'taxonomytags-trash',
 						'route'      => 'taxonomytagsGetTrash',
 						'permission' => 'taxonomy_display',
 					],
 					[
 						'label'      => Lang::get ( 'admin/ewbsservices/messages.menu' ),
+						'section'    => 'ewbsservices-trash',
 						'route'      => 'ewbsservicesGetTrash',
 						'permission' => 'servicescatalog_display',
 					],
@@ -394,19 +410,20 @@ abstract class BaseController extends Controller {
 			// Si interdiction par rôle ou permission, ignorer ce point de menu
 			if(!$hasRole || !$hasPermission) continue;
 			
+			Log::info((isset($item['route'])?$item['route']:'').' : '.$this->getSection().' => '.$item['section']);
 			// Propriété "active" si page courante
-			if(array_key_exists('route', $item) && Route::currentRouteName() == $item['route'])
+			if($this->getSection() == $item['section'])
 				$item['active']=true;
 					
 			// Sous-menu éventuel et remontée propriété "active" si un sous-menu est la page courante
-			else if(array_key_exists('submenu', $item)) {
+			if(array_key_exists('submenu', $item)) {
 				$item['submenu']=$this->filterSidebarMenu($item['submenu']);
-				foreach($item['submenu'] as $subitem) {
+				/*foreach($item['submenu'] as $subitem) {
 					if(array_key_exists('active', $subitem)) {
 						$item['active']=true;
 						break;
 					}
-				}
+				}*/
 			}
 			$filteredMenu[]=$item;
 		}

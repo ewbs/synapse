@@ -5,8 +5,7 @@
 	</a>
 	@if (array_key_exists('submenu', $item))
 	<ul>
-		@each('site.layouts.navigation-menu', $item['submenu'], 'item')
+		@each('site.layouts.partial.navigation-menu', $item['submenu'], 'item')
 	</ul>
 	@endif
 </li>
-

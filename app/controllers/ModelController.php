@@ -22,6 +22,14 @@ abstract class ModelController extends BaseController {
 		View::share('model', $model);
 	}
 	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see BaseController::getSection()
+	 */
+	protected function getSection(){
+		return $this->model->getModelLabel();
+	}
 	
 	/**
 	 * ----------------------------------------------------------------------------------------------------------------------------------------------

@@ -32,6 +32,15 @@ class AdminUsersController extends BaseController {
 	}
 	
 	/**
+	 *
+	 * {@inheritDoc}
+	 * @see BaseController::getSection()
+	 */
+	protected function getSection(){
+		return 'users';
+	}
+	
+	/**
 	 * Display a listing of the resource.
 	 *
 	 * @return Response

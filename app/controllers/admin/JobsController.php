@@ -13,6 +13,15 @@ class JobsController extends BaseController {
 	protected function routeGetIndex() { return route('jobsGetIndex'); }
 	
 	/**
+	 *
+	 * {@inheritDoc}
+	 * @see BaseController::getSection()
+	 */
+	protected function getSection(){
+		return 'jobs';
+	}
+	
+	/**
 	 * 
 	 * {@inheritDoc}
 	 * @see BaseController::getIndex()
