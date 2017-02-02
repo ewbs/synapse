@@ -2,14 +2,13 @@
 
 //FIXME choses bizarres à éclaircir : routes en double, procédure de reset password qui semble ne pas fonctionner (manque un partial-template appelé par une méthode de confide,...)
 //FIX de manière temporaire. Il faut revoir l'ensemble des routes liées à Confide car c'est le bordel (jda - 2016-04-12)
+
 // User reset routes
 Route::get('users/reset_password/{token}', ['as'=>'userGetReset', 'uses' => 'UserController@getReset']);
+Route::post('users/reset_password', ['as'=>'userPostReset', 'uses' => 'UserController@postReset']);
+
 Route::get('users/confirm/{token}', ['as'=>'userGetConfirm', 'uses' => 'UserController@getConfirm']);
 Route::get('user/reset/{token}', ['as'=>'userGetReset', 'uses' => 'UserController@getReset']);
-
-// User password reset
-Route::post('users/reset_password', ['as'=>'userGetReset', 'uses' => 'UserController@postReset']);
-//Route::post('user/reset/{token}', ['as'=>'userGetReset', 'uses' => 'UserController@postReset']);
 
 // User Account Routes
 Route::post('user/{user}/edit', ['as'=>'userGetReset', 'uses' => 'UserController@postEdit']);
