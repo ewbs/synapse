@@ -65,7 +65,7 @@ $eform_id = Input::old('eform_id', $demarche_eform ? $demarche_eform->eform_id :
 					</div>-->
 				</div>
 				<div class="modal-footer">
-					<button type="submit" name="action" value="save" class="btn btn-primary">{{ ($demarche_eform ? 'Modifier' : 'Lier') }} le formulaire</button>
+					<button type="submit" name="action" value="save" class="btn btn-primary">{{ ($demarche_eform ? 'Editer' : 'Lier') }} le formulaire</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">{{Lang::get('button.cancel')}}</button>
 				</div>
 			</form>

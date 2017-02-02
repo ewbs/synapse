@@ -226,7 +226,7 @@ if(!$edit && !$fromTriggerUpdate) {
 					@endif
 				</div>
 				<div class="modal-footer">
-					<button type="submit" name="action" value="save" class="btn btn-primary">{{ ($edit ? 'Modifier' : 'Ajouter') }} l'action</button>
+					<button type="submit" name="action" value="save" class="btn btn-primary">{{ ($edit ? 'Editer' : 'Ajouter') }} l'action</button>
 					@if($fromTriggerUpdate)
 					<button class="btn btn-default" type="submit" name="action" value="cancel">Non merci</button>
 					@else

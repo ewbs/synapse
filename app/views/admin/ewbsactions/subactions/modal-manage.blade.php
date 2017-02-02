@@ -75,7 +75,7 @@ $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRev
 					<!-- ./ Priority -->
 				</div>
 				<div class="modal-footer">
-					<button type="submit" name="action" value="save" class="btn btn-primary">{{ ($edit ? 'Modifier' : 'Ajouter') }} l'action</button>
+					<button type="submit" name="action" value="save" class="btn btn-primary">{{ ($edit ? 'Editer' : 'Ajouter') }} l'action</button>
 					<button class="btn btn-default" type="button" data-dismiss="modal">Annuler</button>
 				</div>
 			</form>

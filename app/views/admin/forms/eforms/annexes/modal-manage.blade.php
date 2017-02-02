@@ -73,7 +73,7 @@ $next_state = Input::old('next_state', $annexe_eform ? $annexe_eform->next_state
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="submit" name="action" value="save" class="btn btn-primary">{{ ($annexe_eform ? 'Modifier' : 'Ajouter') }} l'annexe</button>
+					<button type="submit" name="action" value="save" class="btn btn-primary">{{ ($annexe_eform ? 'Editer' : 'Ajouter') }} l'annexe</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">{{Lang::get('button.cancel')}}</button>
 				</div>
 			</form>

@@ -61,7 +61,6 @@ return [
 		'edit' => [
 			'title' => 'Edition de la pièce liée à la démarche',
 			'name' => 'Nom de la tâche, ou variante du nom de la tâche si celle-ci est liée plusieurs fois à cette démarche',
-			'button' => 'Modifier la pièce',
 		],
 		'history' => [
 			'title' => 'Historique de la pièce liée à la démarche',
@@ -83,7 +82,6 @@ return [
 		],
 		'edit' => [
 			'title' => 'Edition de la tâche liée à la démarche',
-			'button' => 'Modifier la tâche',
 		],
 		'history' => [
 			'title' => 'Historique de la tâche liée à la démarche',

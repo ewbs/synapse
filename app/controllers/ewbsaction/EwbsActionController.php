@@ -16,7 +16,7 @@ class EwbsActionController extends TrashableModelController {
 				'icon' => 'eye'
 			],
 			[
-				'label' => Lang::get ( 'admin/ewbsactions/messages.features.edit' ),
+				'label' => Lang::get ( 'button.edit' ),
 				'url' => $modelInstance->routeGetEdit(),
 				'permission' => 'ewbsactions_manage',
 				'icon' => 'pencil'
