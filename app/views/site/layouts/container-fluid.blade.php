@@ -11,14 +11,13 @@
 				</h2>
 			</div>
 			@if(isset($features))
-				<div class="col-md-4">
-					<div class="pull-right">
-						@include('admin.modelInstance.partial-features')
-					</div>
+			<div class="col-md-4">
+				<div class="pull-right">
+					@include('admin.modelInstance.partial-features')
 				</div>
-				@endif
+			</div>
+			@endif
 		</div>
-		
 	</div>
 	<div class="cl-mcont">
 		@yield('content')

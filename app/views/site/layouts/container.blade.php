@@ -13,6 +13,7 @@
 	</div>
 </div>
 @stop
+
 @section('containerscripts')
 <script type="text/javascript">
 	console.log("container");
