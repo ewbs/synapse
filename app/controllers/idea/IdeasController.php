@@ -139,7 +139,7 @@ class IdeaController extends TrashableModelController {
 		})
 		->add_column ( 'Etat', function ($item) {
 			//$a = $item->getLastStateModification ();
-			return (Lang::get ( 'admin/ideas/states.label-' . $item->state ));
+			return $item->state ? Lang::get ( 'admin/ideas/states.label-' . $item->state ) : '';
 		})
 		->add_column ( 'DG(s)', function ($item) {
 			return $item->administrations;
