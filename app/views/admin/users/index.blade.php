@@ -14,7 +14,7 @@
 			</div>
 			<div class="content">
 				<div class="table-responsive">
-					<table id="datatable" class="table table-hover">
+					<table class="table table-hover datatable" data-ajaxurl="{{ URL::secure('admin/users/data') }}" data-bFilter="true" data-bSort="true" data-bPaginate="true">
 						<thead>
 							<tr>
 								<th class="col-md-2">Nom</th>
@@ -34,17 +34,3 @@
 	</div>
 </div>
 @stop
-
-@section('scripts')
-	<script type="text/javascript">
-		$(document).ready(function() {
-			$('#datatable').dataTable({
-				"aoColumnDefs": [
-					{ 'bSortable'  : false, 'aTargets': [5] },
-					{ 'bSearchable': false, 'aTargets': [5] }
-				],
-				"sAjaxSource": "{{ URL::secure('admin/users/data') }}",
-			});
-		});
-	</script>
-	@stop

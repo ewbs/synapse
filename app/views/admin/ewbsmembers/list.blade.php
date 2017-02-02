@@ -16,7 +16,7 @@
 			</div>
 			<div class="content">
 				<div class="table-responsive">
-					<table id="datatable" class="table table-hover">
+					<table class="table table-hover datatable" data-ajaxurl="{{ $trash?$model->routeGetDataTrash():$model->routeGetData() }}" data-bFilter="true" data-bSort="true" data-bPaginate="true">
 						<thead>
 							<tr>
 								@if ($trash)
@@ -37,18 +37,4 @@
 		</div>
 	</div>
 </div>
-@stop
-
-@section('scripts')
-<script type="text/javascript">
-	$(document).ready(function() {
-		$('#datatable').dataTable( {
-			"aoColumnDefs": [
-				{ 'bSortable'  : false, 'aTargets': [@if ($trash) 5 @else 4 @endif] },
-				{ 'bSearchable': false, 'aTargets': [@if ($trash) 5 @else 4 @endif] }
-			],
-			"sAjaxSource": "{{ $trash?$model->routeGetDataTrash():$model->routeGetData() }}",
-		});
-	});
-</script>
 @stop

@@ -165,7 +165,7 @@ $ideaState = $modelInstance->getLastStateModification ()->ideaState;
 					<?php $actions=EwbsAction::each()->forDemarche($demarche)->get(); ?>
 					@if($actions)
 					<div class="table-responsive actions">
-						<table class="table table-hover datatable">
+						<table class="table table-hover">
 							<thead>
 								<tr>
 									<th>Actions</th>
@@ -176,7 +176,6 @@ $ideaState = $modelInstance->getLastStateModification ()->ideaState;
 							@foreach($actions as $item)
 									<tr>
 										<td><strong>{{{ $item->name }}}</strong><br/><em>{{{ $item->description }}}</em></td>
-										<?php /* <td>{{ ($item->demarche_piece_name ? ('<span title="'.Lang::get ( 'admin/demarches/messages.piece.piece' ).'"><i class="fa fa-clipboard"></i>'.$item->demarche_piece_name.'</span>') : ($item->demarche_task_name ? ('<span title="'.Lang::get ( 'admin/demarches/messages.task.task' ).'"><i class="fa fa-tasks"></i>'.$item->demarche_task_name.'</span>') : '')) }}</td> */ ?>
 										<td>{{ EwbsActionRevision::graphicState($item->state) }}</td>
 									</tr>
 								@endforeach
@@ -261,7 +260,7 @@ $ideaState = $modelInstance->getLastStateModification ()->ideaState;
 </script>
 <script type="text/javascript">
 	$(document).ready(function() {
-		$('.table-responsive.actions table.datatable').dataTable();
+		$('.table-responsive.actions table').dataTable();
 	});
 </script>
 @stop

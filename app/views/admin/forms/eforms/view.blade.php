@@ -62,7 +62,7 @@ $lastRevision=$modelInstance->getLastRevisionEform();
 			<div class="content">
 				<fieldset>
 					<div class="table-responsive">
-						<table id="revisions-table" class="table table-hover">
+						<table class="table table-hover datatable" data-ajaxurl="{{ route('eformsRevisionsGetData', $modelInstance->id) }}" data-bFilter="true" data-bSort="false" data-bPaginate="true">
 							<thead>
 								<tr>
 									<th class="col-md-2">Révision</th>
@@ -80,20 +80,4 @@ $lastRevision=$modelInstance->getLastRevisionEform();
 		</div>
 	</div>
 </div>
-@stop
-
-{{-- Scripts --}}
-@section('scripts')
-<script type="text/javascript">
-	$(document).ready(function() {
-		$('#revisions-table').dataTable( {
-			"bSort"      : false,
-			"aoColumnDefs": [
-				
-				{ 'bSearchable': false, 'aTargets': ['4'] }
-			],
-			"sAjaxSource": "{{ route('eformsRevisionsGetData', $modelInstance->id) }}",
-		});
-	});
-</script>
 @stop

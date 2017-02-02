@@ -9,7 +9,7 @@
 			</div>
 			<div class="content">
 				<div class="table-responsive">
-					<table id="datatable" class="table table-hover">
+					<table class="table table-hover datatable" data-ajaxurl="{{ route('failedjobsGetData') }}" data-bFilter="true" data-bSort="true" data-bPaginate="true">
 						<thead>
 							<tr>
 								<th class="col-md-1">#</th>
@@ -27,19 +27,4 @@
 		</div>
 	</div>
 </div>
-@stop
-
-{{-- Scripts --}}
-@section('scripts')
-<script type="text/javascript">
-	$(document).ready(function() {
-		$('#datatable').dataTable({
-			"aoColumnDefs": [
-				{ 'bSortable'  : false, 'aTargets': [4] },
-				{ 'bSearchable': false, 'aTargets': [4] }
-			],
-			"sAjaxSource": "{{ route('failedjobsGetData') }}",
-		});
-	});
-</script>
 @stop
