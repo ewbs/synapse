@@ -63,8 +63,8 @@
 					@endforeach
 				</div>
 				<div class="modal-footer">
-					<button type="submit" name="action" value="save" class="btn btn-primary">{{ Lang::choice('admin/demarches/messages.idea.modalUpdate.update', count($aIdeas)) }}</button>
 					<button type="submit" name="action" value="cancel" class="btn btn-default">Non merci</button>
+					<button type="submit" name="action" value="save" class="btn btn-primary">{{ Lang::choice('admin/demarches/messages.idea.modalUpdate.update', count($aIdeas)) }}</button>
 				</div>
 			</form>
 		</div>

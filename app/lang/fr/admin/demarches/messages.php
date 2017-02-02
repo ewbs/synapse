@@ -52,11 +52,9 @@ return [
 		'name' => 'Nom de la pièce, ou variante du nom de la pièce si celle-ci est liée plusieurs fois à cette démarche',
 		'choose' => [
 			'title' => 'Sélection d\'une pièce à lier à la démarche',
-			'button' => 'Suivant',
 		],
 		'create' => [
 			'title' => 'Liaison d\'une pièce à la démarche',
-			'button' => 'Lier la pièce',
 		],
 		'edit' => [
 			'title' => 'Edition de la pièce liée à la démarche',
@@ -74,11 +72,9 @@ return [
 		'name' => 'Nom de la tâche, ou variante du nom de la tâche si celle-ci est liée plusieurs fois à cette démarche',
 		'choose' => [
 			'title' => 'Sélection d\'une tâche à lier à la démarche',
-			'button' => 'Suivant',
 		],
 		'create' => [
 			'title' => 'Liaison d\'une tâche à la démarche',
-			'button' => 'Lier la tâche',
 		],
 		'edit' => [
 			'title' => 'Edition de la tâche liée à la démarche',

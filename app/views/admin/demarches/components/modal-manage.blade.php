@@ -196,7 +196,9 @@ $name = Input::old('name', $action=='edit' ? $demarche_component->name : '');
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">{{Lang::get('button.cancel')}}</button>
-					<button type="submit" name="action" value="{{$action}}" class="btn btn-primary">{{Lang::get('button.save')}}</button>
+					<button type="submit" name="action" value="{{$action}}" class="btn btn-primary">
+					{{Lang::get($action=='choose' ? 'button.next':'button.save')}}
+					</button>
 				</div>
 			</form>
 		</div>

@@ -5,6 +5,7 @@ return array (
 	'destroy' => 'Détruire',
 	'edit' => 'Editer',
 	'historical' => 'Historique',
+	'next' => 'Suivant',
 	'restore' => 'Restaurer',
 	'save' => 'Enregistrer',
 	'view' => 'Consulter',
