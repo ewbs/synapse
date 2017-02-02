@@ -97,7 +97,7 @@ class TaskController extends TrashableModelController {
 		->join('nostra_demarches', 'nostra_demarches.id', '=', 'demarches.nostra_demarche_id')
 		->groupBy(['demarches.id', 'nostra_demarches.title'])
 		->orderBy('nostra_demarches.title')
-		->get(['demarches.id AS id', 'nostra_demarches.title AS name']);
+		->get(['demarches.id AS id', 'nostra_demarches.title AS name'])->toArray();
 		
 		$links=[];
 		if(!empty($demarches)) {
