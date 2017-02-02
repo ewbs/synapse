@@ -6,7 +6,7 @@
 		<div class="block-flat">
 			<div class="content">
 				<form class="form-horizontal" method="post"
-					action="{{ URL::secure('user/' . $user->id . '/edit') }}"
+					action="{{route('userPostEdit', $user->id)}}"
 					autocomplete="off">
 					<!-- CSRF Token -->
 					<input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
@@ -15,13 +15,12 @@
 					<!-- avatar -->
 					<div class="form-group">
 						<label class="col-md-2 control-label">Avatar</label>
-							<div class="col-md-10">
-								{{Gravatarer::make( ['email' => Auth::user()->email, 'size' => 80, 'secured' => true] )->html( ['class' => 'avatar'] )}}
-								<span>
-									Votre avatar est chargé depuis le service <a href="https://fr.gravatar.com/" target="_blank">Gravatar</a>. Utilisez ce service pour personnaliser votre avatar sur l'ensemble des outils de eWBS.
-								</span>
-							</div>
-						</li>
+						<div class="col-md-10">
+							{{Gravatarer::make( ['email' => Auth::user()->email, 'size' => 80, 'secured' => true] )->html( ['class' => 'avatar'] )}}
+							<span>
+								Votre avatar est chargé depuis le service <a href="https://fr.gravatar.com/" target="_blank">Gravatar</a>. Utilisez ce service pour personnaliser votre avatar sur l'ensemble des outils de eWBS.
+							</span>
+						</div>
 					</div>
 					<!-- ./avatar -->
 

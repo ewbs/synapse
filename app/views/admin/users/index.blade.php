@@ -6,7 +6,7 @@
 		<div class="block-flat">
 			<div class="header">
 				<div class="pull-right">
-					<a href="{{{ URL::secure('admin/users/create') }}}"
+					<a href="{{route('usersGetCreate')}}"
 						class="btn btn-small btn-primary"><i
 						class="glyphicon glyphicon-plus-sign"></i> Ajouter un utilisateur</a>
 				</div>
@@ -14,15 +14,15 @@
 			</div>
 			<div class="content">
 				<div class="table-responsive">
-					<table class="table table-hover datatable" data-ajaxurl="{{ URL::secure('admin/users/data') }}" data-bFilter="true" data-bSort="true" data-bPaginate="true">
+					<table class="table table-hover datatable" data-ajaxurl="{{ route('usersGetData') }}" data-bFilter="true" data-bSort="true" data-bPaginate="true">
 						<thead>
 							<tr>
 								<th class="col-md-2">Nom</th>
 								<th class="col-md-2">E-mail</th>
 								<th class="col-md-2">Peut se connecter</th>
 								<th class="col-md-2">Créé le</th>
-								<th class="col-md-2">Rôles</th>
-								<th class="col-md-2">Actions</th>
+								<th>Rôles</th>
+								<th class="col-md-1">Actions</th>
 							</tr>
 						</thead>
 						<tbody>

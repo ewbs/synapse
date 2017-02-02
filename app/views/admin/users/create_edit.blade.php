@@ -10,7 +10,7 @@
 			<div class="content">
 				{{-- Create User Form --}}
 				<form class="form-horizontal" method="post"
-					action="@if (isset($user)){{ URL::secure('admin/users/' . $user->id . '/edit') }}@endif"
+					action="{{isset($user) ? route('usersPostEdit', $user->id) : route('rolesPostCreate')}}"
 					autocomplete="off">
 					<!-- CSRF Token -->
 					<input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
@@ -133,7 +133,7 @@
 					<!-- Form Actions -->
 					<div class="form-group">
 						<div class="col-md-offset-2 col-md-10">
-							<a class="btn btn-cancel" href="{{{ URL::secure('admin/users') }}}">{{Lang::get('button.cancel')}}</a>
+							<a class="btn btn-cancel" href="{{route('usersGetIndex')}}">{{Lang::get('button.cancel')}}</a>
 							<button type="submit" class="btn btn-primary">{{Lang::get('button.save')}}</button>
 						</div>
 					</div>

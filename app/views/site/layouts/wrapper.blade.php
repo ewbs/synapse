@@ -35,8 +35,8 @@
 		</div>
 		<div class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
-				<li {{(Request::is('/') ? ' class="active"' : '')}}><a href="{{{ URL::secure('') }}}"><span class="fa fa-home"></span> Accueil</a></li>
-				<li {{(Request::is('contact') ? ' class="active"' : '')}}><a href="{{{ URL::secure('/contact') }}}"><span class="fa fa-envelope"></span> Contact</a></li>
+				<li {{(Request::is('/') ? ' class="active"' : '')}}><a href="{{route('getIndex')}}"><span class="fa fa-home"></span> Accueil</a></li>
+				<li {{(Request::is('contact') ? ' class="active"' : '')}}><a href="{{route('getContact')}}"><span class="fa fa-envelope"></span> Contact</a></li>
 				@if (Auth::check() && count(Auth::user()->EWBSMember))
 					<li {{(Request::is('tracker') ? ' class="active"' : '')}}><a href="http://tracking.e-wbs.be" target="_blank"><span class="fa fa-bug"></span> Signaler un bug</a></li>
 				@endif
@@ -47,14 +47,14 @@
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 						{{Gravatarer::make( ['email' => Auth::user()->email, 'size' => 30, 'secured' => true] )->html()}}{{{ Auth::user()->username }}} <b class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li><a href="{{{ URL::secure('user') }}}">Mon profil</a></li>
+						<li><a href="{{route('userGetIndex')}}">Mon profil</a></li>
 						<li><a href="{{ route('UserGetFilters') }}">Mes filtres</a></li>
 						<li class="divider"></li>
-						<li><a href="{{{ URL::secure('user/logout') }}}">Déconnexion</a></li>
+						<li><a href="{{route('userGetLogout')}}">Déconnexion</a></li>
 					</ul>
 				</li>
 				@else
-				<li class="button"><a href="{{{ URL::secure('/user/login') }}}" title="Connexion"><span class="fa fa-user"></span></a></li>
+				<li class="button"><a href="{{route('userGetLogin')}}" title="Connexion"><span class="fa fa-user"></span></a></li>
 				@endif
 			</ul>
 		</div>

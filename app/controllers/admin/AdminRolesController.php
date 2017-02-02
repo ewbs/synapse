@@ -206,21 +206,22 @@ class AdminRolesController extends BaseController {
 	 */
 	public function getData() {
 		$roles = Role::select ( array (
-				'roles.id',
-				'roles.name',
-				'roles.id as users',
-				'roles.created_at' 
-		) );
+			'roles.id',
+			'roles.name',
+			'roles.id as users',
+			'roles.created_at' 
+		));
 		
-		return Datatables::of ( $roles )->
-		// ->edit_column('created_at','{{{ Carbon::now()->diffForHumans(Carbon::createFromFormat(\'Y-m-d H\', $test)) }}}')
-		edit_column ( 'users', '{{{ DB::table(\'assigned_roles\')->where(\'role_id\', \'=\', $id)->count()  }}}' )->
-		add_column ( 'actions', '<a title="'.Lang::get('button.edit').'" href="{{{ URL::secure(\'admin/roles/\' . $id . \'/edit\' ) }}}" class="iframe btn btn-xs btn-default"><span class="fa fa-pencil"></span></a>
-		                         <a title="'.Lang::get('button.delete').'" href="{{{ URL::secure(\'admin/roles/\' . $id . \'/delete\' ) }}}" class="iframe btn btn-xs btn-danger"><span class="fa fa-trash-o"></span></a>
-                    ' )->
-
-		remove_column ( 'id' )->
-
-		make ();
+		return Datatables::of ( $roles )
+		->edit_column( 'users', function ($item) {
+			return DB::table('assigned_roles')->where('role_id', '=', $item->id)->count();
+		})
+		->add_column('actions', function ($item) {
+			return
+			'<a title="'.Lang::get('button.edit').'" href="'.route('rolesGetEdit', $item->id).'" class="iframe btn btn-xs btn-default"><span class="fa fa-pencil"></span></a>
+			 <a title="'.Lang::get('button.delete').'" href="'.route('rolesGetDelete', $item->id).'" class="iframe btn btn-xs btn-danger"><span class="fa fa-trash-o"></span></a>';
+		})
+		->remove_column ( 'id' )
+		->make ();
 	}
 }

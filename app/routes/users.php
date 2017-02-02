@@ -8,17 +8,20 @@ Route::get('users/reset_password/{token}', ['as'=>'userGetReset', 'uses' => 'Use
 Route::post('users/reset_password', ['as'=>'userPostReset', 'uses' => 'UserController@postReset']);
 
 Route::get('users/confirm/{token}', ['as'=>'userGetConfirm', 'uses' => 'UserController@getConfirm']);
-Route::get('user/reset/{token}', ['as'=>'userGetReset', 'uses' => 'UserController@getReset']);
 
 // User Account Routes
-Route::post('user/{user}/edit', ['as'=>'userGetReset', 'uses' => 'UserController@postEdit']);
-Route::post('user/login', ['as'=>'userGetReset', 'uses' => 'UserController@postLogin']);
+Route::get('user', ['as'=>'userGetIndex', 'uses' => 'UserController@getIndex']);
+Route::post('user/{user}/edit', ['as'=>'userPostEdit', 'uses' => 'UserController@postEdit']);
+Route::get('user/login', ['as'=>'userGetLogin', 'uses' => 'UserController@getLogin']);
+Route::post('user/login', ['as'=>'userPostLogin', 'uses' => 'UserController@postLogin']);
+Route::get('user/logout', ['as'=>'userGetLogout', 'uses' => 'UserController@getLogout']);
 
 // Gestion des filtres
 Route::get('user/mes-filtres', ['as'=>'UserGetFilters', 'uses'=>'UserController@getFilters', 'before' => 'auth']); //cette route est sécurisée : doit etre loggé
 Route::post('user/mes-filtres', ['as'=>'UserPostFilters', 'uses'=>'UserController@postFilters', 'before' => 'auth']); //cette route est sécurisée : doit etre loggé
 
 // User RESTful Routes (Login, Logout, Register, etc)
-Route::get('user', ['as'=>'userGetIndex', 'uses' => 'UserController@getIndex']);
+Route::get('users/forgot_password', ['as'=>'userGetForgotPassword', 'uses' => 'UserController@getForgotPassword']);
 Route::post('users/forgot_password', ['as'=>'userPostForgotPassword', 'uses' => 'UserController@postForgotPassword']);
+
 Route::controller('user', 'UserController');

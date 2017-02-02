@@ -67,7 +67,7 @@
 						<!-- Form Actions -->
 						<div class="form-group">
 							<div class="col-md-offset-2 col-md-10">
-								<a class="btn btn-cancel" href="{{{ URL::secure('admin/roles') }}}">{{Lang::get('button.cancel')}}</a>
+								<a class="btn btn-cancel" href="{{route('rolesGetIndex')}}">{{Lang::get('button.cancel')}}</a>
 								<button type="submit" class="btn btn-primary">{{Lang::get('button.save')}}</button>
 							</div>
 						</div>

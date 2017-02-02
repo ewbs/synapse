@@ -16,7 +16,7 @@
 				@endif @if ( Session::get('notice') )
 				<div class="alert alert-info">{{ Session::get('notice') }}</div>
 				@endif
-				<form style="margin-bottom: 0px !important;" class="form-horizontal" method="POST" action="{{ URL::secure('user/login') }}">
+				<form style="margin-bottom: 0px !important;" class="form-horizontal" method="POST" action="{{route('userPostLogin')}}">
 					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 					<div class="content">
 						<h4 class="title">Connexion</h4>
@@ -47,10 +47,10 @@
 								value="1"> Rester connecté
 							</label>
 						</div>
-						<a class="btn btn-default" href="{{{ URL::secure('/') }}}">Retour</a>
+						<a class="btn btn-default" href="{{route('getIndex')}}">Retour</a>
 						<button class="btn btn-primary" data-dismiss="modal" type="submit">Connexion</button>
 						<br />
-						<a href="{{{ URL::secure('user/forgot') }}}">J'ai oublié mes identifiants</a>
+						<a href="{{route('userGetForgotPassword')}}">J'ai oublié mes identifiants</a>
 					</div>
 				</form>
 			</div>

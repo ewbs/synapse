@@ -265,46 +265,22 @@ class AdminUsersController extends BaseController {
 		) ); // password est sélectionné pour avoir une colonne à utiliser (on y balancera les rôles)
 		
 		return Datatables::of ( $users )
-		->edit_column ( 'confirmed', '@if($confirmed)Oui @else Non @endif' )
-		->add_column ( 'roles', function ($user) {
-			$a = $user->currentRoleNames ();
+		->edit_column ( 'confirmed', function ($item) {
+			return Lang::get($item->confirmed ? 'general.yes' : 'general.no');
+		})
+		->add_column ( 'roles', function ($item) {
+			$a = $item->currentRoleNames ();
 			$return = ($a) ? implode ( ', ', $a ) : '';
-			if ($user->hasRestrictionsByAdministrations ())
+			if ($item->hasRestrictionsByAdministrations ())
 				$return .= ' <strong>Avec restrictions</strong>';
 			return ($return);
 		})
-		->add_column ( 'actions', '<a title="{{{ Lang::get(\'button.edit\')   }}}" href="{{{ URL::secure(\'admin/users/\' . $id . \'/edit\' )   }}}" class="iframe btn btn-xs btn-default"><span class="fa fa-pencil"></span></a>
-		                           <a title="{{{ Lang::get(\'button.delete\') }}}" href="{{{ URL::secure(\'admin/users/\' . $id . \'/delete\' ) }}}" class="iframe btn btn-xs btn-danger"><span class="fa fa-trash-o"></span></a>' )
+		->add_column ( 'actions', function ($item) {
+			return
+			'<a title="'.Lang::get('button.edit').'" href="'.route('usersGetEdit', $item->id).'" class="iframe btn btn-xs btn-default"><span class="fa fa-pencil"></span></a>
+			 <a title="'.Lang::get('button.delete').'" href="'.route('usersGetDelete', $item->id).'" class="iframe btn btn-xs btn-danger"><span class="fa fa-trash-o"></span></a>';
+		})
 		->remove_column ( 'id' )
 		->make ();
 	}
-	
-	/*
-	 * public function getData()
-	 * {
-	 * $users = User::leftjoin('assigned_roles', 'assigned_roles.user_id', '=', 'users.id')
-	 * ->leftjoin('roles', 'roles.id', '=', 'assigned_roles.role_id')
-	 * ->select(array('users.id', 'users.username','users.email', 'roles.name as rolename', 'users.confirmed', 'users.created_at'));
-	 *
-	 * return Datatables::of($users)
-	 * // ->edit_column('created_at','{{{ Carbon::now()->diffForHumans(Carbon::createFromFormat(\'Y-m-d H\', $test)) }}}')
-	 *
-	 * ->edit_column('confirmed','@if($confirmed)
-	 * Oui
-	 * @else
-	 * Non
-	 * @endif')
-	 *
-	 * ->add_column('actions', '<a href="{{{ URL::secure(\'admin/users/\' . $id . \'/edit\' ) }}}" class="iframe btn btn-xs btn-default">{{{ Lang::get(\'button.edit\') }}}</a>
-	 * @if($username == \'admin\')
-	 * @else
-	 * <a href="{{{ URL::secure(\'admin/users/\' . $id . \'/delete\' ) }}}" class="iframe btn btn-xs btn-danger">{{{ Lang::get(\'button.delete\') }}}</a>
-	 * @endif
-	 * ')
-	 *
-	 * ->remove_column('id')
-	 *
-	 * ->make();
-	 * }
-	 */
 }

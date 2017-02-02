@@ -7,7 +7,7 @@
 			<div class="content">
 				{{-- Delete User Form --}}
 				<form id="deleteForm" class="form-horizontal" method="post"
-					action="@if (isset($user)){{ URL::secure('admin/users/' . $user->id . '/delete') }}@endif"
+					action="{{route('usersPostDelete', $user->id)}}"
 					autocomplete="off">
 					<!-- CSRF Token -->
 					<input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
@@ -22,7 +22,7 @@
 					<div class="form-group">
 						<div class="controls">
 							<a class="btn btn-cancel"
-								href="{{{ URL::secure('admin/users') }}}">{{Lang::get('button.cancel')}}</a>
+								href="{{route('usersGetIndex')}}">{{Lang::get('button.cancel')}}</a>
 							<button type="submit" class="btn btn-danger">Confirmer la
 								suppression</button>
 						</div>

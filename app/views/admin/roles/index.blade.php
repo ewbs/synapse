@@ -6,7 +6,7 @@
 		<div class="block-flat">
 			<div class="header">
 				<div class="pull-right">
-					<a href="{{{ URL::secure('admin/roles/create') }}}"
+					<a href="{{route('rolesGetCreate')}}"
 						class="btn btn-small btn-primary"><i
 						class="glyphicon glyphicon-plus-sign"></i> Ajouter un rôle</a>
 				</div>
@@ -14,7 +14,7 @@
 			</div>
 			<div class="content">
 				<div class="table-responsive">
-					<table class="table table-hover datatable" data-ajaxurl="{{ URL::secure('admin/roles/data') }}" data-bFilter="true" data-bSort="true" data-bPaginate="true">
+					<table class="table table-hover datatable" data-ajaxurl="{{ route('rolesGetData') }}" data-bFilter="true" data-bSort="true" data-bPaginate="true">
 						<thead>
 							<tr>
 								<th>Nom</th>

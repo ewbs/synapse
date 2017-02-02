@@ -47,10 +47,10 @@ class PieceRateController extends TrashableModelController {
 		})
 		->add_column ( 'actions', function ($item) use ($onlyTrashed) {
 			if($onlyTrashed) return
-				'<a title="' . Lang::get ( 'button.restore' ) . '" href="' . URL::secure ( 'admin/piecesrates/' . $item->id . '/restore' ) . '" class="btn btn-xs btn-default">' . Lang::get ( 'button.restore' ) . '</a>';
+				'<a title="' . Lang::get ( 'button.restore' ) . '" href="' . route('piecesratesGetRestore', $item->id) . '" class="btn btn-xs btn-default">' . Lang::get ( 'button.restore' ) . '</a>';
 			else if($this->getLoggedUser()->can('pieces_tasks_manage')) return
-				'<a title="' . Lang::get ( 'button.edit'    ) . '" href="' . URL::secure ( 'admin/piecesrates/' . $item->id . '/edit'    ) . '" class="btn btn-xs btn-default"><span class="fa fa-pencil"></span></a>'.
-				'<a title="' . Lang::get ( 'button.delete'  ) . '" href="' . URL::secure ( 'admin/piecesrates/' . $item->id . '/delete'  ) . '" class="btn btn-xs btn-danger"><span class="fa fa-trash-o"></span></a>';
+				'<a title="' . Lang::get ( 'button.edit'    ) . '" href="' . route('piecesratesGetEdit', $item->id) . '" class="btn btn-xs btn-default"><span class="fa fa-pencil"></span></a>'.
+				'<a title="' . Lang::get ( 'button.delete'  ) . '" href="' . route('piecesratesGetDelete', $item->id) . '" class="btn btn-xs btn-danger"><span class="fa fa-trash-o"></span></a>';
 		})
 		->make ();
 	}
