@@ -280,7 +280,7 @@ abstract class ModelController extends BaseController {
 					return Redirect::secure($url)->with ( 'success', Lang::get ( 'admin/'.$this->model->getModelLabel().'/messages.manage.success' ) );
 				}
 				DB::rollBack ();
-				$errors=$modelInstance->errors();
+				$errors=$modelInstance->validationErrors;
 			}
 			else $errors=$validator->errors();
 			
