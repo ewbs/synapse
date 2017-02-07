@@ -1,5 +1,4 @@
 <?php
-use Zizaco\Confide\ConfideUser;
 use Zizaco\Confide\ConfideUserInterface;
 use Zizaco\Entrust\HasRole;
 use Carbon\Carbon;
@@ -20,8 +19,28 @@ use Carbon\Carbon;
  *
  * @author jdavreux
  */
-class User extends Eloquent implements ConfideUserInterface {
-	use ConfideUser, HasRole, SoftDeletingTrait;
+class User extends TrashableModel implements ConfideUserInterface {
+	use ArdentConfideUser, HasRole;
+	
+	/**
+	 * Règles de validation au niveau du modèle
+	 * @var array
+	 */
+	public static $rules=[
+		'username' => 'required|min:3',
+		'email' => 'required|email',
+		'password' => 'confirmed|min:4',
+		'password_confirmation' => 'min:4',
+	];
+	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see ManageableModel::permissionManage()
+	 */
+	public function permissionManage() {
+		return 'manage_users';
+	}
 	
 	
 	public function EWBSMember() {
