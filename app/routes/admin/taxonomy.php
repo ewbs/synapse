@@ -1,8 +1,8 @@
 <?php
 Route::group(['prefix' => 'taxonomy'], function() {
 
-	Route::get('synonyms',							['as' => 'taxonomyGetSynonyms',				'uses' => 'TaxonomyTagsController@getSynonyms']);
-	Route::post('synonyms', 						['as' => 'taxonomyPostSynonyms',			'uses' => 'TaxonomyTagsController@postSynonyms',		'before' => 'csrf']); //appelé en ajax pour modifier de la synonimie
+	Route::get('synonyms',							['as' => 'taxonomyGetSynonyms',				'uses' => 'TaxonomySynonymsController@getSynonyms']);
+	Route::post('synonyms', 						['as' => 'taxonomyPostSynonyms',			'uses' => 'TaxonomySynonymsController@postSynonyms',		'before' => 'csrf']); //appelé en ajax pour modifier de la synonimie
 
 	Route::group(['prefix' => 'tags'], function() {
 		Route::get('', 								['as' => 'taxonomytagsGetIndex', 			'uses' => 'TaxonomyTagsController@getList']);

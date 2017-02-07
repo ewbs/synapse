@@ -9,6 +9,8 @@ abstract class BaseController extends Controller {
 	private $loggedUser;
 	const SESSION_RETURNTO_ROUTENAME = 'baseCtrl_returnTo_routeName'; //nom de la variable de session utilisée par les fonctionnalités de returnTo;
 	
+	private $section;
+	
 	/**
 	 * Initialisation
 	 *
@@ -21,42 +23,17 @@ abstract class BaseController extends Controller {
 		$this->loggedUser = Auth::user ();
 		View::share('loggedUser', $this->loggedUser);
 		
-		View::share('sectionIcon', $this->getSectionIcon($this->getSection()));
-
+		$this->section=$this->getSection();
+		View::share('sectionIcon', $this->getSectionIcon($this->section));
+		
+		// Traiter le cas spécifique de la corbeille : La section est préfixée de '-trash' dans ce cas.
+		$uri=Route::getCurrentRoute()->getUri();
+		if(ends_with($uri, ['trash','datatrash','restore']))
+			$this->section.='-trash';
+		
 		// Charger le menu sidebar
 		$this->buildSidebarMenu();
 	}
-	
-	/**
-	 * Section courante
-	 * 
-	 * @return string
-	 */
-	protected abstract function getSection();
-	
-	/**
-	 * Associe une icône font-awesome à une section
-	 * 
-	 * @param string $section
-	 * @return string
-	 */
-	public final function getSectionIcon($section){
-		switch($section) {
-			case 'contact'     :return 'envelope';
-			case 'dashboard'   :return 'area-chart';
-			case 'ideas'       :return 'lightbulb-o';
-			case 'demarches'   :return 'briefcase';
-			case 'ewbsactions' :return 'magic';
-			case 'eforms'      :return 'wpforms';
-			case 'pieces'      :
-			case 'tasks'       :return 'clipboard';
-			case 'damus'       :return 'connectdevelop';
-			case 'taxonomy'    :return 'tag';
-			case 'ewbsservices':return 'wrench';
-			default            :return '';
-		}
-	}
-	
 	
 	/**
 	 * ----------------------------------------------------------------------------------------------------------------------------------------------
@@ -82,6 +59,13 @@ abstract class BaseController extends Controller {
 	 * Route correspondant à la page d'index du contrôleur courant
 	 */
 	protected abstract function routeGetIndex();
+	
+	/**
+	 * Section courante
+	 *
+	 * @return string
+	 */
+	protected abstract function getSection();
 	
 	
 	/**
@@ -138,6 +122,49 @@ abstract class BaseController extends Controller {
 	 * ----------------------------------------------------------------------------------------------------------------------------------------------
 	 */
 	
+	/**
+	 * Associe une icône font-awesome à une section
+	 *
+	 * @param string $section
+	 * @return string
+	 */
+	protected final function getSectionIcon($section){
+		switch($section) {
+			case 'contact'            :return 'envelope';
+			case 'dashboard'          :return 'area-chart';
+			case 'ideas'              :return 'lightbulb-o';
+			case 'demarches'          :return 'briefcase';
+			case 'ewbsactions'        :return 'magic';
+				
+			case 'formslibrary'       :
+			case 'annexes'            :
+			case 'eforms'             :return 'wpforms';
+				
+			case 'components'         :
+			case 'pieces'             :
+			case 'tasks'              :return 'clipboard';
+				
+			case 'damus'              :return 'connectdevelop';
+				
+			case 'taxonomy'           :
+			case 'taxonomycategories' :
+			case 'taxonomysynonyms'   :
+			case 'taxonomytags'       :return 'tag';
+				
+			case 'ewbsservices'       :return 'wrench';
+				
+			case 'admin'              :
+			case 'administrations'    :
+			case 'ewbsmembers'        :
+			case 'jobs'               :
+			case 'failedjobs'         :
+			case 'roles'              :
+			case 'users'              :return 'cog';
+				
+			case 'trash'              :return 'trash-o';
+			default                   :return '';
+		}
+	}
 	
 	/**
 	 * Construire le menu affiché dans la sidebar
@@ -158,33 +185,28 @@ abstract class BaseController extends Controller {
 				'label'      => Lang::get ( 'admin/dashboard/messages.menu' ),
 				'section'    => 'dashboard',
 				'route'      => 'adminDashboardGetIndex',
-				'icon'       => 'area-chart',
 			],
 			[ // Projets de simplif
 				'label'      => Lang::get ( 'admin/ideas/messages.menu' ),
 				'section'    => 'ideas',
 				'route'      => 'ideasGetIndex',
-				'icon'       => 'lightbulb-o',
 				'permission' => 'ideas_display',
 			],
 			[ // Démarches
 				'label'      => Lang::get ( 'admin/demarches/messages.menu' ),
 				'section'    => 'demarches',
 				'route'      => 'demarchesGetIndex',
-				'icon'       => 'briefcase',
 				'permission' => 'demarches_display',
 			],
 			[ // Actions
 				'label'      => Lang::get ( 'admin/ewbsactions/messages.menu' ),
 				'section'    => 'ewbsactions',
 				'route'      => 'ewbsactionsGetIndex',
-				'icon'       => 'magic',
 				'permission' => 'ewbsactions_display',
 			],
 			[ // Formulaires
 				'label'     => Lang::get ( 'admin/eforms/messages.supermenu' ),
 				'section'   => 'formslibrary',
-				'icon'      => 'wpforms',
 				'permission'=> 'formslibrary_display',
 				'submenu'   => [
 					[
@@ -201,7 +223,6 @@ abstract class BaseController extends Controller {
 			[ // Pièces et données
 				'label'      => Lang::get ( 'admin/pieces/messages.supermenu' ),
 				'section'    => 'components',
-				'icon'       => 'clipboard',
 				'permission' => 'pieces_tasks_display',
 				'submenu'    => [
 					[
@@ -225,13 +246,11 @@ abstract class BaseController extends Controller {
 				'label'      => Lang::get ( 'admin/damus/messages.menu' ),
 				'section'    => 'damus',
 				'route'      => 'damusGetIndex',
-				'icon'       => 'connectdevelop',
 				'permission' => 'damus_manage',
 			],
 			[ // Taxonomie
 				'label'      => Lang::get ('admin/taxonomy/messages.menu' ),
 				'section'    => 'taxonomy',
-				'icon'       => 'tag',
 				'permission' => 'taxonomy_display',
 				'submenu'	 => [
 					[
@@ -255,13 +274,11 @@ abstract class BaseController extends Controller {
 				'label'      => Lang::get ( 'admin/ewbsservices/messages.menu' ),
 				'section'    => 'ewbsservices',
 				'route'      => 'ewbsservicesGetIndex',
-				'icon'       => 'wrench',
 				'permission' => 'servicescatalog_display',
 			],
 			[ // Admin
 				'label'      => Lang::get ( 'general.admin' ),
 				'section'    => 'admin',
-				'icon'       => 'cog',
 				'permission' => ['administrations_manage', 'ewbsmembers_manage', 'manage_roles', 'manage_users', 'jobs_manage'],
 				'submenu'    => [
 					[
@@ -300,7 +317,6 @@ abstract class BaseController extends Controller {
 			[ // Corbeille
 				'label'      => Lang::get ( 'general.trash' ),
 				'section'    => 'trash',
-				'icon'       => 'trash-o',
 				'submenu'    => [
 					[
 						'label'      => Lang::get ( 'admin/ewbsactions/messages.title' ),
@@ -410,20 +426,16 @@ abstract class BaseController extends Controller {
 			// Si interdiction par rôle ou permission, ignorer ce point de menu
 			if(!$hasRole || !$hasPermission) continue;
 			
-			Log::info((isset($item['route'])?$item['route']:'').' : '.$this->getSection().' => '.$item['section']);
+			// Associer une icône à la section
+			$item['icon']=$this->getSectionIcon($item['section']);
+			
 			// Propriété "active" si page courante
-			if($this->getSection() == $item['section'])
+			if($this->section == $item['section'])
 				$item['active']=true;
 					
-			// Sous-menu éventuel et remontée propriété "active" si un sous-menu est la page courante
+			// Sous-menu éventuel
 			if(array_key_exists('submenu', $item)) {
 				$item['submenu']=$this->filterSidebarMenu($item['submenu']);
-				/*foreach($item['submenu'] as $subitem) {
-					if(array_key_exists('active', $subitem)) {
-						$item['active']=true;
-						break;
-					}
-				}*/
 			}
 			$filteredMenu[]=$item;
 		}
