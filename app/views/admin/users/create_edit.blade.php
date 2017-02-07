@@ -10,7 +10,7 @@
 			<div class="content">
 				{{-- Create User Form --}}
 				<form class="form-horizontal" method="post"
-					action="{{isset($user) ? route('usersPostEdit', $user->id) : route('rolesPostCreate')}}"
+					action="{{isset($user) ? route('usersPostEdit', $user->id) : route('usersPostCreate')}}"
 					autocomplete="off">
 					<!-- CSRF Token -->
 					<input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
