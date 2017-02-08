@@ -23,7 +23,7 @@ class AdminUsersController extends TrashableModelController {
 	 * @see ModelController::getList()
 	 */
 	protected function getList($onlyTrashed=false) {
-		return View::make ('admin/users/index', array('trash'=>$onlyTrashed));
+		return View::make ('admin/users/list', array('trash'=>$onlyTrashed));
 	}
 	
 	/**
@@ -31,15 +31,19 @@ class AdminUsersController extends TrashableModelController {
 	 * @see ModelController::getDataJson()
 	 */
 	protected function getDataJson($onlyTrashed=false) {
-		$users = User::select ( array (
+		$select = [
 			'id',
 			'username',
 			'email',
 			'confirmed',
 			'created_at'
-		) ); // password est sélectionné pour avoir une colonne à utiliser (on y balancera les rôles)
-		
-		return Datatables::of ( $users )
+		];
+		$builder = $this->getModel()->query();
+		if($onlyTrashed) {
+			array_unshift($select, 'deleted_at');
+			$builder->onlyTrashed();
+		}
+		return Datatables::of ( $builder->select($select) )
 		->edit_column ( 'confirmed', function ($item) {
 			return Lang::get($item->confirmed ? 'general.yes' : 'general.no');
 		})
@@ -80,18 +84,16 @@ class AdminUsersController extends TrashableModelController {
 		$user->email = Input::get ( 'email' );
 		
 		// Generate a random confirmation code
-		if(!$user->id)
-			$user->confirmation_code = md5 ( uniqid ( mt_rand (), true ) );
+		if($create)
+			$user->confirmation_code = md5(uniqid(mt_rand(), true));
 		
 		$user->confirmed=Input::get ( 'confirmed', $user->confirmed );
 		
-		// FIXME Voir comment avoir un msg d'erreur sur le password à la création uniquement
 		if ($password=Input::get ( 'password' ))
 			$user->password = $password;
 		
 		if ($password_confirmation=Input::get ( 'password_confirmation' ))
 			$user->password_confirmation = $password_confirmation;
-		// FIXME Voir comment cette propritété est supposée être retirée avant sauveagrde.
 		
 		$saved=$user->save();
 		if($saved) {
@@ -101,20 +103,28 @@ class AdminUsersController extends TrashableModelController {
 			if ($create && Config::get ( 'confide::signup_email' )) {
 				Mail::queueOn ( Config::get ( 'confide::email_queue' ), Config::get ( 'confide::email_account_confirmation' ), compact ( 'user' ), function ($message) use($user) {
 					$message->to ( $user->email, $user->username )->subject ( Lang::get ( 'confide::confide.email.account_confirmation.subject' ) );
-				} );
+				});
 			}
 		}
 		return $saved;
+	}
+	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see ModelController::getDelete()
+	 */
+	public function getDelete(ManageableModel $modelInstance) {
+		if ($modelInstance->id === Confide::user ()->id)
+			return Redirect::secure ( 'admin/users' )->with ( 'error', Lang::get ( 'admin/users/messages.delete.impossible' ) );
+		return parent::getDelete($modelInstance);
 	}
 		
 	/**
 	 * {@inheritDoc}
 	 * @see ModelController::getLinks()
 	 */
-	protected function getLinks(ManageableModel $administration) {
-		if ($user->id === Confide::user ()->id) {
-			// Redirect to the user management page
-			return Redirect::secure ( 'admin/users' )->with ( 'error', Lang::get ( 'admin/users/messages.delete.impossible' ) );
-		}
+	protected function getLinks(ManageableModel $user) {
+		return [];
 	}
 }

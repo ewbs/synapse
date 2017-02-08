@@ -86,7 +86,10 @@ trait ArdentConfideUser
     		Closure $beforeSave = null,
     		Closure $afterSave = null
     		) {
+    	if ($this->isValid()) {
     			return $this->internalSave($rules, $customMessages, $options, $beforeSave, $afterSave, false);
+    	}
+    	return false;
     }
 
     /**

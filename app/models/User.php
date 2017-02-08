@@ -23,17 +23,6 @@ class User extends TrashableModel implements ConfideUserInterface {
 	use ArdentConfideUser, HasRole;
 	
 	/**
-	 * Règles de validation au niveau du modèle
-	 * @var array
-	 */
-	public static $rules=[
-		'username' => 'required|min:3',
-		'email' => 'required|email',
-		'password' => 'confirmed|min:4',
-		'password_confirmation' => 'min:4',
-	];
-	
-	/**
 	 * 
 	 * {@inheritDoc}
 	 * @see ManageableModel::permissionManage()
@@ -42,6 +31,14 @@ class User extends TrashableModel implements ConfideUserInterface {
 		return 'manage_users';
 	}
 	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see ManageableModel::name()
+	 */
+	public function name() {
+		return $this->username;
+	}
 	
 	public function EWBSMember() {
 		return $this->hasOne ( 'EWBSMember' );

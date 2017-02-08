@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var boolean $trash
+ */
+?>
 @extends('site.layouts.container-fluid')
 @section('title')Utilisateurs @stop
 @section('content')
@@ -14,7 +19,7 @@
 			</div>
 			<div class="content">
 				<div class="table-responsive">
-					<table class="table table-hover datatable" data-ajaxurl="{{ route('usersGetData') }}" data-bFilter="true" data-bSort="true" data-bPaginate="true">
+					<table class="table table-hover datatable" data-ajaxurl="{{ $trash?$model->routeGetDataTrash():$model->routeGetData() }}" data-bFilter="true" data-bSort="true" data-bPaginate="true">
 						<thead>
 							<tr>
 								<th class="col-md-2">Nom</th>

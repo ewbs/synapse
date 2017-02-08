@@ -5,18 +5,14 @@
  */
 ?>
 @extends('site.layouts.container-fluid')
-@section('title')Création/Edition d'un utilisateur @stop
+@section('title'){{$user?'Edition':'Création'}} d'un utilisateur @stop
 @section('content')
 <div class="row">
 	<div class="col-md-12">
 		<div class="block-flat">
-			<div class="header">
-				<h3>Création/Edition d'un utilisateur</h3>
-			</div>
 			<div class="content">
 				
-				<form class="form-horizontal" method="post" autocomplete="off"
-					action="{{isset($user) ? route('usersPostEdit', $user->id) : route('usersPostCreate')}}">
+				<form class="form-horizontal" method="post" autocomplete="off" action="{{$user ? route('usersPostEdit', $user->id) : route('usersPostCreate')}}">
 					<input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
 					
 					<!-- username -->
@@ -60,21 +56,21 @@
 					<!-- ./ password confirm -->
 					
 					<!-- Activation Status -->
-					<div class="form-group {{{ $errors->has('activated') || $errors->has('confirm') ? 'has-error' : '' }}}">
-						<label class="col-md-2 control-label" for="confirm">Actif ?</label>
+					<div class="form-group {{{ $errors->has('activated') || $errors->has('confirmed') ? 'has-error' : '' }}}">
+						<label class="col-md-2 control-label" for="confirmed">Actif ?</label>
 						<div class="col-md-6">
 							@if(!$user)
-							<select class="form-control" name="confirm" id="confirm">
-								<option value="1" {{{ (Input::old('confirm', 0) === 1 ? ' selected="selected"' : '') }}}>{{{ Lang::get('general.yes') }}}</option>
-								<option value="0" {{{ (Input::old('confirm', 0) === 0 ? ' selected="selected"' : '') }}}>{{{ Lang::get('general.no') }}}</option>
+							<select class="form-control" name="confirmed" id="confirmed">
+								<option value="1" {{{ (Input::old('confirmed', 0) === 1 ? ' selected="selected"' : '') }}}>{{{ Lang::get('general.yes') }}}</option>
+								<option value="0" {{{ (Input::old('confirmed', 0) === 0 ? ' selected="selected"' : '') }}}>{{{ Lang::get('general.no') }}}</option>
 							</select>
 							@else
-							<select class="form-control" {{{ ($user->id === Confide::user()->id ? ' disabled="disabled"' : '') }}} name="confirm" id="confirm">
+							<select class="form-control" {{{ ($user->id === Confide::user()->id ? ' disabled="disabled"' : '') }}} name="confirmed" id="confirmed">
 								<option value="1" {{{ ( $user->confirmed ? ' selected="selected"' : '') }}}>{{{ Lang::get('general.yes') }}}</option>
 								<option value="0" {{{ (!$user->confirmed ? ' selected="selected"' : '') }}}>{{{ Lang::get('general.no') }}}</option>
 							</select>
 							@endif
-							{{ $errors->first('confirm', '<span class="help-inline">:message</span>') }}
+							{{ $errors->first('confirmed', '<span class="help-inline">:message</span>') }}
 						</div>
 					</div>
 					<!-- ./ activation status -->
