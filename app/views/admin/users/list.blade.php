@@ -11,9 +11,11 @@
 		<div class="block-flat">
 			<div class="header">
 				<div class="pull-right">
-					<a href="{{route('usersGetCreate')}}"
-						class="btn btn-small btn-primary"><i
-						class="glyphicon glyphicon-plus-sign"></i> Ajouter un utilisateur</a>
+					@if($trash)
+					<a class="btn btn-small btn-default" href="{{ $model->routeGetIndex() }}">Retour à la liste</a>
+					@else
+					<a href="{{ $model->routeGetCreate() }}" class="btn btn-small btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Ajouter un utilisateur</a>
+					@endif
 				</div>
 				<h3>Liste des utilisateurs @if($trash) supprimés @endif</h3>
 			</div>
