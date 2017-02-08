@@ -73,7 +73,7 @@ class AdminUsersController extends TrashableModelController {
 		$roles = Role::orderBy('name')->get ();
 		$permissions = Permission::all ();
 		$administrations = Administration::all ();
-		return View::make ( 'admin/users/manage', compact ( 'user', 'roles', 'permissions', 'mode', 'administrations' ) );
+		return $this->makeDetailView ($user, 'admin/users/manage', compact ( 'roles', 'permissions', 'mode', 'administrations' ) );
 	}
 	
 	/**

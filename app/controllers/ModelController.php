@@ -230,7 +230,30 @@ abstract class ModelController extends BaseController {
 	 * @return array
 	 */
 	protected function features(ManageableModel $modelInstance) {
-		return [];
+		$features=[];
+		if($modelInstance->hasView()) {
+			$features[]=[
+				'label' => Lang::get ( 'button.view' ),
+				'url' => $modelInstance->routeGetView(),
+				'icon' => 'eye'
+			];
+		}
+		if($modelInstance->canManage()) {
+			$features[]=[
+				'label' => Lang::get ( 'button.edit' ),
+				'url' => $modelInstance->routeGetEdit(),
+				'icon' => 'pencil'
+			];
+		}
+		if($modelInstance->canDelete()) {
+			$features[]=[
+				'label' => Lang::get ( 'button.delete' ),
+				'url' => $modelInstance->routeGetDelete(),
+				'icon' => 'trash-o',
+				'class' =>'btn-danger',
+			];
+		}
+		return $features;
 	}
 	
 	/**
@@ -245,7 +268,7 @@ abstract class ModelController extends BaseController {
 		$data ['modelInstance'] = $modelInstance;
 		$data ['returnTo'] = $this->getReturnTo();
 		if($modelInstance)
-			$data ['features'] = $this->filteredFeatures ( $modelInstance );
+			$data ['features'] = $this->features ( $modelInstance );
 		return View::make ( $view, $data );
 	}
 	
@@ -294,28 +317,5 @@ abstract class ModelController extends BaseController {
 			Log::error($e);
 			return Redirect::secure ($url)->withInput ()->with ( 'error', Lang::get ( 'general.baderror' ) . '<pre>' . $e->getMessage () . '</pre>' );
 		}
-	}
-	
-	/**
-	 * Retourne les actions que peut exécuter l'utilisateur sur une instance du modèle courant
-	 *
-	 * @param ManageableModel $model
-	 * @return array
-	 */
-	private function filteredFeatures(ManageableModel $modelInstance) {
-		$filteredFeatures = [];
-		if($features=$this->features($modelInstance)) {
-			$canManage = $modelInstance->canManage();
-			foreach ( $features as $feature ) {
-				$permission=empty($feature ['permission'])?null:$feature ['permission'];
-				if (strpos($permission, '_manage')!==false) {
-					if ($canManage) $filteredFeatures [] = $feature;
-				}
-				elseif (!$permission || $this->getLoggedUser ()->id == $modelInstance->user_id || $this->getLoggedUser ()->can ( $feature ['permission'] )) {
-					$filteredFeatures [] = $feature;
-				}
-			}
-		}
-		return $filteredFeatures;
 	}
 }

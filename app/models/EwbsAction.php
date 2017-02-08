@@ -52,6 +52,15 @@ class EwbsAction extends RevisableModel {
 	/**
 	 * 
 	 * {@inheritDoc}
+	 * @see ManageableModel::canDelete()
+	 */
+	public function canDelete(\User $loggedUser=null) {
+		return false;
+	}
+	
+	/**
+	 * 
+	 * {@inheritDoc}
 	 * @see ManageableModel::formRules()
 	 */
 	public function formRules() {

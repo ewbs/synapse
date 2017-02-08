@@ -129,6 +129,19 @@ abstract class ManageableModel extends Ardent {
 	}
 	
 	/**
+	 * Vérifie si on dispose du droit de supprimer l'instance du modèle courant
+	 * 
+	 * Par défaut, cette méthode utilise la méthode canManage(), mais il est possible de la redéfinir afin d'empêcher explicitement la suppression
+	 * malgré que l'on dispose du droit de gestion
+	 * 
+	 * @param \User $loggedUser
+	 * @return boolean
+	 */
+	public function canDelete(\User $loggedUser=null) {
+		return $this->canManage($loggedUser);
+	}
+	
+	/**
 	 * Donne la possibilité à des modèles de vérifier via des restrictions supplémentaires
 	 * que l'on a bien le droit de gérer l'instance du modèle courant lorsque les tests de base
 	 * de la méthode canManage() sont positifs

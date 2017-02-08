@@ -17,37 +17,37 @@ class EformController extends TrashableModelController {
 	 * @see ModelController::features()
 	 */
 	protected function features(ManageableModel $modelInstance) {
-		return [
-			[
-				'label' => Lang::get ( 'button.view' ),
-				'url' => $modelInstance->routeGetView(),
-				'permission' => 'formslibrary_display',
-				'icon' => 'eye'
-			],
-			[
+		$features[]=[
+			'label' => Lang::get ( 'button.view' ),
+			'url' => $modelInstance->routeGetView(),
+			'icon' => 'eye'
+		];
+		if($modelInstance->canManage()) {
+			$features[]=[
 				'label' => Lang::get ( 'button.edit' ),
 				'url' => $modelInstance->routeGetEdit(),
-				'permission' => $modelInstance->permissionManage(),
 				'icon' => 'pencil'
-			],
-			[
-				'label' => Lang::get ( 'admin/annexes/messages.menu' ),
-				'url' => route('eformsAnnexesGetIndex', $modelInstance->id),
-				'icon' => 'wpforms'
-			],
-			[
-				'label' => Lang::get ( 'admin/ewbsactions/messages.title' ),
-				'url' => route('eformsActionsGetIndex', $modelInstance->id),
-				'icon' => 'magic'
-			],
-			[
+			];
+		}
+		$features[]=[
+			'label' => Lang::get ( 'admin/annexes/messages.menu' ),
+			'url' => route('eformsAnnexesGetIndex', $modelInstance->id),
+			'icon' => 'wpforms'
+		];
+		$features[]=[
+			'label' => Lang::get ( 'admin/ewbsactions/messages.title' ),
+			'url' => route('eformsActionsGetIndex', $modelInstance->id),
+			'icon' => 'magic'
+		];
+		if($modelInstance->canDelete()) {
+			$features[]=[
 				'label' => Lang::get ( 'button.delete' ),
 				'url' => $modelInstance->routeGetDelete(),
-				'permission' => $modelInstance->permissionManage(),
 				'icon' => 'trash-o',
 				'class' =>'btn-danger',
-			]
-		];
+			];
+		}
+		return $features;
 	}
 	
 	/**

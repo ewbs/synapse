@@ -1,12 +1,18 @@
+<?php 
+/**
+ * @var Administration $modelInstance
+ * @var Illuminate\Database\Eloquent\Collection $regions
+ */
+?>
 @extends('site.layouts.container-fluid')
-@section('title'){{ ($administration ? 'Edition' : 'Création') }} d'une administration @stop
+@section('title'){{ ($modelInstance ? 'Edition' : 'Création') }} d'une administration @stop
 @section('content')
 <div class="row">
 	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="content">
 				{{-- CreateEdit Form --}}
-				<form id="manage-administration-form" class="form-horizontal" method="post" autocomplete="off" action="{{ $administration ? $administration->routePostEdit() :$model->routePostCreate() }}">
+				<form id="manage-administration-form" class="form-horizontal" method="post" autocomplete="off" action="{{ $modelInstance ? $modelInstance->routePostEdit() :$model->routePostCreate() }}">
 					<!-- CSRF Token -->
 					<input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
 					<!-- ./ csrf token -->
@@ -16,7 +22,7 @@
 						class="form-group {{{ $errors->has('name') ? 'has-error' : '' }}}">
 						<label class="col-md-2 control-label" for="name">Nom</label>
 						<div class="col-md-10">
-							<input class="form-control" type="text" name="name" id="name" value="{{{ Input::old('name', $administration ? $administration->name : null) }}}" placeholder="Nom" />
+							<input class="form-control" type="text" name="name" id="name" value="{{{ Input::old('name', $modelInstance ? $modelInstance->name : null) }}}" placeholder="Nom" />
 							{{ $errors->first('name', '<span class="help-inline">:message</span>') }}
 						</div>
 					</div>
@@ -28,7 +34,7 @@
 						<div class="col-md-10">
 							<select class="select2" name="region" id="region">
 								@foreach($regions as $region)
-								<option value="{{ $region->id }}" {{ ($administration && $administration->region==$region) ?'selected' : '' }}>{{$region->name}}</option>
+								<option value="{{ $region->id }}" {{ ($modelInstance && $modelInstance->region==$region) ?'selected' : '' }}>{{$region->name}}</option>
 								@endforeach
 							</select>
 							{{ $errors->first('region', '<span class="help-inline">:message</span>') }}

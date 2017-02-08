@@ -1,14 +1,19 @@
+<?php 
+/**
+ * @var Piece $modelInstance
+ */
+?>
 @extends('site.layouts.container-fluid')
-@section('title'){{ ($piece ? 'Edition' : 'Création') }} d'une pièce justificative @stop
+@section('title'){{ ($modelInstance ? 'Edition' : 'Création') }} d'une pièce justificative @stop
 @section('content')
 <div class="row">
 	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="content">
-				{{-- AVERTISSEMENTS --}} @if ($piece)
+				{{-- AVERTISSEMENTS --}} @if ($modelInstance)
 				@warning('La modification de la pièce est immédiate et impacte toutes les données de Synapse (excepté les analyses SCM Light déjà générées).')
 				@endif {{-- Create-Edit Piece Form --}}
-				<form id="manage-piece-form" class="form-horizontal" method="post" autocomplete="off" action="{{ ($piece) ? $piece->routePostEdit() : $model->routePostCreate() }}">
+				<form id="manage-piece-form" class="form-horizontal" method="post" autocomplete="off" action="{{ ($modelInstance) ? $modelInstance->routePostEdit() : $model->routePostCreate() }}">
 					<!-- CSRF Token -->
 					<input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
 					<!-- ./ csrf token -->
@@ -18,7 +23,7 @@
 						class="form-group {{{ $errors->has('name') ? 'has-error' : '' }}}">
 						<label class="col-md-2 control-label" for="name">Nom de la pièce</label>
 						<div class="col-md-10">
-							<input class="form-control" type="text" name="name" id="name" value="{{{ Input::old('name', $piece!=null ? $piece->name : null) }}}" />
+							<input class="form-control" type="text" name="name" id="name" value="{{{ Input::old('name', $modelInstance!=null ? $modelInstance->name : null) }}}" />
 							{{ $errors->first('name', '<span class="help-inline">:message</span>') }}
 						</div>
 					</div>
@@ -30,7 +35,7 @@
 						<div class="col-md-10">
 							<div class="input-group">
 								<input class="form-control decimalNumber" type="text" name="cost_administration_currency" id="cost_administration_currency"
-									value="{{{ Input::old('cost_administration_currency', $piece!=null ? NumberHelper::decimalFormat($piece->cost_administration_currency) : '0') }}}" placeholder="Indiquez un montant en euros" />
+									value="{{{ Input::old('cost_administration_currency', $modelInstance!=null ? NumberHelper::decimalFormat($modelInstance->cost_administration_currency) : '0') }}}" placeholder="Indiquez un montant en euros" />
 									<span class="input-group-addon">€</span>
 							</div>
 							{{ $errors->first('cost_administration_currency', '<span class="help-inline">:message</span>') }}
@@ -44,7 +49,7 @@
 						<div class="col-md-10">
 							<div class="input-group">
 								<input class="form-control decimalNumber" type="text" name="cost_citizen_currency" id="cost_citizen_currency"
-									value="{{{ Input::old('cost_citizen_currency', $piece!=null ? NumberHelper::decimalFormat($piece->cost_citizen_currency) : '0') }}}" placeholder="Indiquez un montant en euros" />
+									value="{{{ Input::old('cost_citizen_currency', $modelInstance!=null ? NumberHelper::decimalFormat($modelInstance->cost_citizen_currency) : '0') }}}" placeholder="Indiquez un montant en euros" />
 									<span class="input-group-addon">€</span>
 							</div>
 							{{ $errors->first('cost_citizen_currency', '<span class="help-inline">:message</span>') }}
@@ -56,8 +61,8 @@
 					<?php /*
 					// recherche de l'élément à selectionner
 					$selectedType = 0;
-					if ($piece) {
-						$selectedType = $piece->type_id;
+					if ($modelInstance) {
+						$selectedType = $modelInstance->type_id;
 					}
 					if (Input::old ( 'type' )) {
 						$selectedType = Input::old ( 'type' );
@@ -79,7 +84,7 @@
 					<div class="form-group {{{ $errors->has('description') ? 'has-error' : '' }}}">
 						<label class="col-md-2 control-label" for="name">Description</label>
 						<div class="col-md-10">
-							<textarea style="height: 100px;" class="form-control" name="description" id="description">{{{ Input::old('description', $piece!=null ? $piece->description : null) }}}</textarea>
+							<textarea style="height: 100px;" class="form-control" name="description" id="description">{{{ Input::old('description', $modelInstance!=null ? $modelInstance->description : null) }}}</textarea>
 							{{ $errors->first('description', '<span class="help-inline">:message</span>') }}
 							<small class="pull-right">(facultatif)</small>
 						</div>

@@ -12,40 +12,16 @@ class IdeaController extends TrashableModelController {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see ModelController::features()
-	 */
-	protected function features(ManageableModel $modelInstance) {
-		return [
-			[
-				'label' => Lang::get ( 'button.view' ),
-				'url' => $modelInstance->routeGetView(),
-				'permission' => 'ideas_display',
-				'icon' => 'eye'
-			],
-			[
-				'label' => Lang::get ( 'button.edit' ),
-				'url' => $modelInstance->routeGetEdit(),
-				'permission' => 'ideas_manage',
-				'icon' => 'pencil'
-			],
-			[
-				'label' => Lang::get ( 'button.delete' ),
-				'url' => $modelInstance->routeGetDelete(),
-				'permission' => 'demarches_manage',
-				'icon' => 'trash-o',
-				'class' =>'btn-danger',
-			],
-		];
-	}
-	
-	/**
-	 * {@inheritDoc}
 	 * @see ModelController::getList()
 	 */
 	protected function getList($onlyTrashed=false) {
 		return View::make ('admin/ideas/list', array('trash'=>$onlyTrashed));
 	}
-
+	
+	/**
+	 * 
+	 * @return Datatables
+	 */
 	protected function getDataFilteredJson() {
 		return $this->getDataJson(false, true);
 	}

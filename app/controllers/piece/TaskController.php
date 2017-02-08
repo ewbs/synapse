@@ -35,7 +35,6 @@ class TaskController extends TrashableModelController {
 			$items = Task::select ($select);
 		}
 		
-		
 		return Datatables::of ( $items )
 		->remove_column ( 'id' )
 		->remove_column ( 'description' )
@@ -64,10 +63,8 @@ class TaskController extends TrashableModelController {
 	 */
 	protected function getManage(ManageableModel $task=null){
 		// Types
-		$types = PieceType::all ();
-		
-		// affiche le formulaire
-		return View::make('admin/tasks/manage', compact ('task', 'types'));
+		// $types = PieceType::all ();
+		return $this->makeDetailView($task, 'admin/tasks/manage');
 	}
 	
 	/**

@@ -12,34 +12,6 @@ class AnnexeController extends TrashableModelController {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see ModelController::features()
-	 */
-	protected function features(ManageableModel $modelInstance) {
-		return [
-			[
-				'label' => Lang::get ( 'button.view' ),
-				'url' => $modelInstance->routeGetView(),
-				'permission' => 'formslibrary_display',
-				'icon' => 'eye'
-			],
-			[
-				'label' => Lang::get ( 'button.edit' ),
-				'url' => $modelInstance->routeGetEdit(),
-				'permission' => $modelInstance->permissionManage(),
-				'icon' => 'pencil'
-			],
-			[
-				'label' => Lang::get ( 'button.delete' ),
-				'url' => $modelInstance->routeGetDelete(),
-				'permission' => $modelInstance->permissionManage(),
-				'icon' => 'trash-o',
-				'class' =>'btn-danger',
-			]
-		];
-	}
-	
-	/**
-	 * {@inheritDoc}
 	 * @see ModelController::getList()
 	 */
 	protected function getList($onlyTrashed=false) {

@@ -17,53 +17,45 @@ class DemarcheController extends ModelController {
 	 * @see ModelController::features()
 	 */
 	protected function features(ManageableModel $modelInstance) {
-		return [
-			[
-				'label' => Lang::get ( 'button.view' ),
-				'url' => $modelInstance->routeGetView(),
-				'permission' => 'demarches_display',
-				'icon' => 'eye'
-			],
-			[
+		$features[]=[
+			'label' => Lang::get ( 'button.view' ),
+			'url' => $modelInstance->routeGetView(),
+			'icon' => 'eye'
+		];
+		if($modelInstance->canManage()) {
+			$features[]=[
 				'label' => Lang::get ( 'admin/demarches/messages.features.edit' ),
 				'url' => $modelInstance->routeGetEdit(),
-				'permission' => 'demarches_manage',
 				'icon' => 'pencil'
-			],
-			[
+			];
+			$features[]=[
 				'label' => Lang::get ( 'admin/ewbsactions/messages.title' ),
 				'url' => route('demarchesActionsGetIndex', $modelInstance->id),
-				'permission' => 'demarches_manage',
 				'icon' => 'magic'
-			],
-			[
+			];
+			$features[]=[
 				'label' => Lang::get ( 'admin/demarches/messages.features.components' ),
-				'permission' => 'demarches_manage',
 				'icon' => 'clipboard',
 				'sub' => [
 					[
 						'label' => Lang::get('admin/demarches/messages.features.components'),
 						'url' => route('demarchesGetComponents', $modelInstance->id),
 						'icon' => 'clipboard',
-						'permission' => 'demarches_manage',
 					],
 					[
 						'label' => Lang::get ( 'admin/demarches/messages.features.downloadSCMLight' ),
 						'url' => route('demarchesGetDownload', $modelInstance->id),
-						'permission' => 'demarches_manage',
 						'icon' => 'download'
 					],
 					[
 						'label' => Lang::get ( 'admin/demarches/messages.features.uploadSCMLight' ),
 						'url' => route('demarchesScmUploadGetFile', $modelInstance->id),
-						'permission' => 'demarches_manage',
 						'icon' => 'upload'
 					]
-				],
-			],
-
-		];
-
+				]
+			];
+		}
+		return $features;
 	}
 	
 	/**

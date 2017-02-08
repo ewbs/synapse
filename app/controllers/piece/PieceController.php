@@ -62,8 +62,8 @@ class PieceController extends TrashableModelController {
 	 * @see ModelController::getManage()
 	 */
 	protected function getManage(ManageableModel $piece=null){
-		$types = PieceType::all ();
-		return View::make('admin/pieces/manage', compact ('piece', 'types'));
+		//$types = PieceType::all ();
+		return $this->makeDetailView($piece, 'admin/pieces/manage');
 	}
 	
 	/**
