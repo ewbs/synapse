@@ -398,7 +398,7 @@ abstract class BaseController extends Controller {
 	 *
 	 * @param array $menu
 	 */
-	private final function filterSidebarMenu($menu) {
+	private final function filterSidebarMenu($menu, $sub=false) {
 		$filteredMenu=array();
 		foreach($menu as $item) {
 			
@@ -426,8 +426,9 @@ abstract class BaseController extends Controller {
 			// Si interdiction par rôle ou permission, ignorer ce point de menu
 			if(!$hasRole || !$hasPermission) continue;
 			
-			// Associer une icône à la section
-			$item['icon']=$this->getSectionIcon($item['section']);
+			// Associer une icône à la section pour le 1e niveau
+			if(!$sub)
+				$item['icon']=$this->getSectionIcon($item['section']);
 			
 			// Propriété "active" si page courante
 			if($this->section == $item['section'])
@@ -435,7 +436,7 @@ abstract class BaseController extends Controller {
 					
 			// Sous-menu éventuel
 			if(array_key_exists('submenu', $item)) {
-				$item['submenu']=$this->filterSidebarMenu($item['submenu']);
+				$item['submenu']=$this->filterSidebarMenu($item['submenu'],true);
 			}
 			$filteredMenu[]=$item;
 		}
