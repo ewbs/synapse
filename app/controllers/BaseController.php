@@ -494,9 +494,7 @@ abstract class BaseController extends Controller {
 	 * @return mixed|null Nom de la route ou null
 	 */
 	final public function getReturnTo() {
-
-		return Session::has(self::SESSION_RETURNTO_ROUTENAME) ? Session::get(self::SESSION_RETURNTO_ROUTENAME) : null;
-
+		return Session::get(self::SESSION_RETURNTO_ROUTENAME, null);
 	}
 
 

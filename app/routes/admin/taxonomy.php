@@ -5,7 +5,7 @@ Route::group(['prefix' => 'taxonomy'], function() {
 	Route::post('synonyms', 						['as' => 'taxonomyPostSynonyms',			'uses' => 'TaxonomySynonymsController@postSynonyms',		'before' => 'csrf']); //appelé en ajax pour modifier de la synonimie
 
 	Route::group(['prefix' => 'tags'], function() {
-		Route::get('', 								['as' => 'taxonomytagsGetIndex', 			'uses' => 'TaxonomyTagsController@getList']);
+		Route::get('', 								['as' => 'taxonomytagsGetIndex', 			'uses' => 'TaxonomyTagsController@getIndex']);
 		Route::get('data', 							['as' => 'taxonomytagsGetData', 			'uses' => 'TaxonomyTagsController@getData']);
 		Route::get('{taxonomytag}/view',			['as' => 'taxonomytagsGetView',				'uses' => 'TaxonomyTagsController@getView']);
 		Route::get('create', 						['as' => 'taxonomytagsGetCreate', 			'uses' => 'TaxonomyTagsController@getCreate']);
@@ -21,7 +21,7 @@ Route::group(['prefix' => 'taxonomy'], function() {
 	});
 
 	Route::group(['prefix' => 'categories'], function() {
-		Route::get('', 								['as' => 'taxonomycategoriesGetIndex', 		'uses' => 'TaxonomyCategoriesController@getList']);
+		Route::get('', 								['as' => 'taxonomycategoriesGetIndex', 		'uses' => 'TaxonomyCategoriesController@getIndex']);
 		Route::get('data', 							['as' => 'taxonomycategoriesGetData', 		'uses' => 'TaxonomyCategoriesController@getData']);
 		Route::get('{taxonomycategory}/view',		['as' => 'taxonomycategoriesGetView',		'uses' => 'TaxonomyCategoriesController@getView']);
 		Route::get('create', 						['as' => 'taxonomycategoriesGetCreate', 	'uses' => 'TaxonomyCategoriesController@getCreate']);

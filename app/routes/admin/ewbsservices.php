@@ -1,7 +1,7 @@
 <?php
 Route::group(['prefix' => 'ewbsservices'], function() {
 
-	Route::get('', 								['as' => 'ewbsservicesGetIndex', 			'uses' => 'EwbsServicesController@getList']);
+	Route::get('', 								['as' => 'ewbsservicesGetIndex', 			'uses' => 'EwbsServicesController@getIndex']);
 	Route::get('data', 							['as' => 'ewbsservicesGetData', 			'uses' => 'EwbsServicesController@getData']);
 	Route::get('{ewbsservice}/view',			['as' => 'ewbsservicesGetView',				'uses' => 'EwbsServicesController@getView']);
 	Route::get('create', 						['as' => 'ewbsservicesGetCreate', 			'uses' => 'EwbsServicesController@getCreate']);
