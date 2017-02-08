@@ -54,7 +54,9 @@ class AdminUsersController extends TrashableModelController {
 				$return .= ' <strong>Avec restrictions</strong>';
 			return ($return);
 		})
-		->add_column ( 'actions', function ($item) {
+		->add_column ( 'actions', function ($item) use ($onlyTrashed) {
+			if($onlyTrashed) return
+			'<a title="' . Lang::get ( 'button.restore' ) . '" href="' . route( 'usersGetRestore', $item->id ) . '" class="btn btn-xs btn-default">' . Lang::get ( 'button.restore' ) . '</a>';
 			return
 			'<a title="'.Lang::get('button.edit').'" href="'.route('usersGetEdit', $item->id).'" class="iframe btn btn-xs btn-default"><span class="fa fa-pencil"></span></a>
 			 <a title="'.Lang::get('button.delete').'" href="'.route('usersGetDelete', $item->id).'" class="iframe btn btn-xs btn-danger"><span class="fa fa-trash-o"></span></a>';

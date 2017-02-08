@@ -377,6 +377,12 @@ abstract class BaseController extends Controller {
 						'route'      => 'ewbsservicesGetTrash',
 						'permission' => 'servicescatalog_display',
 					],
+					[
+						'label'      => Lang::get ( 'admin/users/messages.menu' ),
+						'section'    => 'users-trash',
+						'route'      => 'usersGetTrash',
+						'permission' => 'manage_users',
+					],
 					/*[
 						'label'      => Lang::get ( 'admin/piecesrates/messages.menu' ),
 						'route'      => 'piecesratesGetTrash',

@@ -15,13 +15,16 @@
 						class="btn btn-small btn-primary"><i
 						class="glyphicon glyphicon-plus-sign"></i> Ajouter un utilisateur</a>
 				</div>
-				<h3>Liste des utilisateurs</h3>
+				<h3>Liste des utilisateurs @if($trash) supprimés @endif</h3>
 			</div>
 			<div class="content">
 				<div class="table-responsive">
 					<table class="table table-hover datatable" data-ajaxurl="{{ $trash?$model->routeGetDataTrash():$model->routeGetData() }}" data-bFilter="true" data-bSort="true" data-bPaginate="true">
 						<thead>
 							<tr>
+								@if ($trash)
+								<th class="col-md-2">Supprimé le</th>
+								@endif
 								<th class="col-md-2">Nom</th>
 								<th class="col-md-2">E-mail</th>
 								<th class="col-md-2">Peut se connecter</th>
