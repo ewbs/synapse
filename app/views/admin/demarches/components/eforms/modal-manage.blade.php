@@ -6,6 +6,8 @@
  * @var Demarche $demarche
  * @var DemarcheEform $demarche_eform
  * @var array $aEforms
+ * @var array aSuggestedEforms
+ * @var Illuminate\Support\MessageBag $errors
  * @var array $states
  */
 $eform_id = Input::old('eform_id', $demarche_eform ? $demarche_eform->eform_id : '');
