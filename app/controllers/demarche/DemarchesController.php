@@ -1534,21 +1534,21 @@ class DemarcheController extends ModelController {
 		}
 		else {
 			//on regarde les nostra_forms liés à cette démarche pour proposer ceux-ci en "suggérés".
-			$aLinkedNostraForms = $demarche->nostraDemarche->nostraForms()->lists('id');
-			$aSuggestedEforms = Eform
-			::whereRaw("eforms.id NOT IN(SELECT eform_id FROM v_lastrevisiondemarcheeform WHERE demarche_id={$demarche->id} AND deleted_at IS NULL)")
-			->leftjoin('v_lastrevisioneforms', 'eforms.id', '=', 'v_lastrevisioneforms.eform_id')
-			->leftjoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
+			$aSuggestedEforms = $demarche->nostraDemarche->nostraForms()->getBaseQuery()
+			->join('eforms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
+			->join('v_lastrevisioneforms', 'eforms.id', '=', 'v_lastrevisioneforms.eform_id')
 			->whereNull('v_lastrevisioneforms.deleted_at')
-			->whereIn('nostra_forms.id', $aLinkedNostraForms)
+			->whereRaw("eforms.id NOT IN(SELECT demarche_eform.eform_id FROM demarche_eform WHERE demarche_eform.demarche_id={$demarche->id} AND demarche_eform.deleted_at IS NULL)")
 			->orderby('title')
 			->select(['eforms.id', DB::raw('COALESCE(nostra_forms.title, eforms.title) AS title'), 'nostra_forms.nostra_id as nostra_id', 'v_lastrevisioneforms.current_state_id', 'v_lastrevisioneforms.next_state_id'])->get();
+			$aEforms=[];
 			// et ici on prend l'ensemble des autres formulaires
+			$aLinkedNostraForms = $demarche->nostraDemarche->nostraForms()->lists('id');
 			$aEforms=Eform
-			::whereRaw("eforms.id NOT IN(SELECT eform_id FROM v_lastrevisiondemarcheeform WHERE demarche_id={$demarche->id} AND deleted_at IS NULL)")
-			->leftjoin('v_lastrevisioneforms', 'eforms.id', '=', 'v_lastrevisioneforms.eform_id')
+			::leftjoin('v_lastrevisioneforms', 'eforms.id', '=', 'v_lastrevisioneforms.eform_id')
 			->leftjoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
 			->whereNull('v_lastrevisioneforms.deleted_at')
+			->whereRaw("eforms.id NOT IN(SELECT eform_id FROM v_lastrevisiondemarcheeform WHERE demarche_id={$demarche->id} AND deleted_at IS NULL)")
 			->whereNotIn('nostra_forms.id', $aLinkedNostraForms)
 			->orderby('title')
 			->select(['eforms.id', DB::raw('COALESCE(nostra_forms.title, eforms.title) AS title'), 'nostra_forms.nostra_id as nostra_id', 'v_lastrevisioneforms.current_state_id', 'v_lastrevisioneforms.next_state_id'])->get();
