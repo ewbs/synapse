@@ -235,17 +235,15 @@ class Demarche extends TrashableModel {
 	}
 	
 	/**
-	 * Retourne les pièces liées à une démarche dans leur état actuel
+	 * Retourne les formualaires liés à une démarche dans leur état actuel
 	 * 
 	 * @return Collection
 	 */
 	public function getLastRevisionEforms() {
-		$array = [];
-		$results = DB::table ( 'v_lastrevisiondemarcheeform' )->where ( 'demarche_id', '=', $this->id )->get ();
-		foreach ( $results as $result ) {
-			array_push ( $array, $result->id );
-		}
-		return (DemarcheEform::find ( $array ));
+		return DemarcheEform
+		::join('v_lastrevisiondemarcheeform', 'v_lastrevisiondemarcheeform.id', '=', 'demarche_eform.id')
+		->where ( 'v_lastrevisiondemarcheeform.demarche_id', '=', $this->id )
+		->get();
 	}
 	
 	/**
