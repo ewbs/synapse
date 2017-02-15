@@ -2,13 +2,15 @@
 
 // Catalogue des démarches
 Route::group(['prefix' => 'demarches'], function() {
-	Route::get(''                          ,['as'=>'demarchesGetIndex'       		,'uses'=>'DemarcheController@getIndex']);
-	Route::get('data'                      ,['as'=>'demarchesGetData'        		,'uses'=>'DemarcheController@getData']);
-	Route::get('filtered-data'             ,['as'=>'demarchesGetFilteredData'		,'uses'=>'DemarcheController@getDataFiltered']);
+	Route::get(''                          ,['as'=>'demarchesGetIndex'              ,'uses'=>'DemarcheController@getIndex']);
+	Route::get('data'                      ,['as'=>'demarchesGetData'               ,'uses'=>'DemarcheController@getData']);
+	Route::get('filtered-data'             ,['as'=>'demarchesGetFilteredData'       ,'uses'=>'DemarcheController@getDataFiltered']);
 	Route::get('filteredcharges-data'      ,['as'=>'demarchesGetFilteredChargesData','uses'=>'DemarcheController@getDataFilteredCharges']);
-	Route::get('datahtml'                  ,['as'=>'demarchesGetDataHtml'    		,'uses'=>'DemarcheController@getDataHtml']);
-	Route::get('{damus_demarcheId}/create' ,['as'=>'demarchesGetCreate'      		,'uses'=>'DemarcheController@getCreateDemarcheNostra']);
-	Route::post('export'                   ,['as'=>'demarchesPostExport'      		,'uses'=>'DemarcheController@PostExport']);
+	Route::get('datahtml'                  ,['as'=>'demarchesGetDataHtml'           ,'uses'=>'DemarcheController@getDataHtml']);
+	Route::get('{damus_demarcheId}/create' ,['as'=>'demarchesGetCreate'             ,'uses'=>'DemarcheController@getCreateDemarcheNostra']);
+	Route::post('export'                   ,['as'=>'demarchesPostExport'            ,'uses'=>'DemarcheController@PostExport']);
+	Route::get('trash'                     ,['as'=>'demarchesGetTrash'              ,'uses'=>'DemarcheController@getTrash']);
+	Route::get('datatrash'                 ,['as'=>'demarchesGetDataTrash'          ,'uses'=>'DemarcheController@getDataTrash']);
 	
 	// Détail d'une démarche
 	Route::group(['prefix' => '{demarche}'], function() {

@@ -334,6 +334,11 @@ abstract class BaseController extends Controller {
 						'route'      => 'administrationsGetTrash',
 						'permission' => 'administrations_manage',
 					],[
+						'label'      => Lang::get ( 'admin/demarches/messages.menu' ),
+						'section'    => 'demarches-trash',
+						'route'      => 'demarchesGetTrash',
+						'permission' => 'demarches_display',
+					],[
 						'label'      => Lang::get ( 'admin/eforms/messages.menu' ),
 						'section'    => 'eforms-trash',
 						'route'      => 'eformsGetTrash',

@@ -1,7 +1,7 @@
 <?php
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\MessageBag;
-class DemarcheController extends ModelController {
+class DemarcheController extends TrashableModelController {
 	
 	/**
 	 * Inject the models.
@@ -77,17 +77,12 @@ class DemarcheController extends ModelController {
 	 * {@inheritDoc}
 	 * @see ModelController::getList()
 	 */
-	protected function getList($onlyTrashed=false) {
+	protected function getList($trash=false) {
 		$aRegions = Region::all ();
 		$aPublics = NostraPublic::root()->get();
-		return View::make ( 'admin/demarches/list', compact ( 'aRegions', 'aPublics' ) );
+		return View::make ( 'admin/demarches/list', compact ( 'aRegions', 'aPublics', 'trash' ) );
 	}
-
-
-	/**
-
-
-
+	
 	/**
 	 * Pour respecter la forme d'appel des autres méthode, la route appelle getDataFilteredCharges, qui appelle une autre méthode.
 	 * C'est la même construction que pour getData() qui appelle getDataJson() et que pour getDataFiltered qui appelle getDataFilteredJson.
@@ -186,7 +181,7 @@ class DemarcheController extends ModelController {
 	 * {@inheritDoc}
 	 * @see ModelController::getDataJson()
 	 */
-	protected function getDataJson($onlyTrashed=false) {
+	protected function getDataJson($trash=false) {
 
 		// ne prendre que les démarches documentées
 		$documented = Input::has('onlyDocumented');
@@ -211,7 +206,7 @@ class DemarcheController extends ModelController {
 
 
 
-		$items = $this->getDataSql(false, $documented, $actions, $pieces, $tasks, $forms, $publics, $administrations);
+		$items = $this->getDataSql($trash, false, $documented, $actions, $pieces, $tasks, $forms, $publics, $administrations);
 
 		$dt = Datatables::of ( $items )
 			->edit_column('demarche_completeid', function ($item) {
@@ -289,7 +284,7 @@ class DemarcheController extends ModelController {
 
 
 
-		$items = $this->getDataSql(true, $documented, $actions, $pieces, $tasks, $forms);
+		$items = $this->getDataSql(false, true, $documented, $actions, $pieces, $tasks, $forms);
 
 		$dt = Datatables::of ( $items )
 			->edit_column('demarche_completeid', function ($item) {
@@ -344,6 +339,7 @@ class DemarcheController extends ModelController {
 	 * Cette fonction retourne un builder, pour créer
 	 * - la liste des démarches
 	 * - la liste des démarches filtrées dans le dashboard d'un utilisateur
+	 * @param bool $trash Considérer les soft-deletés, false par défaut
 	 * @param bool $withUserFilters  ne prendre que selon les démarches filtrées par les filtres de l'utilisateur (si false : on prend toutes les démarches/nostrademarches)
 	 * @param bool $onlyDocumented : ne prendre que les documentées (donc les Demarches, sans les NostraDemarche non liées à une Demarche)
 	 * @param bool $onlyWithActions : ne prendre que les élément avec des actions EN COURS (ou DEMARREES)
@@ -354,7 +350,7 @@ class DemarcheController extends ModelController {
 	 * @param string $multipleSeparator : separateur litéraire pour les arrays transformés en strings
 	 * @return Eloquent\Builder;
 	 */
-	private function getDataSql($withUserFilters = false, $onlyDocumented=false, $onlyWithActions=false, $minPieces=false, $minTasks=false, $minForms=false, $publics=false, $administrations=false, $multipleSeparator = ', ')
+	private function getDataSql($trash=false, $withUserFilters = false, $onlyDocumented=false, $onlyWithActions=false, $minPieces=false, $minTasks=false, $minForms=false, $publics=false, $administrations=false, $multipleSeparator = ', ')
 	{
 
 		$columns = [
@@ -377,11 +373,13 @@ class DemarcheController extends ModelController {
 			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_GIVENUP . "'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_givenup")
 		];
 
-		if ($withUserFilters) { // si on est dans le dashcoard : on ne prend que les démarches de l'utilisateur (selon ses filtres)
+		if ($withUserFilters) { // si on est dans le dashboard : on ne prend que les démarches de l'utilisateur (selon ses filtres)
 			$builder = NostraDemarche::filtered();
 		} else { // sinon on prend tout par défaut
 			$builder = NostraDemarche::query(); //pas utiliser getQuery car l'objet retourné n'est pas le meme !!!!!!!!
 		}
+		
+		if($trash) $builder->onlyTrashed();
 
 		$builder->join('demarches', 'demarches.nostra_demarche_id', '=', 'nostra_demarches.id', (($onlyDocumented || $onlyWithActions) ? 'inner' : 'left'))
 			->join('ewbsActions', 'ewbsActions.demarche_id', '=', 'demarches.id', ($onlyWithActions ? 'inner' : 'left'))
