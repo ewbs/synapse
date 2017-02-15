@@ -9,8 +9,7 @@
  * @var string $returnTo
  */
 
-// FIXME: on a du code ici qui aurait plus sa place dans un controller
-
+// TODO: on a du code ici qui aurait plus sa place dans un controller
 
 $edit=($action && $action->id);
 $revision=$edit ? $action->getLastRevision() : null;
@@ -33,7 +32,7 @@ if(!$piecetask && $action) {
 
 $piecetasktype=(!$piecetask) ? null : (strpos($piecetask, 'piece')===0 ? 'piece' : (strpos($piecetask, 'task')===0 ? 'task' : 'eform'));
 $piecetaskid=(!$piecetask) ? null : str_replace($piecetasktype, '', $piecetask);
-$piecetaskname=(!$piecetask) ? null : ($piecetasktype=='piece' ? DemarchePiece::withTrashed()->find($piecetaskid,['name'])->name : ($piecetasktype=='task' ? DemarcheTask::withTrashed()->find($piecetaskid,['name'])->name : Eform::withTrashed()->find($piecetaskid,['title'])->title ));
+$piecetaskname=(!$piecetask) ? null : ($piecetasktype=='piece' ? DemarchePiece::withTrashed()->find($piecetaskid,['name'])->name : ($piecetasktype=='task' ? DemarcheTask::withTrashed()->find($piecetaskid,['name'])->name : Eform::withTrashed()->find($piecetaskid)->name() ));
 
 $fromTriggerUpdate=(isset($fromTriggerUpdate) && $fromTriggerUpdate); // Dans ce cas c'est qu'on vient de la méthode getActionsTriggerUpdate() => créer une action depuis une pièce/tâche
 if(!$edit && !$fromTriggerUpdate) {
