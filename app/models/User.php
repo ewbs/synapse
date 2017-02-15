@@ -6,17 +6,12 @@ use Carbon\Carbon;
 /**
  * Utilisateurs
  *
- * @property int            $id                 (PK)
  * @property string         $username           Obligatoire, maximum 255 caractères
  * @property string         $email              Obligatoire, maximum 255 caractères
  * @property string         $password           Obligatoire, maximum 255 caractères
  * @property string         $confirmation_code  Obligatoire, maximum 255 caractères
  * @property string         $remember_token     Obligatoire, maximum 255 caractères
  * @property boolean        $confirmed          Obligatoire, false par défaut
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- *
  * @author jdavreux
  */
 class User extends TrashableModel implements ConfideUserInterface {

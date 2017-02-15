@@ -2,16 +2,11 @@
 /**
  * Membres de l'eWBS
  *
- * @property int            $id              (PK)
  * @property int            $user_id         Obligatoire, @see User
  * @property int            $ewbs_action_id  Obligatoire, @see EwbsAction
  * @property string         $lastname        Maximum 255 caractères
  * @property string         $firstname       Maximum 255 caractères
  * @property string         $jobtitle        Maximum 255 caractères
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- *
  * @author jdavreux
  */
 class EWBSMember extends TrashableModel {

@@ -5,15 +5,9 @@ use Illuminate\Database\Eloquent\Builder;
 /**
  * Liaisons entre les pièces et les démarches
  * 
- * @property int            $id                             (PK)
  * @property int            $demarche_id                    Obligatoire, @see Demarche
  * @property int            $eform_id                       Obligatoire, @see Eform
- * @property int            $user_id                        Obligatoire, @see User
  * @property string         $comment
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- * 
  * @author mgrenson
  * 
  * Note : On gère l'historique des modifications ! (à chaque modif, on crée un nouvel élément en fait.

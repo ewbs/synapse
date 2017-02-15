@@ -6,10 +6,9 @@ use LaravelBook\Ardent\Ardent;
  * 
  * On part de l'hypothèse que les modèles étendus auront bien au minimum les propriétés ci-dessous
  * 
- * @property int            $id              (PK)
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * 
+ * @property int            $id           Clé primaire
+ * @property \Carbon\Carbon $created_at   Date de création
+ * @property \Carbon\Carbon $updated_at   Date de mise à jour
  * @abstract
  * @author mgrenson
  *

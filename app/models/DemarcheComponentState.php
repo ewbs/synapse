@@ -2,13 +2,8 @@
 /**
  * Etats de composants liés à une démarche, étendu actuellement par les pièces et tâches
  * 
- * @property int            $id                  (PK)
  * @property string         $code                Obligatoire
  * @property string         $name                Obligatoire
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- * 
  * @abstract
  * @author mgrenson
  */

@@ -2,7 +2,6 @@
 /**
  * Projets de simplif'
  *
- * @property int            $id                                (PK)
  * @property int            $user_id                            Obligatoire, @see User
  * @property int            $ewbs_member_id                     Obligatoire, @see EWBSMember
  * @property string         $name                               Maximum 1024 caractères
@@ -18,11 +17,7 @@
  * @property string         $doc_source_page                    Maximum 256 caractères
  * @property string         $doc_source_link                    Maximum 1024 caractères
  * @property int            $prioritary
- * @property int            $transversal 
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- *
+ * @property int            $transversal
  * @author jdavreux
  */
 class Idea extends TrashableModel {

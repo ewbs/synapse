@@ -3,14 +3,7 @@
 /**
  * Liaisons entre les tâches et les démarches
  * 
- * @property int            $id                             (PK)
- * @property int            $demarche_id                    Obligatoire, @see Demarche
  * @property int            $task_id                        Obligatoire, @see Task
- * @property string         $name
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- * 
  * @author jdavreux
  * 
  * Note : On gère l'historique des modifications ! (à chaque modif, on crée un nouvel élément en fait.

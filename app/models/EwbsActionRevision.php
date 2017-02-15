@@ -2,16 +2,10 @@
 /**
  * Révisions des actions
  *
- * @property int            $id              (PK)
- * @property int            $user_id         @see User
  * @property int            $ewbs_action_id  Obligatoire, @see EwbsAction
  * @property string         $state           Maximum 255 caractères
  * @property string         $priority
  * @property string         $description
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- *
  * @author mgrenson
  */
 class EwbsActionRevision extends RevisionModel {

@@ -4,13 +4,7 @@ use Illuminate\Database\Eloquent\SoftDeletingTrait;
 /**
  * Classe de base à tous les modèles soft-deletable dans Synapse
  * 
- * On part de l'hypothèse que les modèles étendus auront bien au minimum les propriétés ci-dessous
- * 
- * @property int            $id              (PK)
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- * 
+ * @property \Carbon\Carbon $deleted_at   Date de suppression
  * @author mgrenson
  *
  */

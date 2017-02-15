@@ -1,20 +1,13 @@
 <?php
-use Illuminate\Database\Eloquent\Builder;
-
 /**
  * Démarches Ewbs
  * 
- * Table columns :
- * @property int            $id                      (PK)
  * @property int            $user_id                 Obligatoire, @see User
  * @property int            $nostra_demarche_id      Obligatoire, @see NostraDemarche
  * @property int            $ewbs
  * @property int            $eform_usage
- * $property enum			$volume
+ * $property enum           $volume
  * @property string         $comment
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
  * 
  * Dynamic properties :
  * @property NostraDemarche $nostraDemarche

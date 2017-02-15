@@ -2,16 +2,10 @@
 /**
  * Révisions des formulaires
  *
- * @property int            $id               (PK)
- * @property int            $user_id          @see User
  * @property int            $eform_id         Obligatoire, @see Eform
  * @property string         $comment
  * @property string         $current_state_id @see DemarchePieceState
  * @property string         $next_state_id    @see DemarchePieceState
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- *
  * @author mgrenson
  */
 class EformRevision extends RevisionModel {

@@ -2,13 +2,6 @@
 /**
  * Etats de démarches-pièces
  * 
- * @property int            $id                  (PK)
- * @property string         $code                Obligatoire
- * @property string         $name                Obligatoire
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- * 
  * @author mgrenson
  */
 class DemarcheTaskState extends DemarcheComponentState {
