@@ -1,4 +1,6 @@
 <?php
+use Illuminate\Database\Eloquent\Builder;
+
 /**
  * Démarches Ewbs
  * 
@@ -235,15 +237,12 @@ class Demarche extends TrashableModel {
 	}
 	
 	/**
-	 * Retourne les formualaires liés à une démarche dans leur état actuel
+	 * Retourne les formulaires liés à une démarche dans leur état actuel
 	 * 
 	 * @return Collection
 	 */
 	public function getLastRevisionEforms() {
-		return DemarcheEform
-		::join('v_lastrevisiondemarcheeform', 'v_lastrevisiondemarcheeform.id', '=', 'demarche_eform.id')
-		->where ( 'v_lastrevisiondemarcheeform.demarche_id', '=', $this->id )
-		->get();
+		return DemarcheEform::lastRevision()->joinEforms()->forDemarche($this)->get();
 	}
 	
 	/**

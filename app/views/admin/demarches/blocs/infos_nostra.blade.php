@@ -1,3 +1,23 @@
+<?php
+	/**
+	 * 
+	 * @var Demarche $modelInstance
+	 */
+
+	/**
+	 * A partir des nostra_forms et eforms liés à ce DemarcheEform, trouver les liaisons manquantes entre nostra et synapse.
+	 * nb : Je sens que cela va devoir vite changer, je garde donc cette logique pr l'instant dans la vue par facilité.
+	 */
+	$nostra_forms=$modelInstance->nostraDemarche->nostraForms()->orderBy('nostra_forms.title')->get();
+	$nostra_forms_ids=[];
+	foreach($nostra_forms as $form) $nostra_forms_ids[]='#'.$form->nostra_id;
+	
+	$eforms=DemarcheEform::lastRevision()->joinEforms()->forDemarche($modelInstance)->get();
+	$eforms_ids=[];
+	foreach($eforms as $form) if($form->nostra_id) $eforms_ids[]='#'.$form->nostra_id;
+	$moreFormsInSynapse=array_diff($eforms_ids, $nostra_forms_ids);
+	$moreFormsInNostra=array_diff($nostra_forms_ids, $eforms_ids);
+?>
 <div class="block-flat">
 	<div class="header">
 		<h4>
@@ -21,25 +41,32 @@
 				</p>
 			</li>
 			<li class="list-group-item"><strong>Formulaires :</strong>
-				@if ( count($modelInstance->nostraDemarche->nostraForms) )
+				@if ( !$nostra_forms->isEmpty() )
 				<ul>
-					@foreach ($modelInstance->nostraDemarche->nostraForms as $form)
+					@foreach ($nostra_forms as $form)
 					<li>
-						@if (strlen($form->url))<a href="{{$form->url}}" target="_blank">{{$form->title}} <span class="fa fa-external-link"></span></a>
-						@else {{$form->title}}
+						@if (strlen($form->url))<a href="{{$form->url}}" target="_blank">{{$form->title}}, {{$form->formatedId()}} <span class="fa fa-external-link"></span></a>
+						@else {{$form->title}}, {{$form->formatedId()}}
 						@endif
 					</li>
 					@endforeach
 				</ul>
 				@else Aucun
 				@endif
-				@if (isset($modelInstance)) @if (
-				count($modelInstance->nostraDemarche->nostraForms) !=
-				count($modelInstance->getLastRevisionEforms()) )
-				<p class="color-danger">
-					<span class="badge badge-danger"><i class="fa fa-exclamation"></i></span>
-					Il y a une incohérence entre les formulaires renseignés dans Nostra et dans Synapse @endif @endif
-				</p>
+				@if (isset($modelInstance) && ($moreFormsInSynapse||$moreFormsInNostra))
+				<div class="alert alert-danger alert-white rounded">
+					<div class="icon"><i class="fa fa-exclamation-triangle"></i></div>
+					<div><strong>Attention! </strong>Il y a une incohérence entre les formulaires renseignés dans Nostra et dans Synapse :</div>
+					<ul>
+					@if($moreFormsInSynapse)
+					<li>Présent dans Synapse et pas dans Nostra :<br/>{{implode(', ', $moreFormsInSynapse)}}</li>
+					@endif
+					@if($moreFormsInNostra)
+					<li>Présent dans Nostra et pas dans Synapse :<br/>{{implode(', ', $moreFormsInNostra)}}</li>
+					@endif
+					</ul>
+				</div>
+				@endif
 			</li>
 			
 			<li class="list-group-item"><strong>Documents :</strong>

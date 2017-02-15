@@ -30,29 +30,23 @@ $eform_id = Input::old('eform_id', $demarche_eform ? $demarche_eform->eform_id :
 					<div class="form-group {{{ $errors->has('eform_id') ? 'has-error' : '' }}}">
 						<label class="col-md-2 control-label" for="eform_id">Formulaire</label>
 						<div class="col-md-10">
-							@if ($aSuggestedEforms)
-								<select class="form-control select2" name="eform_id" id="eform_id" required>
-									@if(!$eform_id)<option></option>@endif
-									<optgroup label="Formulaires suggérés">
-										@foreach($aSuggestedEforms as $item)
-											<option value="{{ $item->id }}"{{ $eform_id==$item->id ?' selected':'' }} data-line2="{{$item->nostra_id?'Id Nostra '. ManageableModel::formatId($item->nostra_id):'-'}}" data-line3="{{$item->current_state_id||$item->next_state_id ? ('('.($item->current_state_id?$states[$item->current_state_id]->code:'?') .'->'. ($item->next_state_id?$states[$item->next_state_id]->code:'?').')') : ''}}">{{ $item->title }}</option>
-										@endforeach
-									</optgroup>
-									@if(!$eform_id)<option></option>@endif
-									<optgroup label="Autres formulaires">
-										@foreach($aEforms as $item)
-											<option value="{{ $item->id }}"{{ $eform_id==$item->id ?' selected':'' }} data-line2="{{$item->nostra_id?'Id Nostra '. ManageableModel::formatId($item->nostra_id):'-'}}" data-line3="{{$item->current_state_id||$item->next_state_id ? ('('.($item->current_state_id?$states[$item->current_state_id]->code:'?') .'->'. ($item->next_state_id?$states[$item->next_state_id]->code:'?').')') : ''}}">{{ $item->title }}</option>
-										@endforeach
-									</optgroup>
-								</select>
-							@else
-								<select class="form-control select2" name="eform_id" id="eform_id" required>
-									@if(!$eform_id)<option></option>@endif
-									@foreach($aEforms as $item)
-									<option value="{{ $item->id }}"{{ $eform_id==$item->id ?' selected':'' }} data-line2="{{$item->nostra_id?'Id Nostra '. ManageableModel::formatId($item->nostra_id):'-'}}" data-line3="{{$item->current_state_id||$item->next_state_id ? ('('.($item->current_state_id?$states[$item->current_state_id]->code:'?') .'->'. ($item->next_state_id?$states[$item->next_state_id]->code:'?').')') : ''}}">{{ $item->title }}</option>
+							<select class="form-control select2" name="eform_id" id="eform_id" required>
+								@if(!$eform_id)<option></option>@endif
+								@if ($aSuggestedEforms)
+								<optgroup label="Formulaires Nostra suggérés">
+									@foreach($aSuggestedEforms as $item)
+										<option value="{{ $item->id }}"{{ $eform_id==$item->id ?' selected':'' }} data-line2="{{'Id Nostra '. ManageableModel::formatId($item->nostra_id)}}" data-line3="{{$item->current_state_id||$item->next_state_id ? ('('.($item->current_state_id?$states[$item->current_state_id]->code:'?') .'->'. ($item->next_state_id?$states[$item->next_state_id]->code:'?').')') : ''}}">{{ $item->title }}</option>
 									@endforeach
-								</select>
-							@endif
+								</optgroup>
+								@endif
+								@if ($aEforms)
+								<optgroup label="Formulaires non présents dans Nostra">
+									@foreach($aEforms as $item)
+										<option value="{{ $item->id }}"{{ $eform_id==$item->id ?' selected':'' }} data-line3="{{$item->current_state_id||$item->next_state_id ? ('('.($item->current_state_id?$states[$item->current_state_id]->code:'?') .'->'. ($item->next_state_id?$states[$item->next_state_id]->code:'?').')') : ''}}">{{ $item->title }}</option>
+									@endforeach
+								</optgroup>
+								@endif
+							</select>
 							{{ $errors->first('eform_id', '<span class="help-inline">:message</span>') }}
 						</div>
 					</div>
