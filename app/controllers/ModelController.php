@@ -147,16 +147,18 @@ abstract class ModelController extends BaseController {
 	/**
 	 * Liste les instances du modèle courant formatées pour les DataTables
 	 *
+	 * @param boolean $onlyTrashed, false par défaut
 	 * @return View
 	 */
-	protected abstract function getList();
+	protected abstract function getList($onlyTrashed=false);
 	
 	/**
 	 * Génère la liste des instances du modèle courant formatées pour les DataTables
 	 *
+	 * @param boolean $onlyTrashed, false par défaut
 	 * @return Datatables JSON
 	 */
-	protected abstract function getDataJson();
+	protected abstract function getDataJson($onlyTrashed=false);
 	
 	/**
 	 * Affiche le formulaire de création et édition d'une instance du modèle courant formatées pour les DataTables

@@ -77,7 +77,7 @@ class DemarcheController extends ModelController {
 	 * {@inheritDoc}
 	 * @see ModelController::getList()
 	 */
-	protected function getList() {
+	protected function getList($onlyTrashed=false) {
 		$aRegions = Region::all ();
 		$aPublics = NostraPublic::root()->get();
 		return View::make ( 'admin/demarches/list', compact ( 'aRegions', 'aPublics' ) );
@@ -186,7 +186,7 @@ class DemarcheController extends ModelController {
 	 * {@inheritDoc}
 	 * @see ModelController::getDataJson()
 	 */
-	protected function getDataJson() {
+	protected function getDataJson($onlyTrashed=false) {
 
 		// ne prendre que les démarches documentées
 		$documented = Input::has('onlyDocumented');
