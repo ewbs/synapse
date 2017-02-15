@@ -24,6 +24,8 @@ class importFromNostraV2 extends Command {
 	 */
 	protected $description = 'Importation de Nostra V2 dans DAMUS';
 	
+	private $demarchesProcessed=[];
+	
 	/**
 	 * Create a new command instance.
 	 *
@@ -649,6 +651,13 @@ class importFromNostraV2 extends Command {
 		$json = json_decode ( $json );
 		if (isset ( $json->{'fiche'} )) {
 			foreach ( $json->{'fiche'} as $fiche ) {
+				
+				// Ne pas traiter plusieurs fois la même démarche
+				if(in_array($fiche->{'nid'}, $this->demarchesProcessed)) {
+					continue;
+				}
+				$this->demarchesProcessed[]=$fiche->{'nid'};
+				
 				// on crée un objet NostraDemarche
 				$date = new \DateTime ();
 				$oDemarche = NostraDemarche::firstOrNew ( array (
