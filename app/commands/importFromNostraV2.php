@@ -24,8 +24,18 @@ class importFromNostraV2 extends Command {
 	 */
 	protected $description = 'Importation de Nostra V2 dans DAMUS';
 	
+	/**
+	 * ID des démarches présentes dans les flux Nostra
+	 * 
+	 * @var array
+	 */
 	private $demarchesProcessed=[];
 	
+	/**
+	 * Date de début de la synchro
+	 * 
+	 * @var \DateTime
+	 */
 	private $started;
 	
 	/**
@@ -37,8 +47,6 @@ class importFromNostraV2 extends Command {
 		parent::__construct ();
 		$this->started = new \DateTime();
 	}
-	
-	
 	
 	/**
 	 * Get the console command arguments.
@@ -112,11 +120,8 @@ class importFromNostraV2 extends Command {
 	 */
 	public function fire() {
 		Log::info ( "Demarrage de l'import Nostra" );
-		
 		DB::beginTransaction();
-		
 		try {
-		
 			/*
 			 *		1.	Import des publics cibles
 			 */
@@ -202,9 +207,6 @@ class importFromNostraV2 extends Command {
 		Log::info ( "Fin de l'import Nostra");
 	}
 	
-	
-	
-	
 	/**
 	 * Import des publics cibles
 	 * Fonction récursive
@@ -271,8 +273,7 @@ class importFromNostraV2 extends Command {
 		}
 		
 		curl_close ( $ch );
-		return ($count);		
-		
+		return ($count);
 	}
 	
 	
@@ -734,7 +735,6 @@ class importFromNostraV2 extends Command {
 		}
 		
 		// si on est arrivé jusque là ... c'est que l'appel au WS a bien fonctionné
-		
 		$json = json_decode ( $json );
 
 		if (isset ( $json->{'fiche'} )) {
@@ -795,7 +795,6 @@ class importFromNostraV2 extends Command {
 				$oDemarche->nostraPublics()->sync($publicsIds);
 				$oDemarche->nostraThematiquesabc()->sync($thematiquesABCIds);
 				$oDemarche->nostraThematiquesadm()->sync($thematiquesADMIds);
-
 				
 				// on regarde si il existe des formulaires
 				if (isset ( $fiche->{'forms'} )) {
@@ -839,15 +838,9 @@ class importFromNostraV2 extends Command {
 						}
 					}
 				}
-				
 				$oDemarche->save ();
-				
 			}
 		}
-		
 		curl_close ( $ch ); 
-		
 	}
-	
-	
 }
