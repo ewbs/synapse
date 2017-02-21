@@ -215,14 +215,15 @@ class DemarcheController extends TrashableModelController {
 				}
 				return DateHelper::year($item->demarche_created_at) . '-' . str_pad ( $item->demarche_completeid, 4, "0", STR_PAD_LEFT );
 			})
-			->edit_column('title', function ($item) {
-				if ( strlen($item->demarche_completeid) ) {
-					return '<a href="' . route('demarchesGetView', $item->demarche_id) . '"><strong>'.$item->title.'</strong><br/><small>'.$item->titlelong.'</small></a>';
+			->edit_column('title', function ($item) use($trash) {
+				if(!$trash) {
+					if ( strlen($item->demarche_completeid) ) {
+						return '<a href="' . route('demarchesGetView', $item->demarche_id) . '"><strong>'.$item->title.'</strong><br/><small>'.$item->titlelong.'</small></a>';
+					}
+					elseif ( Auth::user()->can('demarches_encode') ) {
+						return '<a href="' . route('demarchesGetCreate', $item->nostra_demarche_id) . '"><strong>' . $item->title . '</strong><br/><small>' . $item->titlelong . '</small></a>';
+					}
 				}
-				elseif ( Auth::user()->can('demarches_encode') ) {
-					return '<a href="' . route('demarchesGetCreate', $item->nostra_demarche_id) . '"><strong>' . $item->title . '</strong><br/><small>' . $item->titlelong . '</small></a>';
-				}
-
 				return '<strong>'.$item->title.'</strong><br/><small>'.$item->titlelong.'</small>';
 			})
 			->edit_column('count_pieces', function ($item) {
