@@ -1,4 +1,6 @@
 <?php
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
+
 /**
  * Démarches NOSTRA
  *
