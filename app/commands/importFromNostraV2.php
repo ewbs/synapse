@@ -26,6 +26,8 @@ class importFromNostraV2 extends Command {
 	
 	private $demarchesProcessed=[];
 	
+	private $started;
+	
 	/**
 	 * Create a new command instance.
 	 *
@@ -33,6 +35,7 @@ class importFromNostraV2 extends Command {
 	 */
 	public function __construct() {
 		parent::__construct ();
+		$this->started = new \DateTime();
 	}
 	
 	
@@ -93,7 +96,9 @@ class importFromNostraV2 extends Command {
 	 * 
 	 * 6.	On procède à l'import des démarches par publics.
 	 *		Comme une démarche est OBLIGATOIREMENT liée à un public, on les aura toutes.
-	 *			 
+	 *
+	 * 6bis On soft-delete les démarches absentes du flux
+	 * 
 	 * 7.	On appelle le détail des fiches et on en profitera pour :
 	 *		- Lier aux publics, abc, adm et evenements,
 	 *		- Importer formulaires et documents
@@ -118,30 +123,27 @@ class importFromNostraV2 extends Command {
 			Log::info ( "----- Import des publics cibles -----" );
 			$totalPublicsCibles = $this->_importPublics();
 			Log::info ( "$totalPublicsCibles public importes" );
-		
-		
+			
 			/*
 			 *		2.	Import des thématique ABC
 			 */
 			Log::info ( "----- Import des thematiques ABC -----" );
 			$totalThematiquesABC = $this->_importThematiquesABC();
 			Log::info ( "$totalThematiquesABC thematiques ABC importees" );
-
-
+			
 			/*
 			 *		3.	Lien entre les publics et les thématiques ABC
-			 */
+			 
 			Log::info ( "----- Lien entre publics et thematiques ABC -----" );
 			$arrayNostraPublics = NostraPublic::all ();
 			foreach ( $arrayNostraPublics as $nostraPublic ) {
 				$total = $this->_linkThematiquesABCWithPublic ( $nostraPublic );
 				Log::info(" + ".$nostraPublic->title . " [$total thematiques ABC] ");
-			}
-			
+			}*/
 			
 			/*
 			 *		4. Import des événements déclencheurs
-			 */	
+			 */
 			Log::info ( "----- Import des événements déclencheurs -----" );
 			$arrayNostraPublics = NostraPublic::all ();
 			foreach ( $arrayNostraPublics as $nostraPublic ) {
@@ -153,14 +155,12 @@ class importFromNostraV2 extends Command {
 				}
 			}
 			
-			
 			/*
 			 *		5.	Import des thématique ADM
 			 */
 			Log::info ( "----- Import des thematiques ADM -----" );
 			$totalThematiquesADM = $this->_importThematiquesADM();
 			Log::info ( "$totalThematiquesADM thematiques ADM importees" );
-			
 			
 			/*
 			 *		6.	Importation des démarches
@@ -172,31 +172,33 @@ class importFromNostraV2 extends Command {
 				Log::info ( "  + " . $nostraPublic->title . " [$count demarches liees]" );
 			}
 			
+			/*
+			 *		6bis.	Soft-delete des demarches absentes du flux
+			 */
+			Log::info ( "----- Soft-delete des demarches absentes du flux -----" );
+			$count = $this->deleteDemarches();
+			Log::info ( "{$count} demarches soft-deletees" );
 			
 			/*
 			 *		7.	Importation du détail des démarches
 			 */
 			Log::info ( "----- Détails des demarches -----" );
-			$arrayNostraDemarches = NostraDemarche::all();
+			$arrayNostraDemarches = NostraDemarche::whereIn('nostra_id', $this->demarchesProcessed)->get();
+			Log::info ( $arrayNostraDemarches->count().' démarches concernées' );
 			foreach ( $arrayNostraDemarches as $demarche ) {
 				$this->importDemarcheDetail($demarche);
 			}
 			
-		
 			/*
 			 * Fin de l'import ... tout c'est bien passé --> on commit
 			 */
 			DB::commit();
-		
 		}
 		catch (Exception $e) {
-			
-			Log::error($e->getMessage());
-			Log::info("Rollback des opérations DB");
 			DB::rollBack();
-			
+			Log::error("Une erreur s'est produite, rollback des opérations DB");
+			Log::error($e);
 		}
-				
 		Log::info ( "Fin de l'import Nostra");
 	}
 	
@@ -652,17 +654,15 @@ class importFromNostraV2 extends Command {
 		if (isset ( $json->{'fiche'} )) {
 			foreach ( $json->{'fiche'} as $fiche ) {
 				
-				// Ne pas traiter plusieurs fois la même démarche
+				// Ne traiter qu'une fois la même démarche
 				if(in_array($fiche->{'nid'}, $this->demarchesProcessed)) {
 					continue;
 				}
 				$this->demarchesProcessed[]=$fiche->{'nid'};
 				
-				// on crée un objet NostraDemarche
 				$date = new \DateTime ();
-				$oDemarche = NostraDemarche::firstOrNew ( array (
-						"nostra_id" => $fiche->{'nid'} 
-				) );
+				$oDemarche = NostraDemarche::withTrashed()->where('nostra_id', '=', $fiche->{'nid'})->first();
+				if(!$oDemarche) $oDemarche=new NostraDemarche();
 				$oDemarche->nostra_id = $fiche->{'nid'};
 				$oDemarche->title = HTML::decode ( $fiche->{'node_title'} );
 				$oDemarche->title_long = isset ( $fiche->{'title_user_long'} ) ? HTML::decode ( $fiche->{'title_user_long'} ) : '';
@@ -685,21 +685,43 @@ class importFromNostraV2 extends Command {
 				$oDemarche->simplified = isset ( $fiche->{'simplified'} ) ? ((strtolower ( $fiche->{'simplified'} ) == 'oui') ? 1 : 0) : 0;
 				$oDemarche->german_version = isset ( $fiche->{'german_version'} ) ? ((strtolower ( $fiche->{'german_version'} ) == 'oui') ? 1 : 0) : 0;
 				$oDemarche->nostra_state = $date;
+				
+				// Restaurer la fiche si elle était supprimée (implicitement c'est donc qu'elle existe)
+				if($oDemarche->deleted_at) {
+					// Note : En théorie on pourrait se contenter de onlyTrashed(), mais sécurité au cas où le deleted_at n'aurait pas été positionné sur la démarche
+					if($synapseDemarche=$oDemarche->demarche()->getQuery()->withTrashed()->first()) {
+						$synapseDemarche->restore();
+					}
+					$oDemarche->deleted_at=null;
+				}
 				$oDemarche->save ();
-								
-				// on ajoute cet élément au compte
-				$count ++;
+				$count ++; // on ajoute cet élément au compte
 			}
 		}
-		
 		curl_close ( $ch );
 		return ($count); 
 	}
 	
+	/**
+	 * Soft-deleter les démarches nostra (et démarches éventuellement associées) qui n'ont pas été modifiées par la synchro
+	 * 
+	 * (Si absentes du flux, c'est qu'elles ne sont plus associées à synapse => On les soft-delete pour les garder en désactivé)
+	 * @return int Nombre de démarches qui ont été supprimées
+	 */
+	private function deleteDemarches() {
+		$count=0;
+		foreach(NostraDemarche::where('updated_at', '<', $this->started)->get() as $oDemarche) {/* @var NostraDemarche $oDemarche */
+			if($synapseDemarche=$oDemarche->demarche()->getResults()) {
+				$synapseDemarche->delete();
+			}
+			$oDemarche->delete();
+			$count++;
+		}
+		return $count;
+	}
 	
 	
 	private function importDemarcheDetail($demarche) {
-
 		$json = '';
 		$ws = Config::get ( 'app.nostraV2_demarcheDetail' );
 		$ws = str_replace ( '{{demarcheId}}', $demarche->nostra_id, $ws );
