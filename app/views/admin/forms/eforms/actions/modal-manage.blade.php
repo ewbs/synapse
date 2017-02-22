@@ -28,7 +28,7 @@ $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRev
 					<div class="form-group {{{ $errors->has('name') ? 'has-error' : '' }}}">
 						<label class="col-md-2 control-label" for="name">Nom</label>
 						<div class="col-md-10">
-							<input class="form-control" type="text" name="name" value="{{{ Input::old('name', $action ? $action->name : null) }}}" placeholder="Nom" />
+							<input class="form-control" type="text" name="name" value="{{{ Input::old('name', $edit ? $action->name : null) }}}" placeholder="Nom" />
 							{{ $errors->first('name', '<span class="help-inline">:message</span>') }}
 						</div>
 					</div>

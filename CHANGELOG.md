@@ -33,6 +33,9 @@
 - Fixed bug : Détection d'incohérence entre nostraforms et eforms + suggestion de formulaires nostra lors de de la liaison d’un formulaire à une démarche
 - Fixed bug : Ne pas considérer les projets supprimés lors de la liaison entre démarches et projets
 
+### Formulaires
+- Fixed bug : Contraintes sur le titre et commentaire ne sont pas affichées à la sauvegarde d'une action
+
 ### Pièces
 - Fixed bug : Permettre de supprimer une pièce ou tâche du catalogue lorsqu'elle n'est pas liée à une démarche
 

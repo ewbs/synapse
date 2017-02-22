@@ -658,9 +658,10 @@ class EformController extends TrashableModelController {
 	 *
 	 * @param Eform $modelInstance
 	 * @param EwbsAction $action
+	 * @param array $extra Paramètre supplémentaires qui seraient à passer à la vue
 	 * @return \Illuminate\View\View
 	 */
-	protected function actionsGetManage(Eform $modelInstance, EwbsAction $action = null) {
+	protected function actionsGetManage(Eform $modelInstance, EwbsAction $action = null, array $extra=[]) {
 
 		$aTaxonomy = TaxonomyCategory::orderBy('name')->get();
 		$selectedTags = [];
@@ -668,7 +669,7 @@ class EformController extends TrashableModelController {
 			$selectedTags = $action->tags->lists('id');
 		}
 
-		return View::make ( 'admin/forms/eforms/actions/modal-manage', compact ( 'modelInstance', 'action', 'aTaxonomy', 'selectedTags' ) );
+		return View::make ( 'admin/forms/eforms/actions/modal-manage', array_merge(compact ( 'modelInstance', 'action', 'aTaxonomy', 'selectedTags' ), $extra));
 	}
 	
 	/**
@@ -726,7 +727,7 @@ class EformController extends TrashableModelController {
 			}
 			if (! $errors->isEmpty ()) {
 				Input::flash ();
-				return View::make ( 'admin/forms/eforms/actions/modal-manage', compact ( 'modelInstance', 'action' ) )->withErrors ( $errors )->with ( 'error', Lang::get ( 'general.manage.error' ) );
+				return $this->actionsGetManage($modelInstance, $action, ['errors'=>$errors]);
 			}
 		} catch ( Exception $e ) {
 			Log::error ( $e );
