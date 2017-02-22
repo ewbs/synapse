@@ -2710,9 +2710,8 @@ class DemarcheController extends TrashableModelController {
 	 * @return View
 	 */
 	public function ideasGetLink(Demarche $demarche) {
-		$aIdeas=DB
-		::table('ideas')
-		->leftjoin('idea_nostra_demarche', function($join) use($demarche) {
+		$aIdeas=Idea
+		::leftjoin('idea_nostra_demarche', function($join) use($demarche) {
 			$join->on('idea_nostra_demarche.idea_id', '=', 'ideas.id');
 			$join->where('idea_nostra_demarche.nostra_demarche_id', '=', $demarche->nostra_demarche_id);
 		})
