@@ -210,11 +210,7 @@
 					<h3>Gains</h3>
 				</div>
 				<div class="content">
-					@warning(
-						'<br />Par défaut les gains sont automatiquement calculés sur base des sommes des gains des différentes pièces et tâches liées à la démarche.<br />
-						Si vous souhaitez modifier manuellement ces montants, ils ne seront donc plus automatiquement calculés suite aux modifications effectuées au niveau des pièces et tâches de la démarche.<br />
-						<a id="unlockGains" class="btn btn-default" href="#">Modifier manuellement ces montants</a><a id="lockGains" class="btn btn-default" style="display: none" href="#">Remettre les montants initiaux</a>'
-					)
+					@warning('<br />Par défaut les gains sont automatiquement calculés sur base des sommes des gains des différentes pièces et tâches liées à la démarche.<br />Si vous souhaitez modifier manuellement ces montants, ils ne seront donc plus automatiquement calculés suite aux modifications effectuées au niveau des pièces et tâches de la démarche.<br /><a id="unlockGains" class="btn btn-default" href="#">Modifier manuellement ces montants</a><a id="lockGains" class="btn btn-default" style="display: none" href="#">Remettre les montants initiaux</a>')
 					<?php
 					$gains = [ 
 					'gain_potential_administration' => 'Gain potentiel administration',
