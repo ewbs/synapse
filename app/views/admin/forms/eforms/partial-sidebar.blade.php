@@ -5,11 +5,6 @@
 ?>
 <div class="col-md-4">
 	<div class="block-flat">
-		<div class="content no-margin no-padding">
-			@include('admin.modelInstance.partial-features')
-		</div>
-	</div>
-	<div class="block-flat">
 		<div class="header">
 			<h3><span class="fa fa-briefcase"></span> Démarches liées</h3>
 		</div>

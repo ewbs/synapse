@@ -1,4 +1,10 @@
-{{-- Modale permettant de lier un projet à la démarche --}}
+<?php 
+/**
+ * Modale permettant de lier un projet à la démarche
+ * @var Demarche $demarche
+ * @var array aIdeas
+ */
+?>
 <div class="modal fade noAuto colored-header" id="servermodal" role="dialog" aria-labelledby="servermodal-title" data-url="{{ route('demarchesIdeasGetLink', $demarche->id) }}">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
@@ -15,7 +21,7 @@
 							<select class="form-control select2" id="projects">
 								<option></option>
 								@foreach($aIdeas as $idea)
-								<option data-url="{{ route('ideasGetEdit', $idea->id) }}">{{DateHelper::year($idea->created_at)}}-{{$idea->id}} {{ $idea->name }}</option>
+								<option data-url="{{ route('ideasGetEdit', ['idea'=>$idea->id, 'demarchetolink'=>$demarche->id]) }}">{{DateHelper::year($idea->created_at)}}-{{$idea->id}} {{ $idea->name }}</option>
 								@endforeach
 							</select>
 							<script>
@@ -30,7 +36,7 @@
 						</div>
 						<div class="col-xs-2" style="font-size:40px; text-align:center"><i class="fa fa-arrows-h" aria-hidden="true"></i></div>
 						<div class="col-xs-5">
-							<a class="btn btn-primary form-control" href="{{ route('ideasGetCreate') }}"  @if(!$loggedUser->can('ideas_encode')) disabled @endif>Créer un nouveau projet</a>
+							<a class="btn btn-primary form-control" href="{{ route('ideasGetCreate', ['demarchetolink'=>$demarche->id]) }}"  @if(!$loggedUser->can('ideas_encode')) disabled @endif>Créer un nouveau projet</a>
 						</div>
 					</div>
 				</div>

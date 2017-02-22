@@ -3,8 +3,6 @@
 /**
  * Révisions d'un composant de démarche
  * 
- * @property int            $id                             (PK)
- * @property int            $user_id                        Obligatoire, @see User
  * @property string         $comment
  * @property float          $cost_administration_currency   Obligatoire
  * @property float          $cost_citizen_currency          Obligatoire
@@ -16,9 +14,6 @@
  * @property float          $gain_real_citizen              Obligatoire
  * @property int            $current_state_id
  * @property int            $next_state_id
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
  * 
  * @author mgrenson
  */

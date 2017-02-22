@@ -6,7 +6,7 @@
 		<div class="menu-space">
 			<div class="content">
 				<ul class="cl-vnavigation">
-					@each('site.layouts.navigation-menu', $sidebarMenu, 'item')
+					@each('site.layouts.partial.navigation-menu', $sidebarMenu, 'item')
 				</ul>
 			</div>
 		</div>

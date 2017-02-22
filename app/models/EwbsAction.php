@@ -5,7 +5,6 @@ use Zizaco\Entrust\HasRole;
 /**
  * Actions
  *
- * @property int            $id                (PK)
  * @property string         $name
  * @property string         $token
  * @property boolean        $sub
@@ -15,10 +14,6 @@ use Zizaco\Entrust\HasRole;
  * @property int            $idea_id            @see Idea
  * @property int            $eform_id           @see EForm
  * @property int            $parent_id          @see EwbsAction
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- * 
  * @author jdavreux
  */
 class EwbsAction extends RevisableModel {
@@ -47,6 +42,15 @@ class EwbsAction extends RevisableModel {
 	 */
 	public function hasView() {
 		return true;
+	}
+	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see ManageableModel::canDelete()
+	 */
+	public function canDelete(\User $loggedUser=null) {
+		return false;
 	}
 	
 	/**

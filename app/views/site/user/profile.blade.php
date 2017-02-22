@@ -1,9 +1,6 @@
-@extends('site.layouts.default') {{-- Web site Title --}}
-@section('title') {{{ Lang::get('user/user.profile') }}} :: @parent
-@stop {{-- Content --}} @section('content')
-<div class="page-header">
-	<h1>User Profile</h1>
-</div>
+@extends('site.layouts.container-fluid')
+@section('title') {{ Lang::get('user/user.profile') }} @stop
+@section('content')
 <table class="table table-striped">
 	<thead>
 		<tr>

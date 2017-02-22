@@ -3,13 +3,8 @@
 /**
  * Administrations
  * 
- * @property int            $id           (PK)
  * @property int            $region_id    Obligatoire, @see Region
  * @property string         $name         Maximum 255 caractères
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- * 
  * @author mgrenson
  */
 class Administration extends TrashableModel {

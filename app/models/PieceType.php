@@ -2,14 +2,9 @@
 /**
  * Types des pièces et tâches
  *
- * @property int            $id           (PK)
  * @property string         $for          Obligatoire, maximum 255 caractères
  * @property string         $name         Obligatoire, maximum 1024 caractères
  * @property string         $description
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- *
  * @author jdavreux
  */
 class PieceType extends TrashableModel {

@@ -3,7 +3,7 @@ ip: "192.168.10.10"
 memory: 2048
 cpus: 1
 hostname: homestead
-name: homestead
+name: homestead2
 provider: virtualbox
 
 authorize: ~/ssh/homestead.pub # linux : ~/.ssh/id_rsa.pub
@@ -12,9 +12,9 @@ keys:
     - ~/ssh/homestead # linux : ~/.ssh/id_rsa
 
 folders:
-    - map: "C:/DEVPHP/synapse-docker/html"
+    - map: "C:/DEVPHP/synapse-vagrant/html"
       to: "/home/vagrant/html"
-    - map: "C:/DEVPHP/synapse-docker/storage"
+    - map: "C:/DEVPHP/synapse-vagrant/storage"
       to: "/home/vagrant/storage"
 
 sites:

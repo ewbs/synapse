@@ -2,17 +2,11 @@
 /**
  * Table pivot entre les annexes et les eforms
  *
- * @property int            $id               (PK)
  * @property int            $eform_id         Obligatoire, @see Eform
- * @property int            $annexe_id         Obligatoire, @see Annexe
- * @property int            $user_id          @see User
+ * @property int            $annexe_id        Obligatoire, @see Annexe
  * @property string         $comment
  * @property string         $current_state_id @see DemarchePieceState
  * @property string         $next_state_id    @see DemarchePieceState
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- *
  * @author mgrenson
  */
 class AnnexeEform extends RevisionModel {

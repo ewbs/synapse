@@ -9,8 +9,7 @@
  * @var string $returnTo
  */
 
-// FIXME: on a du code ici qui aurait plus sa place dans un controller
-
+// TODO: on a du code ici qui aurait plus sa place dans un controller
 
 $edit=($action && $action->id);
 $revision=$edit ? $action->getLastRevision() : null;
@@ -33,7 +32,7 @@ if(!$piecetask && $action) {
 
 $piecetasktype=(!$piecetask) ? null : (strpos($piecetask, 'piece')===0 ? 'piece' : (strpos($piecetask, 'task')===0 ? 'task' : 'eform'));
 $piecetaskid=(!$piecetask) ? null : str_replace($piecetasktype, '', $piecetask);
-$piecetaskname=(!$piecetask) ? null : ($piecetasktype=='piece' ? DemarchePiece::withTrashed()->find($piecetaskid,['name'])->name : ($piecetasktype=='task' ? DemarcheTask::withTrashed()->find($piecetaskid,['name'])->name : Eform::withTrashed()->find($piecetaskid,['title'])->title ));
+$piecetaskname=(!$piecetask) ? null : ($piecetasktype=='piece' ? DemarchePiece::withTrashed()->find($piecetaskid,['name'])->name : ($piecetasktype=='task' ? DemarcheTask::withTrashed()->find($piecetaskid,['name'])->name : Eform::withTrashed()->find($piecetaskid)->name() ));
 
 $fromTriggerUpdate=(isset($fromTriggerUpdate) && $fromTriggerUpdate); // Dans ce cas c'est qu'on vient de la méthode getActionsTriggerUpdate() => créer une action depuis une pièce/tâche
 if(!$edit && !$fromTriggerUpdate) {
@@ -129,6 +128,7 @@ if(!$edit && !$fromTriggerUpdate) {
 									@endforeach
 								@endif
 							</select>
+							@optional
 							{{ $errors->first('piecetask', '<span class="help-inline">:message</span>') }}
 						</div>
 					</div>
@@ -178,7 +178,7 @@ if(!$edit && !$fromTriggerUpdate) {
 					{{-- ./ Priority --}}
 
 					{{-- Taxonomie --}}
-					<div class="form-group" {{{ $errors->has('tags') ? 'has-error' : '' }}}>
+					<div class="form-group">
 						<label class="col-md-2 control-label" form="tags">Tags</label>
 						<div class="col-md-10">
 							<!-- tags -->
@@ -196,7 +196,7 @@ if(!$edit && !$fromTriggerUpdate) {
 									</optgroup>
 								@endforeach
 							</select>
-							{{ $errors->first('tags', '<span class="help-inline">:message</span>') }}
+							@optional
 						</div>
 					</div>
 					{{-- ./ Taxonomie --}}
@@ -226,12 +226,12 @@ if(!$edit && !$fromTriggerUpdate) {
 					@endif
 				</div>
 				<div class="modal-footer">
-					<button type="submit" name="action" value="save" class="btn btn-primary">{{ ($edit ? 'Modifier' : 'Ajouter') }} l'action</button>
 					@if($fromTriggerUpdate)
 					<button class="btn btn-default" type="submit" name="action" value="cancel">Non merci</button>
 					@else
-					<button class="btn btn-default" type="button" data-dismiss="modal">Annuler</button>
+					<button class="btn btn-default" type="button" data-dismiss="modal">{{Lang::get('button.cancel')}}</button>
 					@endif
+					<button type="submit" name="action" value="save" class="btn btn-primary">{{Lang::get('button.save')}}</button>
 				</div>
 			</form>
 		</div>

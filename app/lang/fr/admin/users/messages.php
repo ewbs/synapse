@@ -1,27 +1,24 @@
 <?php
-return array (
-		'menu' => 'Utilisateurs',
-		'already_exists' => 'Cet utilisateur existe déjà',
-		'does_not_exist' => 'L\'utilisateur n\'existe pas',
-		'login_required' => 'Veuillez remplir le champ "login"',
-		'password_required' => 'Veuillez indiquer un mot de passe',
-		'password_does_not_match' => 'Le mot de passe et sa confirmation ne sont pas identiques',
+return [
+	'menu' => 'Utilisateurs',
+	
+	'manage' => [
+		'success' => 'L\'utilisateur été sauvegardé. Merci.',
+	],
 		
-		'create' => array (
-				'error' => 'L\'utilisateur n\'a pas été créé. Veuillez réessayer.',
-				'success' => 'L\utilisateur a été créé.' 
-		),
-		
-		'edit' => array (
-				'impossible' => 'Vous ne pouvez pas vous éditer vous même.',
-				'error' => 'Un problème est survenu lors de l\'édition de l\'utilisateur. Veuillez réessayer.',
-				'success' => 'L\'utilisateur a été modifié.' 
-		),
-		
-		'delete' => array (
-				'impossible' => 'Vous ne pouvez pas vous supprimer vous même.',
-				'error' => 'Un problème est survenu lors de la suppression de l\'utilisateur. Veuillez réessayer.',
-				'success' => 'L\'utilisateur a été supprimé.' 
-		) 
-)
-;
+	'delete' => [
+		'subtitle' => 'Suppression d\'un utilisateur',
+		'linked' => 'Cet utilisateur est lié à un ou plusieurs éléments',
+		'detail' => 'Vous allez supprimer l\'utilisateur <strong>:name</strong>. Cette opération est irréversible.',
+		'error' => 'Une erreur inconnue est survenue et l\'utilisateur n\'a pas été supprimé. Veuillez réessayer.',
+		'success' => 'L\'utilisateur a été supprimé.',
+		'impossible' => 'Vous ne pouvez pas vous supprimer vous même.',
+	],
+	
+	'restore' => [
+		'subtitle' => 'Restaurer un utilisateur',
+		'detail' => 'Vous allez restaurer l\'utilisateur <strong>:name</strong>',
+		'error' => 'Une erreur inconnue est survenue et l\'utilisateur n\'a pas été restauré. Veuillez réessayer.',
+		'success' => 'L\'utilisateur été restauré.'
+	]
+];

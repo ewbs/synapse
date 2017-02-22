@@ -2,25 +2,8 @@
 
 /**
  * Liaisons entre les pièces et les démarches
- * 
- * @property int            $id                             (PK)
+ *
  * @property int            $demarche_demarchePiece_id      Obligatoire, @see DemarchePiece
- * @property int            $user_id                        Obligatoire, @see User
- * @property string         $comment
- * @property float          $cost_administration_currency   Obligatoire
- * @property float          $cost_citizen_currency          Obligatoire
- * @property int            $volume Obligatoire             Obligatoire
- * @property int            $frequency Obligatoire          Obligatoire
- * @property float          $gain_potential_administration  Obligatoire
- * @property float          $gain_potential_citizen         Obligatoire
- * @property float          $gain_real_administration       Obligatoire
- * @property float          $gain_real_citizen              Obligatoire
- * @property int            $current_state_id
- * @property int            $next_state_id
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- * 
  * @author jdavreux
  * 
  * Note : On gère l'historique des modifications ! (à chaque modif, on crée un nouvel élément en fait.

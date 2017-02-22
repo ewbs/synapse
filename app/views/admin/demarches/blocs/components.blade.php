@@ -19,6 +19,7 @@ if(!isset($minimal)) $minimal=false;
                     <th>Nom</th>
                     <th>Annexes</th>
                     @if (!$minimal)
+                    	<th>Id Nostra</th>
                         <th>Révision</th>
                         <th></th>
                     @endif

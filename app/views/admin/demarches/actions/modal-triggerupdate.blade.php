@@ -68,8 +68,8 @@ elseif($componentType=='eform') {
 				@endforeach
 				</div>
 				<div class="modal-footer">
-					<button type="submit" name="action" value="save" class="btn btn-primary">{{ Lang::choice('admin/demarches/messages.action.modal.update', count($aActions)) }}</button>
 					<button type="submit" name="action" value="cancel" class="btn btn-default">Non merci</button>
+					<button type="submit" name="action" value="save" class="btn btn-primary">{{ Lang::choice('admin/demarches/messages.action.modal.update', count($aActions)) }}</button>
 				</div>
 			</form>
 		</div>

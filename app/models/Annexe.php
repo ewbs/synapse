@@ -2,14 +2,9 @@
 /**
  * Annexes
  *
- * @property int            $id              (PK)
  * @property string         $title           Obligatoire, maximum 2048 caractères, unique
  * @property int            $piece_id        @see Piece
  * @property string         $description
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- * 
  * @author mgrenson
  */
 class Annexe extends TrashableModel {

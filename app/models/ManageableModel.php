@@ -6,10 +6,9 @@ use LaravelBook\Ardent\Ardent;
  * 
  * On part de l'hypothèse que les modèles étendus auront bien au minimum les propriétés ci-dessous
  * 
- * @property int            $id              (PK)
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * 
+ * @property int            $id           Clé primaire
+ * @property \Carbon\Carbon $created_at   Date de création
+ * @property \Carbon\Carbon $updated_at   Date de mise à jour
  * @abstract
  * @author mgrenson
  *
@@ -98,7 +97,7 @@ abstract class ManageableModel extends Ardent {
 	 * @return string
 	 */
 	public static function formatId($id, $pad_length=5, $prefix='#') {
-		if($id) return $prefix . str_pad($id, 5, "0", STR_PAD_LEFT);
+		if($id) return $prefix . str_pad($id, $pad_length, "0", STR_PAD_LEFT);
 		return '';
 	}
 	
@@ -126,6 +125,19 @@ abstract class ManageableModel extends Ardent {
 			return $this->checkManageRestrictions($loggedUser);
 		}
 		return false;
+	}
+	
+	/**
+	 * Vérifie si on dispose du droit de supprimer l'instance du modèle courant
+	 * 
+	 * Par défaut, cette méthode utilise la méthode canManage(), mais il est possible de la redéfinir afin d'empêcher explicitement la suppression
+	 * malgré que l'on dispose du droit de gestion
+	 * 
+	 * @param \User $loggedUser
+	 * @return boolean
+	 */
+	public function canDelete(\User $loggedUser=null) {
+		return $this->canManage($loggedUser);
 	}
 	
 	/**

@@ -49,6 +49,7 @@ $next_state = Input::old('next_state', $annexe_eform ? $annexe_eform->next_state
 								<option value="{{ $item->id }}"{{ $current_state==$item->id ?' selected':'' }}>{{ $item->code }} : {{ $item->name }}</option>
 								@endforeach
 							</select>
+							@optional
 						</div>
 					</div>
 					
@@ -61,20 +62,21 @@ $next_state = Input::old('next_state', $annexe_eform ? $annexe_eform->next_state
 								<option value="{{ $item->id }}"{{ $next_state==$item->id ?' selected':'' }}>{{ $item->code }} : {{ $item->name }}</option>
 								@endforeach
 							</select>
+							@optional
 						</div>
 					</div>
 					
-					<div class="form-group {{{ $errors->has('comment') ? 'has-error' : '' }}}">
+					<div class="form-group">
 						<label class="col-md-2 control-label" for="comment">Commentaire</label>
 						<div class="col-md-10">
 							<textarea style="height: 100px;" class="form-control" name="comment" id="comment">{{{ Input::old('comment', null) }}}</textarea>
-							{{ $errors->first('comment', '<span class="help-inline">:message</span>') }}
+							@optional
 						</div>
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="submit" name="action" value="save" class="btn btn-primary">{{ ($annexe_eform ? 'Modifier' : 'Ajouter') }} l'annexe</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">{{Lang::get('button.cancel')}}</button>
+					<button type="submit" name="action" value="save" class="btn btn-primary">{{Lang::get('button.save')}}</button>
 				</div>
 			</form>
 		</div>

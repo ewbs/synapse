@@ -3,13 +3,8 @@
 /**
  * Liaisons entre les composants (pièces, tâches) et les démarches
  * 
- * @property int            $id                             (PK)
  * @property int            $demarche_id                    Obligatoire, @see Demarche
  * @property string         $name
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- * 
  * @author mgrenson
  */
 abstract class DemarcheComponent extends RevisableModel {

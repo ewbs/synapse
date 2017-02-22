@@ -52,7 +52,7 @@ return array(
 	| be able to set the name of the table that holds the reset tokens.
 	|
 	*/
-
+	// TODO : Ce paramètre ne semble pas utilisé => quid ?
 	'reminder' => array (
 				
 				'email' => 'emails.auth.reminder',

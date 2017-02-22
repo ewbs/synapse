@@ -1,17 +1,13 @@
 <?php
 
+use Illuminate\Database\Eloquent\Builder;
+
 /**
  * Liaisons entre les pièces et les démarches
  * 
- * @property int            $id                             (PK)
  * @property int            $demarche_id                    Obligatoire, @see Demarche
  * @property int            $eform_id                       Obligatoire, @see Eform
- * @property int            $user_id                        Obligatoire, @see User
  * @property string         $comment
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- * 
  * @author mgrenson
  * 
  * Note : On gère l'historique des modifications ! (à chaque modif, on crée un nouvel élément en fait.
@@ -44,6 +40,42 @@ class DemarcheEform extends RevisionModel {
 	 */
 	public function permissionManage() {
 		return 'formslibrary_manage';
+	}
+	
+	/**
+	 * Query scope filtrant la dernière révision d'une demarcheEform
+	 *
+	 * @param Builder $query
+	 * @return Builder
+	 */
+	public function scopeLastRevision(Builder $query) {
+		return $query
+		->join('v_lastrevisiondemarcheeform', 'v_lastrevisiondemarcheeform.id', '=', 'demarche_eform.id')
+		->addSelect(['demarche_eform.*']);
+	}
+	
+	/**
+	 * Query scope ciblant les demarcheEforms liées à une démarche
+	 *
+	 * @param Builder $query
+	 * @return Builder
+	 */
+	public function scopeForDemarche(Builder $query, Demarche $demarche) {
+		return $query->where( 'demarche_eform.demarche_id', '=', $demarche->id );
+	}
+	
+	/**
+	 * Query scope joignant les eforms et nostra_forms éventuels
+	 *
+	 * @param Builder $query
+	 * @return Builder
+	 */
+	public function scopeJoinEforms(Builder $query) {
+		return $query
+		->join('eforms', 'demarche_eform.eform_id', '=', 'eforms.id')
+		->leftjoin('nostra_forms', 'nostra_forms.id', '=', 'eforms.nostra_form_id')
+		->addSelect(DB::raw('COALESCE(nostra_forms.title, eforms.title) AS title'), 'nostra_forms.nostra_id')
+		->orderBy('title');
 	}
 	
 	/**

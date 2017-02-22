@@ -22,6 +22,14 @@ abstract class ModelController extends BaseController {
 		View::share('model', $model);
 	}
 	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see BaseController::getSection()
+	 */
+	protected function getSection(){
+		return $this->model->getModelLabel();
+	}
 	
 	/**
 	 * ----------------------------------------------------------------------------------------------------------------------------------------------
@@ -139,16 +147,18 @@ abstract class ModelController extends BaseController {
 	/**
 	 * Liste les instances du modèle courant formatées pour les DataTables
 	 *
+	 * @param boolean $onlyTrashed, false par défaut
 	 * @return View
 	 */
-	protected abstract function getList();
+	protected abstract function getList($onlyTrashed=false);
 	
 	/**
 	 * Génère la liste des instances du modèle courant formatées pour les DataTables
 	 *
+	 * @param boolean $onlyTrashed, false par défaut
 	 * @return Datatables JSON
 	 */
-	protected abstract function getDataJson();
+	protected abstract function getDataJson($onlyTrashed=false);
 	
 	/**
 	 * Affiche le formulaire de création et édition d'une instance du modèle courant formatées pour les DataTables
@@ -222,7 +232,30 @@ abstract class ModelController extends BaseController {
 	 * @return array
 	 */
 	protected function features(ManageableModel $modelInstance) {
-		return [];
+		$features=[];
+		if($modelInstance->hasView()) {
+			$features[]=[
+				'label' => Lang::get ( 'button.view' ),
+				'url' => $modelInstance->routeGetView(),
+				'icon' => 'eye'
+			];
+		}
+		if($modelInstance->canManage()) {
+			$features[]=[
+				'label' => Lang::get ( 'button.edit' ),
+				'url' => $modelInstance->routeGetEdit(),
+				'icon' => 'pencil'
+			];
+		}
+		if($modelInstance->canDelete()) {
+			$features[]=[
+				'label' => Lang::get ( 'button.delete' ),
+				'url' => $modelInstance->routeGetDelete(),
+				'icon' => 'trash-o',
+				'class' =>'btn-danger',
+			];
+		}
+		return $features;
 	}
 	
 	/**
@@ -237,7 +270,7 @@ abstract class ModelController extends BaseController {
 		$data ['modelInstance'] = $modelInstance;
 		$data ['returnTo'] = $this->getReturnTo();
 		if($modelInstance)
-			$data ['features'] = $this->filteredFeatures ( $modelInstance );
+			$data ['features'] = $this->features ( $modelInstance );
 		return View::make ( $view, $data );
 	}
 	
@@ -272,7 +305,7 @@ abstract class ModelController extends BaseController {
 					return Redirect::secure($url)->with ( 'success', Lang::get ( 'admin/'.$this->model->getModelLabel().'/messages.manage.success' ) );
 				}
 				DB::rollBack ();
-				$errors=$modelInstance->errors();
+				$errors=$modelInstance->validationErrors->merge($modelInstance->errors());
 			}
 			else $errors=$validator->errors();
 			
@@ -286,28 +319,5 @@ abstract class ModelController extends BaseController {
 			Log::error($e);
 			return Redirect::secure ($url)->withInput ()->with ( 'error', Lang::get ( 'general.baderror' ) . '<pre>' . $e->getMessage () . '</pre>' );
 		}
-	}
-	
-	/**
-	 * Retourne les actions que peut exécuter l'utilisateur sur une instance du modèle courant
-	 *
-	 * @param ManageableModel $model
-	 * @return array
-	 */
-	private function filteredFeatures(ManageableModel $modelInstance) {
-		$filteredFeatures = [];
-		if($features=$this->features($modelInstance)) {
-			$canManage = $modelInstance->canManage();
-			foreach ( $features as $feature ) {
-				$permission=empty($feature ['permission'])?null:$feature ['permission'];
-				if (strpos($permission, '_manage')!==false) {
-					if ($canManage) $filteredFeatures [] = $feature;
-				}
-				elseif (!$permission || $this->getLoggedUser ()->id == $modelInstance->user_id || $this->getLoggedUser ()->can ( $feature ['permission'] )) {
-					$filteredFeatures [] = $feature;
-				}
-			}
-		}
-		return $filteredFeatures;
 	}
 }

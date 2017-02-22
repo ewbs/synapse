@@ -2,12 +2,7 @@
 /**
  * TaxonomyTag
  *
- * @property int            $id              (PK)
- * @property string         $name         	 Texte
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- * 
+ * @property string         $name        Texte
  * @author jdavreux
  */
 class TaxonomyTag extends TrashableModel  {

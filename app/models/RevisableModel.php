@@ -3,13 +3,6 @@
 /**
  * Classe de base à tous les modèles ayant des révisions
  * 
- * On part de l'hypothèse que les modèles étendus auront bien au minimum les propriétés ci-dessous
- * 
- * @property int            $id              (PK)
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- * 
  * @abstract
  * @author mgrenson
  *

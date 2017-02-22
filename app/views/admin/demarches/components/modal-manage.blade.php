@@ -158,7 +158,7 @@ $name = Input::old('name', $action=='edit' ? $demarche_component->name : '');
 										<option value="{{ $item->id }}"{{$item->id == Input::old('current_state_id', $revision->current_state_id) ? ' selected':''}}>{{ $item->code }} : {{ $item->name }}</option>
 										@endforeach
 									</select>
-									
+									@optional
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -170,12 +170,14 @@ $name = Input::old('name', $action=='edit' ? $demarche_component->name : '');
 										<option value="{{ $item->id }}"{{$item->id == Input::old('next_state_id', $revision->next_state_id) ? ' selected':''}}>{{ $item->code }} : {{ $item->name }}</option>
 										@endforeach
 									</select>
+									@optional
 								</div>
 							</div>
 						</div>
 						<div class="form-group">
-							<label>Commentaire (facultatif)</label>
+							<label>Commentaire</label>
 							<textarea class="form-control" name="comment">{{Input::old('comment')}}</textarea>
+							@optional
 						</div>
 						@if($loggedUser->hasRole('admin'))
 						<div class="row">
@@ -195,10 +197,10 @@ $name = Input::old('name', $action=='edit' ? $demarche_component->name : '');
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="submit" name="action" value="{{$action}}" class="btn btn-primary">
-					{{Lang::get("admin/demarches/messages.{$demarche_component->componentType()}.{$action}.button")}}
-					</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">{{Lang::get('button.cancel')}}</button>
+					<button type="submit" name="action" value="{{$action}}" class="btn btn-primary">
+					{{Lang::get($action=='choose' ? 'button.next':'button.save')}}
+					</button>
 				</div>
 			</form>
 		</div>

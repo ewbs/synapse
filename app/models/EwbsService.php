@@ -2,13 +2,8 @@
 /**
  * EwbsService
  *
- * @property int            $id              (PK)
- * @property string         $name         	 Texte
- * @property string         $description   	 Texte
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- * 
+ * @property string         $name           Texte
+ * @property string         $description    Texte
  * @author jdavreux
  */
 class EwbsService extends TrashableModel  {

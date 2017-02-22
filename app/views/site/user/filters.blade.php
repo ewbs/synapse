@@ -1,12 +1,5 @@
-@extends('site.layouts.default')
-
-{{-- Web site Title --}}
-@section('title')
-    Bienvenue sur Synapse
-    @parent
-@stop
-
-{{-- Content --}}
+@extends('site.layouts.container-fluid')
+@section('title')Mes filtres @stop
 @section('content')
     <div class="cl-mcont">
 
@@ -32,7 +25,7 @@
                                 <li><strong>et</strong> qui possèdent le tag "cabinet" <strong>ou</strong> le tag "formulaires"
                             </ul>
                         </p>
-                        <form method="post" autocomplete="off" action="{{ route('UserPostFilters') }}">
+                        <form method="post" autocomplete="off" action="{{ route('userPostFilters') }}">
                             <!-- CSRF Token -->
                             <input type="hidden" name="_token" id="_token" value="{{{ csrf_token() }}}" />
                             <!-- ./ csrf token -->

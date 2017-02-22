@@ -6,6 +6,15 @@ class UserController extends BaseController {
 	
 	/**
 	 *
+	 * {@inheritDoc}
+	 * @see BaseController::getSection()
+	 */
+	protected function getSection(){
+		return 'users';
+	}
+	
+	/**
+	 *
 	 * @var UserRepository
 	 */
 	protected $userRepo;
@@ -130,7 +139,7 @@ class UserController extends BaseController {
 	/**
 	 * Displays the forgot password form
 	 */
-	public function getForgot() {
+	public function getForgotPassword() {
 		return View::make ( 'site/user/forgot' );
 	}
 	/**
@@ -167,7 +176,7 @@ class UserController extends BaseController {
 			return Redirect::secure ( 'user/login' )->with ( 'notice', $notice_msg );
 		} else {
 			$error_msg = Lang::get ( 'confide::confide.alerts.wrong_password_reset' );
-			return Redirect::secure ( 'user/reset/'.$input ['token'] )->withInput ()->with ( 'error', $error_msg );
+			return Redirect::secure ( 'user/reset_password/'.$input ['token'] )->withInput ()->with ( 'error', $error_msg );
 		}
 	}
 	/**

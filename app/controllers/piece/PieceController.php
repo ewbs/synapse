@@ -49,10 +49,10 @@ class PieceController extends TrashableModelController {
 		})
 		->add_column ( 'actions', function ($item) use ($onlyTrashed) {
 			if($onlyTrashed) return
-				'<a title="' . Lang::get ( 'button.restore' ) . '" href="' . URL::secure ( 'admin/pieces/' . $item->id . '/restore' ) . '" class="btn btn-xs btn-default">' . Lang::get ( 'button.restore' ) . '</a>';
+				'<a title="' . Lang::get ( 'button.restore' ) . '" href="' . route('piecesGetRestore', $item->id) . '" class="btn btn-xs btn-default">' . Lang::get ( 'button.restore' ) . '</a>';
 			else if($this->getLoggedUser()->can('pieces_tasks_manage')) return
-				'<a title="' . Lang::get ( 'button.edit'    ) . '" href="' . URL::secure ( 'admin/pieces/' . $item->id . '/edit'    ) . '" class="btn btn-xs btn-default"><span class="fa fa-pencil"></span></a>'.
-				'<a title="' . Lang::get ( 'button.delete'  ) . '" href="' . URL::secure ( 'admin/pieces/' . $item->id . '/delete'  ) . '" class="btn btn-xs btn-danger"><span class="fa fa-trash-o"></span></a>';
+				'<a title="' . Lang::get ( 'button.edit'    ) . '" href="' . route('piecesGetEdit', $item->id)    . '" class="btn btn-xs btn-default"><span class="fa fa-pencil"></span></a>'.
+				'<a title="' . Lang::get ( 'button.delete'  ) . '" href="' . route('piecesGetDelete', $item->id)  . '" class="btn btn-xs btn-danger"><span class="fa fa-trash-o"></span></a>';
 		})
 		->make ();
 	}
@@ -62,8 +62,8 @@ class PieceController extends TrashableModelController {
 	 * @see ModelController::getManage()
 	 */
 	protected function getManage(ManageableModel $piece=null){
-		$types = PieceType::all ();
-		return View::make('admin/pieces/manage', compact ('piece', 'types'));
+		//$types = PieceType::all ();
+		return $this->makeDetailView($piece, 'admin/pieces/manage');
 	}
 	
 	/**
@@ -94,7 +94,7 @@ class PieceController extends TrashableModelController {
 		->join('nostra_demarches', 'nostra_demarches.id', '=', 'demarches.nostra_demarche_id')
 		->groupBy(['demarches.id', 'nostra_demarches.title'])
 		->orderBy('nostra_demarches.title')
-		->get(['demarches.id AS id', 'nostra_demarches.title AS name']);
+		->get(['demarches.id AS id', 'nostra_demarches.title AS name'])->toArray();
 		
 		$links=[];
 		if(!empty($demarches)) {

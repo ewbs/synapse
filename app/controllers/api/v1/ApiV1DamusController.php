@@ -242,39 +242,6 @@ class ApiV1DamusController extends Controller {
 	}
 	
 	/**
-	 * Cette fonction fait un appel à Nostra pour obtenir le json d'un record en détail
-	 * Il le retourne tel quel ou fait une 500 ou 404 en cas de probleme.
-	 *
-	 * C'est géré en partie publique par du JS
-	 *
-	 * @param type $nostra_id
-	 * @deprecated Cette méthode a été réécrite dans le DamusController
-	 */
-	public function getDemarche($nostra_id) {
-		$ch = curl_init ( Config::get ( 'app.nostra_demarche_link' ) . $nostra_id );
-		curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
-		
-		if (($json = curl_exec ( $ch )) === false) {
-			/* Erreur de communication avec Nostra */
-			curl_close ( $ch );
-			return ("404");
-			App::abort ( 404 );
-		}
-		curl_close ( $ch );
-		
-		if (is_string ( $json ) && is_object ( json_decode ( $json ) )) {
-			$aJson = json_decode ( $json, true ); // true pour )--> tableau assoc au lieu d'un objet
-			if (isset ( $aJson ['fiche'] [0] )) {
-				return Response::json ( $aJson ['fiche'] [0] ); // seul cas ou on sort normalement de la fonction :-)
-			}
-			App::abort ( 404 );
-		}
-		
-		App::abort ( 500 ); // si c'était pas du json valide ...
-	}
-
-
-	/**
 	 * La fonction est appelée avec les ids des démarches en POST
 	 * @return \Illuminate\Http\JsonResponse
 	 */

@@ -1,31 +1,7 @@
 <?php
 
 class EwbsActionController extends TrashableModelController {
-
-
-	/**
-	 * {@inheritDoc}
-	 * @see ModelController::features()
-	 */
-	protected function features(ManageableModel $modelInstance) {
-		return [
-			[
-				'label' => Lang::get ( 'button.view' ),
-				'url' => $modelInstance->routeGetView(),
-				'permission' => 'ewbsactions_display',
-				'icon' => 'eye'
-			],
-			[
-				'label' => Lang::get ( 'admin/ewbsactions/messages.features.edit' ),
-				'url' => $modelInstance->routeGetEdit(),
-				'permission' => 'ewbsactions_manage',
-				'icon' => 'pencil'
-			],
-		];
-	}
-
-
-
+	
 	/**
 	 * Initialisation
 	 * 

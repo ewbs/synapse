@@ -4,6 +4,15 @@ class PublicSiteController extends BaseController {
 	protected function routeGetIndex() { return route('getIndex'); }
 	
 	/**
+	 *
+	 * {@inheritDoc}
+	 * @see BaseController::getSection()
+	 */
+	protected function getSection(){
+		return 'contact';
+	}
+	
+	/**
 	 * Affiche la page d'accueil
 	 *
 	 * @return View

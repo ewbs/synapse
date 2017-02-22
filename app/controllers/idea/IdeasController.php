@@ -12,40 +12,16 @@ class IdeaController extends TrashableModelController {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see ModelController::features()
-	 */
-	protected function features(ManageableModel $modelInstance) {
-		return [
-			[
-				'label' => Lang::get ( 'button.view' ),
-				'url' => $modelInstance->routeGetView(),
-				'permission' => 'ideas_display',
-				'icon' => 'eye'
-			],
-			[
-				'label' => Lang::get ( 'button.edit' ),
-				'url' => $modelInstance->routeGetEdit(),
-				'permission' => 'ideas_manage',
-				'icon' => 'pencil'
-			],
-			[
-				'label' => Lang::get ( 'button.delete' ),
-				'url' => $modelInstance->routeGetDelete(),
-				'permission' => 'demarches_manage',
-				'icon' => 'trash-o',
-				'class' =>'btn-danger',
-			],
-		];
-	}
-	
-	/**
-	 * {@inheritDoc}
 	 * @see ModelController::getList()
 	 */
 	protected function getList($onlyTrashed=false) {
 		return View::make ('admin/ideas/list', array('trash'=>$onlyTrashed));
 	}
-
+	
+	/**
+	 * 
+	 * @return Datatables
+	 */
 	protected function getDataFilteredJson() {
 		return $this->getDataJson(false, true);
 	}
@@ -139,7 +115,7 @@ class IdeaController extends TrashableModelController {
 		})
 		->add_column ( 'Etat', function ($item) {
 			//$a = $item->getLastStateModification ();
-			return (Lang::get ( 'admin/ideas/states.label-' . $item->state ));
+			return $item->state ? Lang::get ( 'admin/ideas/states.label-' . $item->state ) : '';
 		})
 		->add_column ( 'DG(s)', function ($item) {
 			return $item->administrations;
@@ -218,8 +194,9 @@ class IdeaController extends TrashableModelController {
 
 			$aSelectedTags = $modelInstance->tags->lists('id');
 
-			return $this->makeDetailView($modelInstance, 'admin/ideas/manage', compact ( 	'ewbsMembers', 'aRegions', 'aSelectedAdministrations', 'aGovernements', 'aSelectedMinisters', 'aNostraDemarches', 'aNostraPublics',
-																							'aSelectedNostraPublics', 'aSelectedNostraDemarches', 'availableStates', 'aTaxonomy', 'aSelectedTags', 'returnTo' ) );
+			return $this->makeDetailView($modelInstance, 'admin/ideas/manage',
+				compact ('ewbsMembers', 'aRegions', 'aSelectedAdministrations', 'aGovernements', 'aSelectedMinisters', 'aNostraDemarches', 'aNostraPublics',
+				         'aSelectedNostraPublics', 'aSelectedNostraDemarches', 'availableStates', 'aTaxonomy', 'aSelectedTags', 'returnTo' ) );
 		}
 		return View::make ( 'admin/ideas/manage', compact ( 'modelInstance', 'ewbsMembers', 'aRegions', 'aGovernements', 'aTaxonomy', 'aNostraDemarches', 'aNostraPublics', 'returnTo' ) );
 	}
@@ -240,7 +217,7 @@ class IdeaController extends TrashableModelController {
 		$idea->doc_source_page = Input::get ( 'doc_source_page' );
 		$idea->doc_source_link = Input::get ( 'doc_source_link' );
 		$idea->transversal = Input::has ( 'transversal' ) ? 1 : 0;
-		$idea->ewbs_member_id = Input::get ( 'ewbs_contact' );
+		$idea->ewbs_member_id = StringHelper::getStringOrNull(Input::get ( 'ewbs_contact'));
 		if($create) $idea->user_id = $this->getLoggedUser()->id;
 		// pour prioritary, on regarde si l'utilisateur peut modifier la valeur
 		if ($this->getLoggedUser()->can ( 'ideas_manage' ) && ! $this->getLoggedUser()->hasRestrictionsByAdministrations ()) {
