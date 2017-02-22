@@ -1,8 +1,8 @@
 # Release Notes
 
 
-## 4.1 - Home alone (22/02/2017)
-*Ce release, le premier après le départ de son papa, apporte essentiellement des corrections sur le release 4.0, ainsi que des améliorations mineures.*
+## 4.1 - Never forget (22/02/2017)
+*Ce release de Synapse, le premier après le départ de son papa, apporte essentiellement des corrections sur le release 4.0, ainsi que des améliorations mineures.*
 
 ### Imports
 - Added : Désactiver dans Synapse les démarches qui côté Nostra ne sont plus associées à Synapse
