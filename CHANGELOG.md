@@ -21,7 +21,7 @@
 - Fixed bug : Résoudre l'absence de la colonne deleted_at de la table user dans certains environnements
 - Removed : Vues inutilisées
 
-#### Admin
+### Admin
 - Changed : Refactoring de la gestion des utilisateurs (héritage des ManageableModel, corbeille et restauration des utilisateurs)
 
 ### Dashboard
