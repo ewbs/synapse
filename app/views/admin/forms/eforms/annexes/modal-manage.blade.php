@@ -49,6 +49,7 @@ $next_state = Input::old('next_state', $annexe_eform ? $annexe_eform->next_state
 								<option value="{{ $item->id }}"{{ $current_state==$item->id ?' selected':'' }}>{{ $item->code }} : {{ $item->name }}</option>
 								@endforeach
 							</select>
+							@optional
 						</div>
 					</div>
 					
@@ -61,14 +62,15 @@ $next_state = Input::old('next_state', $annexe_eform ? $annexe_eform->next_state
 								<option value="{{ $item->id }}"{{ $next_state==$item->id ?' selected':'' }}>{{ $item->code }} : {{ $item->name }}</option>
 								@endforeach
 							</select>
+							@optional
 						</div>
 					</div>
 					
-					<div class="form-group {{{ $errors->has('comment') ? 'has-error' : '' }}}">
+					<div class="form-group">
 						<label class="col-md-2 control-label" for="comment">Commentaire</label>
 						<div class="col-md-10">
 							<textarea style="height: 100px;" class="form-control" name="comment" id="comment">{{{ Input::old('comment', null) }}}</textarea>
-							{{ $errors->first('comment', '<span class="help-inline">:message</span>') }}
+							@optional
 						</div>
 					</div>
 				</div>

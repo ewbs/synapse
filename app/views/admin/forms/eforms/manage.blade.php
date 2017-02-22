@@ -24,11 +24,11 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 				<form class="form-horizontal" method="post" autocomplete="off" action="{{ ($modelInstance) ? $modelInstance->routePostEdit() : $model->routePostCreate() }}">
 					<input type="hidden" name="_token" id="_token" value="{{{ csrf_token() }}}" />
 					
-					<div class="form-group {{{ $errors->has('description') ? 'has-error' : '' }}}">
+					<div class="form-group">
 						<label class="col-md-2 control-label" for="name">Description</label>
 						<div class="col-md-10">
 							<textarea style="height: 100px;" class="form-control" name="description" id="description">{{{ Input::old('description', $modelInstance ? $modelInstance->description : null) }}}</textarea>
-							{{ $errors->first('description', '<span class="help-inline">:message</span>') }}
+							@optional
 						</div>
 					</div>
 					
@@ -49,11 +49,12 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 							<label class="col-md-2 control-label" for="form_id">ID Slot</label>
 							<div class="col-md-10">
 								<input class="form-control" type="text" name="form_id" id="form_id" value="{{ Input::old('form_id', $lastRevision ? $lastRevision->form_id : '') }}"{{ ($nostraEditable ? '':' readonly') }}/>
+								@optional
 								{{ $errors->first('form_id', '<span class="help-inline">:message</span>') }}
 							</div>
 						</div>
 						
-						<div class="form-group {{{ $errors->has('language') ? 'has-error' : '' }}}">
+						<div class="form-group">
 							<label class="col-md-2 control-label" for="language">Langue</label>
 							<div class="col-md-10">
 								<select class="form-control" name="language" id="language"{{ ($nostraEditable ? '':' disabled') }}/>
@@ -62,6 +63,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 									<option value="{{ $item->language }}"{{ $language==$item->language ?' selected':'' }}>{{ $item->language }}</option>
 									@endforeach
 								</select>
+								@optional
 							</div>
 						</div>
 						
@@ -74,6 +76,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 									<option value="{{ $item->priority }}"{{ $priority==$item->priority ?' selected':'' }}>{{ $item->priority }}</option>
 									@endforeach
 								</select>
+								@optional
 							</div>
 						</div>
 						
@@ -86,14 +89,15 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 									<option value="{{ $item->format }}"{{ $format==$item->format ?' selected':'' }}>{{ $item->format }}</option>
 									@endforeach
 								</select>
+								@optional
 							</div>
 						</div>
 						
-						<div class="form-group {{{ $errors->has('url') ? 'has-error' : '' }}}">
+						<div class="form-group">
 							<label class="col-md-2 control-label" for="url">Url</label>
 							<div class="col-md-10">
 								<input class="form-control" type="text" name="url" id="url" value="{{ Input::old('url', $lastRevision ? $lastRevision->url : '') }}"{{ ($nostraEditable ? '':' readonly') }}/>
-								{{ $errors->first('url', '<span class="help-inline">:message</span>') }}
+								@optional
 							</div>
 						</div>
 						
@@ -143,6 +147,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 									<option value="{{ $item->id }}"{{ $current_state==$item->id ?' selected':'' }}>{{ $item->code }} : {{ $item->name }}</option>
 									@endforeach
 								</select>
+								@optional
 							</div>
 						</div>
 						
@@ -155,14 +160,15 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 									<option value="{{ $item->id }}"{{ $next_state==$item->id ?' selected':'' }}>{{ $item->code }} : {{ $item->name }}</option>
 									@endforeach
 								</select>
+								@optional
 							</div>
 						</div>
 						
-						<div class="form-group {{{ $errors->has('comment') ? 'has-error' : '' }}}">
+						<div class="form-group">
 							<label class="col-md-2 control-label" for="comment">Commentaire</label>
 							<div class="col-md-10">
 								<textarea style="height: 100px;" class="form-control" name="comment" id="comment">{{{ Input::old('comment', null) }}}</textarea>
-								{{ $errors->first('comment', '<span class="help-inline">:message</span>') }}
+								@optional
 							</div>
 						</div>
 					</fieldset>

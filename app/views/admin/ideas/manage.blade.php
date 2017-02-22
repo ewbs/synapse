@@ -128,11 +128,11 @@ if ($modelInstance) {
 					</div>
 					<!-- ./ switches -->
 					<!-- reference -->
-					<div class="form-group {{{ $errors->has('reference') ? 'has-error' : '' }}}">
+					<div class="form-group">
 						<label class="col-md-2 control-label" for="reference">Référence</label>
 						<div class="col-md-10">
 							<input class="form-control" type="text" name="reference" id="reference" value="{{{ Input::old('reference', $modelInstance ? $modelInstance->reference : '') }}}" placeholder="Référence externe du projet. Ex: identifiant dans un contrat d'administration" />
-							{{ $errors->first('reference', '<span class="help-inline">:message</span>') }}
+							@optional
 						</div>
 					</div>
 					<!-- ./ reference -->
@@ -159,7 +159,7 @@ if ($modelInstance) {
 					if (Input::old('tags'))
 						$selectedTags = Input::old('tags');
 					?>
-					<div class="form-group {{{ $errors->has('tags') ? 'has-error' : '' }}}">
+					<div class="form-group">
 						<div class="col-md-12">
 							<select class="form-control select2" name="tags[]" id="tags" multiple>
 								@foreach($aTaxonomy as $category)
@@ -170,7 +170,7 @@ if ($modelInstance) {
 									</optgroup>
 								@endforeach
 							</select>
-							{{ $errors->first('tags', '<span class="help-inline">:message</span>') }}
+							@optional
 						</div>
 					</div>
 				</div>
@@ -193,7 +193,7 @@ if ($modelInstance) {
 						<div class="form-group">
 							<div class="col-md-12">
 								<textarea class="form-control" style="height: 100px;" id="comment" name="comment">{{ Input::old('comment', '') }}</textarea>
-								<small class="pull-right">(facultatif)</small>
+								@optional
 							</div>
 						</div>
 					</div>
@@ -325,7 +325,7 @@ if ($modelInstance) {
 									</optgroup>
 								@endforeach
 							</select>
-							<small class="pull-right">(facultatif)</small>
+							@optional
 						</div>
 					</div>
 					<!-- ./ administrations impliquées -->
@@ -344,7 +344,7 @@ if ($modelInstance) {
 									</optgroup>
 								@endforeach
 							</select>
-							<small class="pull-right">(facultatif)</small>
+							@optional
 						</div>
 					</div>
 					<!-- ./ ministre compétent -->
@@ -354,7 +354,7 @@ if ($modelInstance) {
 					$selectedMember = Input::old('ewbs_contact', $modelInstance ? $modelInstance->ewbs_member_id : null);
 					?>
 					<strong>Relai eWBS</strong>
-					<div class="form-group {{{ $errors->has('ewbs_contact') ? 'has-error' : '' }}}">
+					<div class="form-group">
 						<div class="col-md-12">
 							<select class="form-control" name="ewbs_contact" id="ewbs_contact">
 								<option></option>
@@ -362,17 +362,17 @@ if ($modelInstance) {
 									<option value="{{$ewbsmember->id}}"{{ $selectedMember== $ewbsmember->id ? ' selected': '' }}>{{strtoupper($ewbsmember->lastname)}} {{$ewbsmember->firstname}}</option>
 								@endforeach
 							</select>
-							{{ $errors->first('ewbs_contact', '<span class="help-inline">:message</span>') }}
+							@optional
 						</div>
 					</div>
 					<!-- ./ relais ewbs -->
 
 					<!-- contact administration -->
 					<strong>Contact administration</strong>
-					<div class="form-group {{{ $errors->has('ext_contact') ? 'has-error' : '' }}}">
+					<div class="form-group">
 						<div class="col-md-12">
 							<input class="form-control" type="text" name="ext_contact" id="ext_contact" value="{{{ Input::old('ext_contact', $modelInstance ? $modelInstance->ext_contact : null) }}}" />
-							{{ $errors->first('ext_contact', '<span class="help-inline">:message</span>') }} <small class="pull-right">(facultatif)</small>
+							@optional
 						</div>
 					</div>
 					<!-- ./ contact administration -->
@@ -398,28 +398,28 @@ if ($modelInstance) {
 						</div>
 					</div>
 
-					<div class="form-group {{{ $errors->has('doc_source_title') ? 'has-error' : '' }}}">
+					<div class="form-group">
 						<label class="col-md-3 control-label" for="doc_source_title">Titre du document</label>
 						<div class="col-md-9">
 							<input class="form-control" type="text" name="doc_source_title" id="doc_source_title"  placeholder="Exemple : Plan Opérationnel 2015 DGO6"
 								   value="{{{ Input::old('doc_source_title', $modelInstance ? $modelInstance->doc_source_title : null) }}}"/>
-							{{ $errors->first('doc_source_title', '<span class="help-inline">:message</span>') }} <small class="pull-right">(facultatif)</small>
+							@optional
 						</div>
 					</div>
-					<div class="form-group {{{ $errors->has('doc_source_page') ? 'has-error' : '' }}}">
+					<div class="form-group">
 						<label class="col-md-3 control-label" for="doc_source_page">Numéro de page</label>
 						<div class="col-md-9">
 							<input class="form-control" type="text" name="doc_source_page" id="doc_source_page"
 								   value="{{{ Input::old('doc_source_page', $modelInstance ? $modelInstance->doc_source_page : null) }}}" />
-							{{ $errors->first('doc_source_page', '<span class="help-inline">:message</span>') }} <small class="pull-right">(facultatif)</small>
+							@optional
 						</div>
 					</div>
-					<div class="form-group {{{ $errors->has('doc_source_link') ? 'has-error' : '' }}}">
+					<div class="form-group">
 						<label class="col-md-3 control-label" for="doc_source_link">Lien vers le document</label>
 						<div class="col-md-9">
 							<input class="form-control" type="text" name="doc_source_link" id="doc_source_title" placeholder="Lien vers le document (adresse vers KP, internet, intranet ou autre)"
 								   value="{{{ Input::old('doc_source_link', $modelInstance ? $modelInstance->doc_source_link : null) }}}"/>
-							{{ $errors->first('doc_source_title', '<span class="help-inline">:message</span>') }} <small class="pull-right">(facultatif)</small>
+							@optional
 						</div>
 					</div>
 					<!-- ./ source documentaire -->

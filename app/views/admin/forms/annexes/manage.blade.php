@@ -23,15 +23,15 @@ $piece_id = Input::old('piece_id', $modelInstance ? $modelInstance->piece_id : '
 							</div>
 						</div>
 						
-					<div class="form-group {{{ $errors->has('description') ? 'has-error' : '' }}}">
+					<div class="form-group">
 						<label class="col-md-2 control-label" for="name">Description</label>
 						<div class="col-md-10">
 							<textarea style="height: 100px;" class="form-control" name="description" id="description">{{{ Input::old('description', $modelInstance ? $modelInstance->description : null) }}}</textarea>
-							{{ $errors->first('description', '<span class="help-inline">:message</span>') }}
+							@optional
 						</div>
 					</div>
 					
-					<div class="form-group {{{ $errors->has('piece_id') ? 'has-error' : '' }}}">
+					<div class="form-group">
 						<label class="col-md-2 control-label" for="piece_id">Relative à la pièce</label>
 						<div class="col-md-10">
 							<select class="form-control select2" name="piece_id" id="piece_id"/>
@@ -40,7 +40,7 @@ $piece_id = Input::old('piece_id', $modelInstance ? $modelInstance->piece_id : '
 									<option value="{{ $item->id }}"{{ $piece_id==$item->id ?' selected':'' }}>{{ $item->name }}</option>
 									@endforeach
 								</select>
-							{{ $errors->first('piece_id', '<span class="help-inline">:message</span>') }}
+							@optional
 						</div>
 					</div>
 					

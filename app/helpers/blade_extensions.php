@@ -42,3 +42,12 @@ Blade::extend(function($view, $compiler) {
 	</div>';
 	return preg_replace($pattern,$replace, $view);
 });
+
+/**
+ * Afficher la mention facultatif en flottant à droite
+ */
+Blade::extend(function($view, $compiler) {
+	$pattern = $compiler->createPlainMatcher('optional');
+	$replace = '<small class="pull-right">{{Lang::get(\'general.optional\')}}</small>';
+	return preg_replace($pattern,$replace, $view);
+});

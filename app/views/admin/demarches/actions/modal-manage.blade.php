@@ -128,6 +128,7 @@ if(!$edit && !$fromTriggerUpdate) {
 									@endforeach
 								@endif
 							</select>
+							@optional
 							{{ $errors->first('piecetask', '<span class="help-inline">:message</span>') }}
 						</div>
 					</div>
@@ -177,7 +178,7 @@ if(!$edit && !$fromTriggerUpdate) {
 					{{-- ./ Priority --}}
 
 					{{-- Taxonomie --}}
-					<div class="form-group" {{{ $errors->has('tags') ? 'has-error' : '' }}}>
+					<div class="form-group">
 						<label class="col-md-2 control-label" form="tags">Tags</label>
 						<div class="col-md-10">
 							<!-- tags -->
@@ -195,7 +196,7 @@ if(!$edit && !$fromTriggerUpdate) {
 									</optgroup>
 								@endforeach
 							</select>
-							{{ $errors->first('tags', '<span class="help-inline">:message</span>') }}
+							@optional
 						</div>
 					</div>
 					{{-- ./ Taxonomie --}}

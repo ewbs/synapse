@@ -18,12 +18,14 @@
 						<label class="col-md-2 control-label" for="documents">Documents liés</label>
 						<div class="col-md-10">
 							<textarea class="form-control" name="documents" rows="4"></textarea>
+							@optional
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="col-md-2 control-label" for="forms">Formulaires liés</label>
 						<div class="col-md-10">
 							<textarea class="form-control" name="forms" rows="4"></textarea>
+							@optional
 						</div>
 					</div>
 					<div class="form-group">

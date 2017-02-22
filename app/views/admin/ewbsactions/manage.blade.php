@@ -33,7 +33,7 @@ $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRev
 				{{-- ./ Description --}}
 				
 				{{-- State --}}
-				<div class="form-group {{{ $errors->has('state') ? 'has-error' : '' }}}">
+				<div class="form-group">
 					<label class="col-md-2 control-label" for="state">Etat</label>
 					<div class="col-md-10">
 						<select class="form-control" name="state"{{($modelInstance->sub && $modelInstance->eachSub()->count()>0)?' disabled title="L\'état est automatiquement défini par les sous-actions"':''}}>
@@ -41,13 +41,12 @@ $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRev
 							<option value="{{$s}}"{{ $s==$state ? ' selected': '' }}>{{ Lang::get( "admin/ewbsactions/messages.state.{$s}") }}</option>
 						@endforeach
 						</select>
-						{{ $errors->first('state', '<span class="help-inline">:message</span>') }}
 					</div>
 				</div>
 				{{-- ./ State --}}
 				
 				{{-- Priority --}}
-				<div class="form-group {{{ $errors->has('priority') ? 'has-error' : '' }}}">
+				<div class="form-group">
 					<label class="col-md-2 control-label" for="priority">Priorité</label>
 					<div class="col-md-10">
 						<select class="form-control" name="priority"{{$loggedUser->can('ewbsaction_prioritize')?' ':' disabled'}}>
@@ -55,7 +54,6 @@ $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRev
 							<option value="{{$p}}"{{ $p==$priority ? ' selected': '' }}>{{ Lang::get( "admin/ewbsactions/messages.priority.{$p}") }}</option>
 						@endforeach
 						</select>
-						{{ $errors->first('priority', '<span class="help-inline">:message</span>') }}
 					</div>
 				</div>
 				{{-- ./ Priority --}}
@@ -75,7 +73,7 @@ $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRev
 				{{-- ./ Sub --}}
 
 				{{-- Taxonomie --}}
-				<div class="form-group" {{{ $errors->has('tags') ? 'has-error' : '' }}}>
+				<div class="form-group" >
 					<label class="col-md-2 control-label" form="tags">Tags</label>
 					<div class="col-md-10">
 						<!-- tags -->
@@ -96,7 +94,7 @@ $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRev
 								</optgroup>
 							@endforeach
 						</select>
-						{{ $errors->first('tags', '<span class="help-inline">:message</span>') }}
+						@optional
 					</div>
 				</div>
 				

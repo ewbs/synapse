@@ -20,6 +20,7 @@
 - Fixed bug : Menu principal : Affichage d'un ascenseur si des éléments passent hors écran
 - Fixed bug : Lien de retour à la liste ne fonctionnait pas toujours (constaté dans les taxonomies et services)
 - Fixed bug : Résoudre l'absence de la colonne deleted_at de la table user dans certains environnements
+- Fixed bug : Spécifier la mention "factultatif" pour tous les champs concernés et centraliser cet affichage
 - Removed : Vues inutilisées
 
 ### Admin

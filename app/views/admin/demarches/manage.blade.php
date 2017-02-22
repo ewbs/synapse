@@ -38,19 +38,20 @@
 									@endforeach
 								</optgroup>
 								@endforeach
-							</select> <small class="pull-right">(facultatif)</small>
+							</select> @optional
 						</div>
 					</div>
 					<!-- ./ administrations impliquées -->
 
 					<!-- volume -->
 					<div class="form-group">
-						<label class="col-md-2 control-label" for="">volume</label>
+						<label class="col-md-2 control-label" for="">Volume</label>
 						<div class="col-md-10">
 							<select class="select2" name="volume">
 								<option value=""></option> @foreach($aVolumes as $vol)
 								<option value="{{$vol}}">{{$vol}}</option> @endforeach
 							</select>
+							@optional
 						</div>
 					</div>
 					<!-- /volume -->
@@ -88,8 +89,8 @@
 						<label class="col-md-2 control-label" for="name">Commentaire</label>
 						<div class="col-md-10">
 							<textarea style="height: 100px;" class="form-control" name="comment" id="comment">{{ Input::old('comment', isset($modelInstance) ? $modelInstance->comment : "") }}</textarea>
+							@optional
 							{{ $errors->first('comment', '<span class="help-inline">:message</span>')}}
-							<small class="pull-right">(facultatif)</small>
 						</div>
 					</div>
 					<!-- ./ commentaire -->
@@ -126,6 +127,7 @@
 										<label class="col-sm-2 control-label">Description</label>
 										<div class="col-sm-10">
 											<textarea name="docLinkDescription[]" name="docLink[]" class="form-control" placeholder="Explication éventuelle">{{$link->description}}</textarea>
+											@optional
 										</div>
 									</div>
 									<a class="pull-right deleteDocLink"><span class="fa fa-remove"></span>
@@ -187,18 +189,18 @@
 					if (Input::old ( 'tags' ))
 						$selectedTags = Input::old ( 'tags' );
 					?>
-					<div class="form-group {{{ $errors->has('tags') ? 'has-error' : '' }}}">
+					<div class="form-group">
 						<div class="col-md-12">
-							<select class="form-control select2" name="tags[]" id="tags"
-								multiple> @foreach($aTaxonomy as $category)
+							<select class="form-control select2" name="tags[]" id="tags" multiple>
+							@foreach($aTaxonomy as $category)
 								<optgroup label="{{$category->name}}">
 									@foreach($category->tags as $tag)
-									<option value="{{$tag->id}}" {{ in_array($tag->id,
-										$selectedTags) ? ' selected': '' }}>{{$tag->name}}</option>
+									<option value="{{$tag->id}}"{{ in_array($tag->id, $selectedTags) ? ' selected': '' }}>{{$tag->name}}</option>
 									@endforeach
-								</optgroup> @endforeach
-							</select> {{ $errors->first('tags', '<span class="help-inline">:message</span>')
-							}}
+								</optgroup>
+							@endforeach
+							</select>
+							@optional
 						</div>
 					</div>
 				</div>

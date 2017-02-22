@@ -6,6 +6,7 @@ return [
 	'no' => 'Non',
 	'no_right' => 'Vous ne disposez pas des droits nécessaires pour accéder à cette page.',
 	'no_right_action' => 'Vous ne disposez pas des droits nécessaires pour effectuer cette action.',
+	'optional' => '(facultatif)',
 	'trash' => 'Corbeille',
 	'yes' => 'Oui',
 	

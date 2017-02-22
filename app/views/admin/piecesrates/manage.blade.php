@@ -57,7 +57,8 @@
 						<label class="col-md-2 control-label" for="name">Description</label>
 						<div class="col-md-10">
 							<textarea style="height: 100px;" class="form-control" name="description" id="description">{{{ Input::old('description', $rate ? $rate->description : null) }}}</textarea>
-							{{ $errors->first('description', '<span class="help-inline">:message</span>') }} <small class="pull-right">(facultatif)</small>
+							@optional
+							{{ $errors->first('description', '<span class="help-inline">:message</span>') }}
 						</div>
 					</div>
 					<!-- ./ description -->

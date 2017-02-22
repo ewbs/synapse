@@ -51,11 +51,11 @@
 							{{ $errors->first('firstname', '<span class="help-inline">:message</span>') }}
 						</div>
 					</div>
-					<div class="form-group {{{ $errors->has('jobtitle') ? 'has-error' : '' }}}">
+					<div class="form-group">
 						<label class="col-md-2 control-label" for="jobtitle">Fonction</label>
 						<div class="col-md-10">
 							<input class="form-control" type="text" name="jobtitle" id="jobtitle" value="{{{ Input::old('jobtitle',  $modelInstance!=null ? $modelInstance->jobtitle : null) }}}" placeholder="Fonction dans eWBS. Ex: Chargé de projet" />
-							{{ $errors->first('jobtitle', '<span class="help-inline">:message</span>') }}
+							@optional
 						</div>
 					</div>
 					<!-- ./ volume -->

@@ -16,11 +16,11 @@
 						</div>
 					</div>
 
-					<div class="form-group {{{ $errors->has('description') ? 'has-error' : '' }}}">
+					<div class="form-group">
 						<label class="col-md-2 control-label" for="title">Description</label>
 						<div class="col-md-10">
 							<textarea style="height:100px;" class="form-control" name="description" id="description">{{ Input::old('description', $modelInstance ? $modelInstance->description : '') }}</textarea>
-							{{ $errors->first('description', '<span class="help-inline">:message</span>') }}
+							@optional
 						</div>
 					</div>
 
@@ -33,7 +33,7 @@
 					if (Input::old('tags'))
 						$selectedTags = Input::old('tags');
 					?>
-					<div class="form-group {{{ $errors->has('tags') ? 'has-error' : '' }}}">
+					<div class="form-group">
 						<label class="col-md-2 control-label" for="category">Tags</label>
 						<div class="col-md-10">
 							<select class="form-control select2" name="tags[]" id="tags" multiple>
@@ -45,7 +45,7 @@
 									</optgroup>
 								@endforeach
 							</select>
-							{{ $errors->first('tags', '<span class="help-inline">:message</span>') }}
+							@optional
 						</div>
 					</div>
 					<!-- ./ tags -->
