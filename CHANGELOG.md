@@ -9,6 +9,7 @@
 
 ### Général
 - Changed : Nouveau format de changelog
+- Changed : Nouvelle homepage
 - Changed : Remonter les features dans le bandeau supérieur, à côté du titre
 - Changed : Centraliser la génération des titres de pages
 - Changed : Harmoniser entre "Editer" et "Modifier"

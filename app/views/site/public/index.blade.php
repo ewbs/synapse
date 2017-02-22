@@ -12,40 +12,19 @@
 </div>
 <div class="row">
 	<div class="col-md-12">
-		<h3 class="text-center">e-Wallonie-Bruxelles Simplification</h3>
-	</div>
-</div>
-<div class="row">
-	<div class="col-md-12"><div class="block-flat">
-		<p>
-			<strong>e-Wallonie-Bruxelles Simplification</strong> est l’organe
-			en charge de la simplification administrative et de
-			l’administration électronique en Wallonie et en Fédération
-			Wallonie-Bruxelles.
-		</p>
-		<p>
-			<strong>eWBS</strong> coordonne toutes les mesures de lutte contre
-			la complexité et les contraintes administratives imposées aux
-			usagers des services publics. Il aide, mobilise et incite les
-			administrations et les organismes publics wallons et de la
-			Fédération Wallonie-Bruxelles à mettre en oeuvre les mesures
-			proposées.
-		</p>
-		<p>
-			Fonctionnellement, <strong>eWBS</strong> est rattaché au
-			Secrétariat général du Service Public de Wallonie et au
-			Secrétariat général du Ministère de la Fédération
-			Wallonie-Bruxelles. Il relève directement de l’autorité
-			hiérarchique des secrétaires généraux. Par ailleurs, pour
-			accroître l’efficacité et le rayonnement de la dynamique de
-			simplification, <strong>eWBS</strong> s’appuie sur un réseau de
-			correspondants administratifs désignés au sein de chaque
-			administration et organisme d’intérêt public. <strong>eWBS</strong>
-			travaille en étroite collaboration avec les administrations, les
-			cabinets ministériels et les partenaires sociaux. Pour la période
-			2010 – 2014, les activités prises en charge par <strong>eWBS</strong>
-			sont guidées principalement par le plan « Ensemble Simplifions ».
-		</p></div>
+		<div class="block-flat">
+			<p>
+				Cette plateforme est un outil mis à disposition des administrations et organismes d’intérêt public par e-Wallonie-Bruxelles Simplification (eWBS), afin de piloter la simplification administrative dans leur institution.<br/>
+				<strong>Synapse</strong> collecte toutes les informations disponibles sur une démarche administrative et les combine au sein d’un tableau de bord.<br/>
+				Cette visualisation permet d’affiner la stratégie simplif’ de façon transversale ou spécifique en fonction de vos usagers, de vos matières, de vos projets.
+			</p>
+			<p>
+				En travaillant sur les expertises proposées par eWBS telles que la réalisation de calculs de charges administratives, l’analyse des pièces demandées aux usagers,  l’état des lieux des formulaires, vous serez en mesure de cibler les problèmes et les opportunités, prioriser vos projets et valoriser le travail réalisé par vos agents.
+			</p>
+			<p>
+				Destiné à s’enrichir de nouveaux outils et expertises en ligne, <strong>Synapse</strong> offre aux administrations et organismes d’intérêt public un véritable support à la prise de décision.
+			</p>
+		</div>
 	</div>
 </div>
 <div class="row">
