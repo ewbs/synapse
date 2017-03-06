@@ -225,13 +225,12 @@ class IdeaController extends TrashableModelController {
 		}
 		if(!$idea->save()) return false;
 		
-		$idea->administrations ()->sync ( is_array ( Input::get ( 'administrations' ) ) ? Input::get ( 'administrations' ) : array () );
-		$idea->ministers ()->sync ( is_array ( Input::get ( 'ministers' ) ) ? Input::get ( 'ministers' ) : array () );
-		$idea->tags()->sync( is_array( Input::get('tags') ) ? Input::get('tags') : []);
+		$idea->administrations()->sync(Input::get('administrations', []));
+		$idea->ministers()->sync(Input::get('ministers', []));
+		$idea->tags()->sync(Input::get('tags', []));
 
-		$arrayNostraDemarches = is_array ( Input::get ( 'nostra_demarches' ) ) ? Input::get ( 'nostra_demarches' ) : array ();
-		$arrayNostraPublics = is_array ( Input::get ( 'nostra_publics' ) ) ? Input::get ( 'nostra_publics' ) : array ();
-
+		$arrayNostraDemarches = Input::get('nostra_demarches', []);
+		$arrayNostraPublics = Input::get('nostra_publics', []);
 
 		//si on a des démarches liées :
 		if (count($arrayNostraDemarches)) {
