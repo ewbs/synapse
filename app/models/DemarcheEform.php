@@ -103,6 +103,6 @@ class DemarcheEform extends RevisionModel {
 	 * @see RevisionModel::revisable()
 	 */
 	public function revisable() {
-		throw new RuntimeException("Le modèle DemarcheEform n'a pas de RevisableModel lié");
+		throw new LogicException("Le modèle DemarcheEform n'a pas de RevisableModel lié");
 	}
 }

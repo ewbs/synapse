@@ -1,4 +1,6 @@
 <?php
+use Symfony\Component\Process\Exception\LogicException;
+
 /**
  * Table pivot entre les annexes et les eforms
  *
@@ -100,6 +102,6 @@ class AnnexeEform extends RevisionModel {
 	 * @see RevisionModel::revisable()
 	 */
 	public function revisable() {
-		throw new RuntimeException("Le modèle AnnexeEform n'a pas de RevisableModel lié");
+		throw new LogicException("Le modèle AnnexeEform n'a pas de RevisableModel lié");
 	}
 }

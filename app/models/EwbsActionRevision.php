@@ -59,7 +59,8 @@ class EwbsActionRevision extends RevisionModel {
 			case self::$STATE_PROGRESS :return 'primary';
 			case self::$STATE_DONE     :return 'success';
 			case self::$STATE_GIVENUP  :return 'warning';
-		};
+			default : throw new \UnexpectedValueException($state);
+		}
 	}
 	
 	/**
@@ -74,7 +75,8 @@ class EwbsActionRevision extends RevisionModel {
 			case self::$STATE_PROGRESS :return 2;
 			case self::$STATE_DONE     :return 3;
 			case self::$STATE_GIVENUP  :return 4;
-		};
+			default : throw new \UnexpectedValueException($state);
+		}
 	}
 	
 	/**
@@ -108,7 +110,8 @@ class EwbsActionRevision extends RevisionModel {
 			case self::$PRIORITY_HIGH     :return 'warning';
 			case self::$PRIORITY_NORMAL   :return 'info';
 			case self::$PRIORITY_LOW      :return 'default';
-		};
+			default : throw new \UnexpectedValueException($priority);
+		}
 	}
 	
 	/**
@@ -123,7 +126,8 @@ class EwbsActionRevision extends RevisionModel {
 			case self::$PRIORITY_HIGH     :return 2;
 			case self::$PRIORITY_NORMAL   :return 3;
 			case self::$PRIORITY_LOW      :return 4;
-		};
+			default : throw new \UnexpectedValueException($priority);
+		}
 	}
 	
 	/**

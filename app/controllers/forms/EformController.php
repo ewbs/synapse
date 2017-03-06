@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\MessageBag;
+use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
 
 class EformController extends TrashableModelController {
 	
@@ -332,7 +333,7 @@ class EformController extends TrashableModelController {
 		$eform = null;
 
 		if ( ! Input::has('eform') ) {
-			throw new Exception(Lang::get('admin/eforms/messages.exceptions.no_eform_id'));
+			throw new MissingMandatoryParametersException(Lang::get('admin/eforms/messages.exceptions.no_eform_id'));
 		}
 
 		if (Input::get('eform') == '-1') { /* on ne fait rien, on passera null à la view */}
@@ -349,7 +350,7 @@ class EformController extends TrashableModelController {
 		$eform = null;
 
 		if ( ! Input::has('eform') ) {
-			throw new Exception(Lang::get('admin/eforms/messages.exceptions.no_eform_id'));
+			throw new MissingMandatoryParametersException(Lang::get('admin/eforms/messages.exceptions.no_eform_id'));
 		}
 
 		/* on crée un nouveau formulaire */

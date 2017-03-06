@@ -117,12 +117,10 @@ class MonitorController extends Controller {
 				$lastImportCarbon = $this->infoLastNostraImport ();
 				$response ['checks'] ['nostra'] ['result'] = "passed";
 				$response ['checks'] ['nostra'] ['lastImport'] = $lastImportCarbon->format ( 'Y-m-d H:i:s' );
-				;
 			} else {
 				$lastImportCarbon = $this->infoLastNostraImport ();
 				$response ['checks'] ['nostra'] ['result'] = "failed";
 				$response ['checks'] ['nostra'] ['lastImport'] = $lastImportCarbon->format ( 'Y-m-d H:i:s' );
-				;
 				$onError = true;
 			}
 			

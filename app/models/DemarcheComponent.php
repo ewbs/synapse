@@ -103,13 +103,14 @@ abstract class DemarcheComponent extends RevisableModel {
 			$previousItemGain=(($demarche_component_previous_revision && $demarche_component_previous_revision->$gainName && ! $demarche_component_previous_revision->trashed ()) ? $demarche_component_previous_revision->$gainName : 0);
 				
 			if ($action == 'delete' || $action == 'destroy') {
-				if ($action == 'destroy' && $demarche_component_revision->trashed ())
+				if ($action == 'destroy' && $demarche_component_revision->trashed ()) {
 					$demarche_component_revision->$gainName = 0; // si la version que l'on détruit est en fait une soft-deletée, on ne doit pas considérer son montant pour calculer la différence à appliquer
-					$diff = $previousItemGain - $demarche_component_revision->$gainName;
+				}
+				$diff = $previousItemGain - $demarche_component_revision->$gainName;
 			}
-			else // En cas de création donc
-			$diff = $demarche_component_revision->$gainName - $previousItemGain;
-				
+			else {// En cas de création donc
+				$diff = $demarche_component_revision->$gainName - $previousItemGain;
+			}
 			if ($diff != 0) { // Si différence positive ou négative, on l'ajoute aux gains concernés par l'ajustement
 				$gains[$gainName]['old']=NumberHelper::moneyFormat ( $oldGain );
 				$gains[$gainName]['new']=NumberHelper::moneyFormat ( $oldGain + $diff );

@@ -1,6 +1,9 @@
 <?php
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\MessageBag;
+use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Illuminate\Filesystem\FileNotFoundException;
 class DemarcheController extends TrashableModelController {
 	
 	/**
@@ -920,13 +923,16 @@ class DemarcheController extends TrashableModelController {
 					$worksheet->getCell ( "B{$line}" )->setValue ( $element->$idcol );
 					$worksheet->getCell ( "C{$line}" )->setValue ( $element->name );
 					foreach ( $columns as $colname => $colproperties ) {
-						if ($colname == 'gain_potential_citizen')
+						if ($colname == 'gain_potential_citizen') {
 							$value = "=D{$line}*E{$line}*F{$line}";
-							elseif ($colname == 'gain_potential_administration')
+						}
+						elseif ($colname == 'gain_potential_administration') {
 							$value = "=D{$line}*E{$line}*G{$line}";
-							else
-								$value = $element->$colname;
-								$worksheet->getCell ( $colproperties ['pos'] . $line )->setValue ( $value );
+						}
+						else {
+							$value = $element->$colname;
+						}
+						$worksheet->getCell ( $colproperties ['pos'] . $line )->setValue ( $value );
 					}
 				
 					// hauteur de ligne en auto (car pas mal de texte dans certaines cellules)
@@ -1094,12 +1100,13 @@ class DemarcheController extends TrashableModelController {
 				), 200 );
 			}
 			
+			$file = Input::file ( 'file' );
+			if ( !$file->isValid ()) {
+				throw new \UnexpectedValueException ( $file->getErrorMessage() );
+			}
+			
 			// On déplace le fichier dans les uploads, et on le renomme.
 			// Le nom du fichier sera de la forme "SCM-<DEMARCHEID>-YYYYMMDDHHMMSS-<RANDOMSTRING(15)>.<EXTENSION>
-			if (! Input::file ( 'file' )->isValid ()) {
-				throw new Exception ( "Fichier invalide" );
-			}
-			$file = Input::file ( 'file' );
 			$fileName = "SCM-" . $demarche->id . "-" . Carbon::now ()->format ( "YmdHis" ) . "-" . str_random ( 15 ) . "." . $file->getClientOriginalExtension ();
 			$destinationPath = storage_path () . '/uploads/scm';
 			// Si le dossier de destination n'existe pas, on le crée
@@ -1144,19 +1151,19 @@ class DemarcheController extends TrashableModelController {
 		try {
 			// A-t-on un fileName ?
 			if (! Input::has ( 'fileName' ))
-				throw new Exception ( "Aucun nom de fichier envoyé" );
+				throw new MissingMandatoryParametersException( "Aucun nom de fichier envoyé" );
 				
 				// La démarche et la démarche SCM existent-ils ?
 			$scm = DemarcheSCM::where ( 'filename', '=', Input::get ( 'fileName' ) )->firstOrFail ();
 			
 			// Peut on manipuler ce fichier ?
 			if(!$demarche->canManage() || $demarche->id!=$scm->demarche_id)
-				throw new Exception ( "NOTALLOWED" );
+				throw new AccessDeniedException( "NOTALLOWED" );
 				
 				// Le fichier existe-t-il ?
 			$completeFileName = $scm->getFilePath ();
 			if (! File::exists ( $completeFileName ))
-				throw new Exception ( "Fichier non trouvé" );
+				throw new FileNotFoundException( "Fichier non trouvé : {$completeFileName}" );
 				
 				/*
 			 * Structure des résultats retournés à l'utilisateur :
@@ -1223,7 +1230,8 @@ class DemarcheController extends TrashableModelController {
 					$demarcheComponent = null;
 					
 					// Quelle est le demarcheComponent
-					switch (strtolower ( $objWorksheet->getCell ( "A{$row}" )->getValue () )) {
+					$componentType=$objWorksheet->getCell ( "A{$row}" )->getValue ();
+					switch (strtolower($componentType)) {
 						case 'tache' :
 						case 'tâche' :
 						case 'tche' :
@@ -1236,6 +1244,7 @@ class DemarcheController extends TrashableModelController {
 							$type = 'piece';
 							$demarcheComponent = DemarchePiece::find ( $demarcheComponentId );
 							break;
+						default: throw new \UnexpectedValueException("Type de composant inattendu : $componentType");
 					}
 					
 					// on a trouvé un demarcheComponent valable à traiter
@@ -1318,7 +1327,7 @@ class DemarcheController extends TrashableModelController {
 			} /* fin de la boucle générale */
 			
 			if (! $eofFound)
-				throw new Exception ( Lang::get ( 'admin/demarches/scmfiles.process.eof_not_found' ) );
+				throw new \ExceUnexpectedValueException( Lang::get ( 'admin/demarches/scmfiles.process.eof_not_found' ) );
 				
 				/*
 			 * Gestion des totaux et de la création éventuelle d'une révision d'une démarche
@@ -2382,9 +2391,7 @@ class DemarcheController extends TrashableModelController {
 			$selectedTags = $action->tags->lists('id');
 		}
 		$returnTo = $this->getReturnTo();
-
 		return View::make ( 'admin/demarches/actions/modal-manage', array_merge(compact('demarche', 'action', 'aTaxonomy', 'selectedTags', 'returnTo'), $extra));
-		return $view;
 	}
 	
 	/**

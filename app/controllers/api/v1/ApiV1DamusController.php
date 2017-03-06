@@ -120,7 +120,7 @@ class ApiV1DamusController extends Controller {
 				// test simple : faire un string ou on enleve les "," et tester si c un nombre :-)
 				$stringToValidate = str_replace ( ",", "", $thematiqueabc );
 				if (! is_numeric ( $stringToValidate )) {
-					throw new Exception ( "Ooops" );
+					throw new \UnexpectedValueException ( " thematiqueabc not numeric : {$thematiqueabc}" );
 				}
 				
 				$arrayNostraEvenements = DB::table ( 'nostra_evenements' )->join ( 'nostra_evenement_nostra_public', function ($join) use($public) {

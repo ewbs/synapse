@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Process\Exception\LogicException;
+
 /**
  * Classe de base à tous les modèles ayant des révisions
  * 
@@ -166,7 +168,7 @@ abstract class RevisableModel extends TrashableModel {
 				}
 				else {
 					DB::rollBack();
-					throw new Exception(get_class($modelInstance)." {$modelInstance->id} not deleted, because revision could not be created. validationErrors : ".print_r($revision->validationErrors->toArray(), true));
+					throw new LogicException(get_class($modelInstance)." {$modelInstance->id} not deleted, because revision could not be created. validationErrors : ".print_r($revision->validationErrors->toArray(), true));
 				}
 			}
 		});

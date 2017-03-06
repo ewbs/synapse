@@ -38,10 +38,11 @@ class TransactionalRollbackCommand extends RollbackCommand {
 			$this->migrator->rollback($pretend);
 			DB::commit();
 		}
-		catch(Exception $e) {
+		catch(\Exception $e) {
 			DB::rollBack();
-			$output->writeln(Lang::get('general.migrate.error'));
-			throw new Exception($e);
+			$output->writeln(Lang::get('general.migrate.error') . ' : '.$e->getMessage());
+			Log::error($e);
+			exit(1);
 		}
 		
 		// Once the migrator has run we will grab the note output and send it out to

@@ -6,8 +6,6 @@
  */
 
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 class importFromNostraV2 extends Command {
 	
 	/**
@@ -646,7 +644,7 @@ class importFromNostraV2 extends Command {
 		curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
 		if (($json = curl_exec ( $ch )) === false) {
 			// Erreur de communication avec Nostra. On log et on abandonne la procédure d'importation. 
-			throw ( new Exception ( "Erreur lors de l'appel à $ws" ) );;
+			throw ( new Exception ( "Erreur lors de l'appel à $ws" ) );
 		}
 		
 		// si on est arrivé jusque là ... c'est que l'appel au WS a bien fonctionné

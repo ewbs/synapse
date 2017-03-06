@@ -25,7 +25,7 @@ abstract class ManageableModel extends Ardent {
 		// en dessous de php 5.5, il est interdit de faire un empty($this->formRules()) ... donc obligé de d'abord créer une var -- JDA 2016-04-11
 		$fRules = $this->formRules();
 		if(!empty($fRules) && !empty(static::$rules))
-			throw new Exception('Ne pas mélanger les règles de validation au niveau du modèle (cf. Ardent) et du formulaire (cf. formRules()), choisir l\'une ou l\'autre');
+			throw new LogicException('Ne pas mélanger les règles de validation au niveau du modèle (cf. Ardent) et du formulaire (cf. formRules()), choisir l\'une ou l\'autre');
 	}
 	
 	/**

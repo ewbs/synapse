@@ -246,16 +246,14 @@ class IdeaController extends TrashableModelController {
 		
 		if(!$create) {
 			// et on termine avec un éventuel changement d'état
-			if (Input::has ( 'changestate' )) {
-				if (Input::get ( 'changestate' ) > 0) {
-					$ideaState = IdeaState::where ( 'name', '=', Input::get ( 'state' ) )->firstOrFail ();
-					$state = new IdeaStateModification ();
-					$state->comment = Input::get ( 'statecomment' );
-					$state->user ()->associate ( $this->getLoggedUser() );
-					$state->ideaState ()->associate ( $ideaState );
-					$state->idea ()->associate ( $idea );
-					$state->save ();
-				}
+			if (Input::get ( 'changestate' ) > 0) {
+				$ideaState = IdeaState::where ( 'name', '=', Input::get ( 'state' ) )->firstOrFail ();
+				$state = new IdeaStateModification ();
+				$state->comment = Input::get ( 'statecomment' );
+				$state->user ()->associate ( $this->getLoggedUser() );
+				$state->ideaState ()->associate ( $ideaState );
+				$state->idea ()->associate ( $idea );
+				$state->save ();
 			}
 		}
 		else {
@@ -266,13 +264,11 @@ class IdeaController extends TrashableModelController {
 			$state->comment = '';
 			$idea->stateModifications ()->save ( $state );
 			// commentaire
-			if (Input::has ( 'comment' )) {
-				if (strlen ( Input::get ( 'comment' ) )) {
-					$comment = new IdeaComment ();
-					$comment->user_id = $this->getLoggedUser()->id;
-					$comment->comment = Input::get ( 'comment' );
-					$idea->comments ()->save ( $comment );
-				}
+			if ($comment=Input::get ( 'comment' )) {
+				$ideaComment = new IdeaComment ();
+				$ideaComment->user_id = $this->getLoggedUser()->id;
+				$ideaComment->comment = $comment;
+				$idea->comments ()->save ( $ideaComment );
 			}
 		}
 		if(Input::has ( 'nostraRequest' )) return route('damusGetRequestIdea', $idea->id);

@@ -106,10 +106,7 @@ class AdminRolesController extends BaseController {
 			}
 			
 			// Redirect to the new role page
-			return Redirect::secure ( 'admin/roles/create' )->with ( 'error', Lang::get ( 'admin/roles/messages.create.error' ) );
-			
-			// Redirect to the role create page
-			return Redirect::secure ( 'admin/roles/create' )->withInput ()->with ( 'error', Lang::get ( 'admin/roles/messages.' . $error ) );
+			return Redirect::secure ( 'admin/roles/create' )->withInput ()->with ( 'error', Lang::get ( 'admin/roles/messages.create.error' ) );
 		}
 		
 		// Form validation failed
