@@ -136,13 +136,13 @@ class importFromNostraV2 extends Command {
 			
 			/*
 			 *		3.	Lien entre les publics et les thématiques ABC
-			 
+			 */
 			Log::info ( "----- Lien entre publics et thematiques ABC -----" );
 			$arrayNostraPublics = NostraPublic::all ();
 			foreach ( $arrayNostraPublics as $nostraPublic ) {
 				$total = $this->_linkThematiquesABCWithPublic ( $nostraPublic );
 				Log::info(" + ".$nostraPublic->title . " [$total thematiques ABC] ");
-			}*/
+			}
 			
 			/*
 			 *		4. Import des événements déclencheurs
