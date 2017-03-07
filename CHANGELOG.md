@@ -1,7 +1,7 @@
 # Release Notes
 
 ## 4.1.1 - Never forget (07/03/2017)
-* Release correctif suite à un souci sur l'import des données Nostra.*
+*Release correctif suite à un souci sur l'import des données Nostra.*
 
 ### Imports
 - Fixed bug : Une partie de la routine d'import Nostra était désactivée. Refactoring du code, afin notamment d'utiliser GuzzleHttp\Client plutôt que curl
