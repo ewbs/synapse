@@ -25,7 +25,7 @@
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-user"></i></span>
 									<input type="text" placeholder="Nom d'utilisateur"
-										name="email" id="email" value="{{ Input::old('email') }}"
+										name="email" id="email" value="{{{ Input::old('email') }}}"
 										class="form-control">
 								</div>
 							</div>
