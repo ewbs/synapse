@@ -1,7 +1,15 @@
 # Release Notes
 
+## 4.1.1 - Never forget (07/03/2017)
+* Release correctif suite à un souci sur l'import des données Nostra.*
 
-## 4.1 - Never forget (22/02/2017)
+### Imports
+- Fixed bug : Une partie de la routine d'import Nostra était désactivée. Refactoring du code, afin notamment d'utiliser GuzzleHttp\Client plutôt que curl
+
+### Général
+- Fixed bug : Adaptations mineures du niveau de qualité de code suite à audit du code par SonarQube
+
+## 4.1.0 - Never forget (22/02/2017)
 *Ce release de Synapse, le premier après le départ de son papa, apporte essentiellement des corrections sur le release 4.0, ainsi que des améliorations mineures.*
 
 ### Imports
@@ -49,7 +57,7 @@
 
 
 
-## 4.0 - Challenge accepted (18/01/2017)
+## 4.0.0 - Challenge accepted (18/01/2017)
 *Ce release reprend principalement les fonctionnalités évolutives spécifiées dans les documents de sprint 6, 9, 11, 12.*
 
 ### Général
@@ -84,7 +92,7 @@
 
 
 
-## 3.1 - Into the trash it goes (19/12/2016)
+## 3.1.0 - Into the trash it goes (19/12/2016)
 *Ce release reprend principalement les fonctionnalités évolutives spécifiées dans les documents de sprint 10.*
 
 ### Actions
@@ -97,7 +105,7 @@
 
 
 
-##3.0 - Draw me like one of your french girls (26/10/2016)
+##3.0.0 - Draw me like one of your french girls (26/10/2016)
 *Ce release reprend principalement les fonctionnalités évolutives spécifiées dans les documents de sprints 7 et 8.*
 
 ### Général
@@ -126,7 +134,7 @@
 
 
 
-##2.0 - That'd be great (02/05/2016)
+##2.0.0 - That'd be great (02/05/2016)
 *Ce release reprend principalement les fonctionnalités évolutives spécifiées dans les documents de sprints 2 et 4.*
 
 ### Actions
@@ -147,7 +155,7 @@
 
 
 
-## 1.1 - Zerg Rush (27/10/2015
+## 1.1.0 - Zerg Rush (27/10/2015
 *Ce release reprend principalement les fonctionnalités évolutives spécifiées dans le document de sprint 3.*
 
 ### Projets
@@ -155,7 +163,7 @@
 
 
 
-## 1.0 - Nyan Cat (19/10/2015)
+## 1.0.0 - Nyan Cat (19/10/2015)
 *Ce release reprend principalement les fonctionnalités évolutives spécifiées dans le document de sprint 1.*
 
 ### Général
