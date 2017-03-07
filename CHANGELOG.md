@@ -8,6 +8,7 @@
 
 ### Général
 - Fixed bug : Adaptations mineures du niveau de qualité de code suite à audit du code par SonarQube
+- Fixed bug : Ne pas tenter d'activer des plugins JS sur des éléments absents du dom
 
 ## 4.1.0 - Never forget (22/02/2017)
 *Ce release de Synapse, le premier après le départ de son papa, apporte essentiellement des corrections sur le release 4.0, ainsi que des améliorations mineures.*

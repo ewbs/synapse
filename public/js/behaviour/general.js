@@ -506,12 +506,16 @@ var App = function() {
 				
 				/* NanoScroller */
 				if (config.nanoScroller) {
-					top.find(".nscroller").nanoScroller();
+					var nscroller=top.find(".nscroller");
+					if(nscroller.length>0)
+						top.find(".nscroller").nanoScroller();
 				}
 
 				/* Switch */
 				if (config.bootstrapSwitch) {
-					top.find('.switch').bootstrapSwitch();
+					var sw=top.find(".switch");
+					if(sw.length>0)
+						sw.bootstrapSwitch();
 				}
 
 				/* DateTimePicker */
@@ -560,48 +564,58 @@ var App = function() {
 				});
 				
 				/* Numbers */
-				top.find('input.integerNumber').number( true, 0, ',', ' ' );
-				top.find('input.decimalNumber').number( true, 2, ',', ' ');
+				var integerNumber=top.find('input.integerNumber');
+				if(integerNumber.length>0) {
+					integerNumber.number( true, 0, ',', ' ' );
+				}
+				var decimalNumber=top.find('input.decimalNumber');
+				if(decimalNumber.length>0) {
+					decimalNumber.number( true, 2, ',', ' ');
+				}
 				
 				/* Select2 */
 				if (config.select2) {
-					top.find(".select2").select2({
-						width : '100%',
-						templateResult: function(item) {
-							var element=$(item.element);
-							var picturemargin=10;
-							var picturewidth=element.data('picturewidth');
-							var picture=element.data('picture');
-							var line2=element.data('line2');
-							var line3=element.data('line3');
-							if(!line2 && !line3 && !picture) return item.text;
-							
-							if(picture) {
-								if(!picturewidth) picturewidth=40;
-								picture='<div class="picture" style="width: '+picturewidth+'px"><img src="'+picture+'" width="'+picturewidth+'"/></div>';
-							}
-							else {
-								picture='';
-								picturewidth=0;
-								picturemargin=0;
-							}
-							
-							var line1='<div class="line1'+(line2||line3?' title':'')+'">'+item.text+'</div>';
-							if(line2) line2='<div class="line2">'+line2+'</div>';
-							else line2='';
-							if(line3) line3='<div class="line3">'+line3+'</div>';
-							else line3='';
-							var meta='<div class="meta" style="margin-left:'+(picturewidth+picturemargin)+'px">'+line1+line2+line3+'</div>';
-							
-							return '<div class="item clearfix">'+picture+meta+'</div>';
-						},
-						escapeMarkup: function(m) { return m; }
-					});
+					var select2=top.find(".select2");
+					if(select2.length>0) {
+						select2.select2({
+							width : '100%',
+							templateResult: function(item) {
+								var element=$(item.element);
+								var picturemargin=10;
+								var picturewidth=element.data('picturewidth');
+								var picture=element.data('picture');
+								var line2=element.data('line2');
+								var line3=element.data('line3');
+								if(!line2 && !line3 && !picture) return item.text;
+								
+								if(picture) {
+									if(!picturewidth) picturewidth=40;
+									picture='<div class="picture" style="width: '+picturewidth+'px"><img src="'+picture+'" width="'+picturewidth+'"/></div>';
+								}
+								else {
+									picture='';
+									picturewidth=0;
+									picturemargin=0;
+								}
+								
+								var line1='<div class="line1'+(line2||line3?' title':'')+'">'+item.text+'</div>';
+								if(line2) line2='<div class="line2">'+line2+'</div>';
+								else line2='';
+								if(line3) line3='<div class="line3">'+line3+'</div>';
+								else line3='';
+								var meta='<div class="meta" style="margin-left:'+(picturewidth+picturemargin)+'px">'+line1+line2+line3+'</div>';
+								
+								return '<div class="item clearfix">'+picture+meta+'</div>';
+							},
+							escapeMarkup: function(m) { return m; }
+						});
+					}
 				}
 				
 				/* Slider */
 				if (config.slider) {
-					top.find('.bslider').slider();
+					var bslider=top.find('.bslider');
+					if(bslider.length>0) bslider.slider();
 				}
 				
 				/* Input & Radio Buttons */
