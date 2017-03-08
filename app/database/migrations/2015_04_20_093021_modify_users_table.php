@@ -17,10 +17,18 @@ class ModifyUsersTable extends Migration {
 		$output=new ConsoleOutput();
 		$output->writeln("Modification de la table users");
 
-		Schema::table('users', function(Blueprint $table) {
-			$table->softDeletes();
-		});
-
+		$exists=DB::select("
+		SELECT column_name 
+		FROM information_schema.columns 
+		WHERE table_name='users' and column_name='deleted_at';");
+		
+		if(!empty($exists))
+			$output->writeln("La colonne deleted_at existe déjà");
+		else {
+			Schema::table('users', function(Blueprint $table) {
+				$table->softDeletes();
+			});
+		}
 	}
 
 	/**
@@ -33,7 +41,7 @@ class ModifyUsersTable extends Migration {
 		$output=new ConsoleOutput();
 		$output->writeln("Annulation des modification de la table users");
 
-		Schema::table('ideas', function(Blueprint $table) {
+		Schema::table('users', function(Blueprint $table) {
 			$table->dropColumn('deleted_at');
 		});
 	}

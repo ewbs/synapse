@@ -1,8 +1,7 @@
 <?php
 /**
  * Eforms
- *
- * @property int            $id              (PK)
+ * 
  * @property string         $form_id         Maximum 64 caractères, unique
  * @property int            $nostra_form_id  @see NostraForm
  * @property string         $title           Maximum 2048 caractères, unique
@@ -14,10 +13,6 @@
  * @property int            $esign           null, 0 ou 1
  * @property string         $format          Maximum 128 caractères
  * @property int            $simplified      null, 0 ou 1
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- * 
  * @author jdavreux
  */
 class Eform extends RevisableModel {

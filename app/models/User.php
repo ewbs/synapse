@@ -1,5 +1,4 @@
 <?php
-use Zizaco\Confide\ConfideUser;
 use Zizaco\Confide\ConfideUserInterface;
 use Zizaco\Entrust\HasRole;
 use Carbon\Carbon;
@@ -7,22 +6,34 @@ use Carbon\Carbon;
 /**
  * Utilisateurs
  *
- * @property int            $id                 (PK)
  * @property string         $username           Obligatoire, maximum 255 caractères
  * @property string         $email              Obligatoire, maximum 255 caractères
  * @property string         $password           Obligatoire, maximum 255 caractères
  * @property string         $confirmation_code  Obligatoire, maximum 255 caractères
  * @property string         $remember_token     Obligatoire, maximum 255 caractères
  * @property boolean        $confirmed          Obligatoire, false par défaut
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- *
  * @author jdavreux
  */
-class User extends Eloquent implements ConfideUserInterface {
-	use ConfideUser, HasRole, SoftDeletingTrait;
+class User extends TrashableModel implements ConfideUserInterface {
+	use ArdentConfideUser, HasRole;
 	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see ManageableModel::permissionManage()
+	 */
+	public function permissionManage() {
+		return 'manage_users';
+	}
+	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see ManageableModel::name()
+	 */
+	public function name() {
+		return $this->username;
+	}
 	
 	public function EWBSMember() {
 		return $this->hasOne ( 'EWBSMember' );

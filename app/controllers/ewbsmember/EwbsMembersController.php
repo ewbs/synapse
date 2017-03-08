@@ -52,12 +52,13 @@ class EwbsMembersController extends TrashableModelController {
 	 * @see ModelController::getManage()
 	 */
 	protected function getManage(ManageableModel $eWBSMember=null){
+		$arrayOfUsers=null;
 		if($eWBSMember==null) {
 			// on doit sélectionner les utilisateurs non "utilisés", cad ceux qui ne sont pas encore liés à un membre eWBS
 			//FIXME : la requête devrait considérer également les membres soft-deletés !
 			$arrayOfUsers = User::has ( 'EWBSMember', '=', '0' )->get ();
 		}
-		return View::make ( 'admin/ewbsmembers/manage', compact ( 'eWBSMember', 'arrayOfUsers' ) );
+		return $this->makeDetailView ($eWBSMember, 'admin/ewbsmembers/manage', compact ( 'arrayOfUsers' ) );
 	}
 	
 	/**

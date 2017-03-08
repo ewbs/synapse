@@ -2,11 +2,7 @@
 return [
 	'menu' => 'Log d\'actions',
 	'title' => 'Actions',
-
-	'features' => [
-		'edit'=>'Modifier',
-	],
-		
+	
 	'does_not_exist' => 'Cette action n\'existe pas.',
 	
 	'manage' => [

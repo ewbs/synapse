@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\MessageBag;
+use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
 
 class EformController extends TrashableModelController {
 	
@@ -17,37 +18,37 @@ class EformController extends TrashableModelController {
 	 * @see ModelController::features()
 	 */
 	protected function features(ManageableModel $modelInstance) {
-		return [
-			[
-				'label' => Lang::get ( 'button.view' ),
-				'url' => $modelInstance->routeGetView(),
-				'permission' => 'formslibrary_display',
-				'icon' => 'eye'
-			],
-			[
+		$features[]=[
+			'label' => Lang::get ( 'button.view' ),
+			'url' => $modelInstance->routeGetView(),
+			'icon' => 'eye'
+		];
+		if($modelInstance->canManage()) {
+			$features[]=[
 				'label' => Lang::get ( 'button.edit' ),
 				'url' => $modelInstance->routeGetEdit(),
-				'permission' => $modelInstance->permissionManage(),
 				'icon' => 'pencil'
-			],
-			[
-				'label' => Lang::get ( 'admin/annexes/messages.menu' ),
-				'url' => route('eformsAnnexesGetIndex', $modelInstance->id),
-				'icon' => 'wpforms'
-			],
-			[
-				'label' => Lang::get ( 'admin/ewbsactions/messages.title' ),
-				'url' => route('eformsActionsGetIndex', $modelInstance->id),
-				'icon' => 'magic'
-			],
-			[
+			];
+		}
+		$features[]=[
+			'label' => Lang::get ( 'admin/annexes/messages.menu' ),
+			'url' => route('eformsAnnexesGetIndex', $modelInstance->id),
+			'icon' => 'wpforms'
+		];
+		$features[]=[
+			'label' => Lang::get ( 'admin/ewbsactions/messages.title' ),
+			'url' => route('eformsActionsGetIndex', $modelInstance->id),
+			'icon' => 'magic'
+		];
+		if($modelInstance->canDelete()) {
+			$features[]=[
 				'label' => Lang::get ( 'button.delete' ),
 				'url' => $modelInstance->routeGetDelete(),
-				'permission' => $modelInstance->permissionManage(),
 				'icon' => 'trash-o',
 				'class' =>'btn-danger',
-			]
-		];
+			];
+		}
+		return $features;
 	}
 	
 	/**
@@ -332,7 +333,7 @@ class EformController extends TrashableModelController {
 		$eform = null;
 
 		if ( ! Input::has('eform') ) {
-			throw new Exception(Lang::get('admin/eforms/messages.exceptions.no_eform_id'));
+			throw new MissingMandatoryParametersException(Lang::get('admin/eforms/messages.exceptions.no_eform_id'));
 		}
 
 		if (Input::get('eform') == '-1') { /* on ne fait rien, on passera null à la view */}
@@ -349,7 +350,7 @@ class EformController extends TrashableModelController {
 		$eform = null;
 
 		if ( ! Input::has('eform') ) {
-			throw new Exception(Lang::get('admin/eforms/messages.exceptions.no_eform_id'));
+			throw new MissingMandatoryParametersException(Lang::get('admin/eforms/messages.exceptions.no_eform_id'));
 		}
 
 		/* on crée un nouveau formulaire */
@@ -658,9 +659,10 @@ class EformController extends TrashableModelController {
 	 *
 	 * @param Eform $modelInstance
 	 * @param EwbsAction $action
+	 * @param array $extra Paramètre supplémentaires qui seraient à passer à la vue
 	 * @return \Illuminate\View\View
 	 */
-	protected function actionsGetManage(Eform $modelInstance, EwbsAction $action = null) {
+	protected function actionsGetManage(Eform $modelInstance, EwbsAction $action = null, array $extra=[]) {
 
 		$aTaxonomy = TaxonomyCategory::orderBy('name')->get();
 		$selectedTags = [];
@@ -668,7 +670,7 @@ class EformController extends TrashableModelController {
 			$selectedTags = $action->tags->lists('id');
 		}
 
-		return View::make ( 'admin/forms/eforms/actions/modal-manage', compact ( 'modelInstance', 'action', 'aTaxonomy', 'selectedTags' ) );
+		return View::make ( 'admin/forms/eforms/actions/modal-manage', array_merge(compact ( 'modelInstance', 'action', 'aTaxonomy', 'selectedTags' ), $extra));
 	}
 	
 	/**
@@ -726,7 +728,7 @@ class EformController extends TrashableModelController {
 			}
 			if (! $errors->isEmpty ()) {
 				Input::flash ();
-				return View::make ( 'admin/forms/eforms/actions/modal-manage', compact ( 'modelInstance', 'action' ) )->withErrors ( $errors )->with ( 'error', Lang::get ( 'general.manage.error' ) );
+				return $this->actionsGetManage($modelInstance, $action, ['errors'=>$errors]);
 			}
 		} catch ( Exception $e ) {
 			Log::error ( $e );

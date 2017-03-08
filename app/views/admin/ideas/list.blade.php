@@ -1,11 +1,6 @@
-@extends('site.layouts.default') {{-- Web site Title --}}
-@section('title') Bienvenue sur Synapse @parent @stop {{-- Content --}}
+@extends('site.layouts.container-fluid')
+@section('title')Projets de simplification @stop
 @section('content')
-
-<div class="page-head">
-	<h2><span class="fa fa-lightbulb-o"></span> Projets de simplification</h2>
-</div>
-<div class="cl-mcont">
 	<div class="row">
 		<div class="col-md-12">
 			<div class="block-flat">
@@ -22,7 +17,7 @@
 				</div>
 				<div class="content">
 					<div class="table-responsive">
-						<table id="datatable" class="table table-hover">
+						<table class="table table-hover datatable" data-ajaxurl="{{ $trash?$model->routeGetDataTrash():$model->routeGetData() }}" data-bFilter="true" data-bSort="true" data-bPaginate="true">
 							<thead>
 								<tr>
 									@if ($trash)
@@ -46,22 +41,4 @@
 				</div>
 			</div>
 		</div>
-	</div>
-
-</div>
-@stop {{-- Scripts --}}
-	
-@section('scripts')
-<script type="text/javascript">
-	$(document).ready(function() {
-		$('#datatable').dataTable( {
-			"aoColumnDefs": [
-				{ 'bSortable'  : false, 'aTargets': [@if ($trash) 6 @else 5 @endif] },
-				{ 'bSearchable': false, 'aTargets': [@if ($trash) 6 @else 5 @endif] }
-			],
-			"aaSorting" : [[0, "desc"]],
-			"sAjaxSource": "{{ $trash?$model->routeGetDataTrash():$model->routeGetData() }}",
-		});
-	});
-</script>
 @stop

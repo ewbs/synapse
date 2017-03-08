@@ -2,7 +2,6 @@
 /**
  * Projets de simplif'
  *
- * @property int            $id                                (PK)
  * @property int            $user_id                            Obligatoire, @see User
  * @property int            $ewbs_member_id                     Obligatoire, @see EWBSMember
  * @property string         $name                               Maximum 1024 caractères
@@ -18,11 +17,7 @@
  * @property string         $doc_source_page                    Maximum 256 caractères
  * @property string         $doc_source_link                    Maximum 1024 caractères
  * @property int            $prioritary
- * @property int            $transversal 
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- *
+ * @property int            $transversal
  * @author jdavreux
  */
 class Idea extends TrashableModel {
@@ -40,7 +35,6 @@ class Idea extends TrashableModel {
 		return [
 			'name' => 'required|min:3',
 			'description' => 'required|min:5',
-			'ewbs_contact' => 'required|integer|min:1',
 			'nostra_publics' => 'required_without:nostra_demarches'
 		];
 	}
@@ -365,10 +359,11 @@ class Idea extends TrashableModel {
 		// droits d'utilisateurs sur les états de l'idée
 		//FIXME : On parle un peu trop de rôles ici, à voir cmt adapter cela
 		
-		if(!$fromstate)
+		if(!$fromstate){
 			$fromstate=$this->getLastStateModification ()->ideaState->name;
+		}
 		
-			$states=array();
+		$states=array();
 		if ($user->hasRole ( 'admin' ))
 			$states=IdeaStateModification::getAvailableStates ( $fromstate, 'admin' );
 		elseif ($user->can ( 'ideas_manage' ))
@@ -377,7 +372,7 @@ class Idea extends TrashableModel {
 			$states=IdeaStateModification::getAvailableStates ( $fromstate, 'owner' );
 		elseif ($user->id == $this->ewbs_member_id)
 			$states=IdeaStateModification::getAvailableStates ( $fromstate, 'ewbs' );
-
+		
 		return $states;
 	}
 }

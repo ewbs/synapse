@@ -28,21 +28,21 @@ $aSelectedNostraDemarches = Input::old('nostra_demarches', isset($aSelectedNostr
 	<div class="form-group">
 		<label class="col-md-2 control-label" for="nostra_thematiquesabc">Thématiques(s) usager <span class="badge" id="countNostraThematiquesabc">0</span></label>
 		<div class="col-md-10">
-			<select class="select2 nostra" multiple name="nostra_thematiquesabc[]" id="nostra_thematiquesabc"></select> <small class="pull-right">(facultatif)</small>
+			<select class="select2 nostra" multiple name="nostra_thematiquesabc[]" id="nostra_thematiquesabc"></select> @optional
 		</div>
 	</div>
 	
 	<div class="form-group">
 		<label class="col-md-2 control-label" for="nostra_evenements">Evénements déclencheurs <span class="badge" id="countNostraEvenements">0</span></label>
 		<div class="col-md-10">
-			<select class="select2 nostra" multiple name="nostra_evenements[]" id="nostra_evenements"></select> <small class="pull-right">(facultatif)</small>
+			<select class="select2 nostra" multiple name="nostra_evenements[]" id="nostra_evenements"></select> @optional
 		</div>
 	</div>
 	
 	<div class="form-group">
 		<label class="col-md-2 control-label" for="nostra_thematiquesadm">Thématiques(s) administrative(s) <span class="badge" id="countNostraThematiquesadm">0</span></label>
 		<div class="col-md-10">
-			<select class="select2 nostra" multiple name="nostra_thematiquesadm[]" id="nostra_thematiquesadm"></select> <small class="pull-right">(facultatif)</small>
+			<select class="select2 nostra" multiple name="nostra_thematiquesadm[]" id="nostra_thematiquesadm"></select> @optional
 		</div>
 	</div>
 	
@@ -50,7 +50,7 @@ $aSelectedNostraDemarches = Input::old('nostra_demarches', isset($aSelectedNostr
 	<div class="form-group">
 		<label class="col-md-2 control-label" for="nostra_demarches">Démarches <span class="badge" id="countNostraDemarches">0</span></label>
 		<div class="col-md-10">
-			<select class="select2 nostra" multiple name="nostra_demarches[]" id="nostra_demarches"></select> <small class="pull-right">(facultatif)</small>
+			<select class="select2 nostra" multiple name="nostra_demarches[]" id="nostra_demarches"></select> @optional
 		</div>
 	</div>
 	@endif

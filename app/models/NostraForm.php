@@ -41,6 +41,10 @@ class NostraForm extends Eloquent {
 		return route('eformsPostCreateFromDamusValidation', $id);
 	}
 	
+	public function formatedId() {
+		return '#'.$this->nostra_id;
+	}
+	
 	/**
 	 * Relation vers les NostraDemarches
 	 * 

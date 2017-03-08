@@ -50,7 +50,7 @@ class AdministrationsController extends TrashableModelController {
 	 */
 	protected function getManage(ManageableModel $administration=null){
 		$regions = Region::orderBy('name')->get ();
-		return View::make('admin/administrations/manage', compact('administration', 'regions') );
+		return $this->makeDetailView($administration, 'admin/administrations/manage', compact('regions') );
 	}
 	
 	/**

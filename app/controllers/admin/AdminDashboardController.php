@@ -4,6 +4,15 @@ class AdminDashboardController extends BaseController {
 	protected function routeGetIndex() { return route('adminGetIndex'); }
 	
 	/**
+	 *
+	 * {@inheritDoc}
+	 * @see BaseController::getSection()
+	 */
+	protected function getSection(){
+		return 'dashboard';
+	}
+	
+	/**
 	 * Admin dashboard
 	 * Tout est filtré en fonction de l'utilisateur
 	 */

@@ -2,17 +2,12 @@
 /**
  * Démarches Ewbs
  * 
- * Table columns :
- * @property int            $id                      (PK)
  * @property int            $user_id                 Obligatoire, @see User
  * @property int            $nostra_demarche_id      Obligatoire, @see NostraDemarche
  * @property int            $ewbs
  * @property int            $eform_usage
- * $property enum			$volume
+ * $property enum           $volume
  * @property string         $comment
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
  * 
  * Dynamic properties :
  * @property NostraDemarche $nostraDemarche
@@ -235,17 +230,12 @@ class Demarche extends TrashableModel {
 	}
 	
 	/**
-	 * Retourne les pièces liées à une démarche dans leur état actuel
+	 * Retourne les formulaires liés à une démarche dans leur état actuel
 	 * 
 	 * @return Collection
 	 */
 	public function getLastRevisionEforms() {
-		$array = [];
-		$results = DB::table ( 'v_lastrevisiondemarcheeform' )->where ( 'demarche_id', '=', $this->id )->get ();
-		foreach ( $results as $result ) {
-			array_push ( $array, $result->id );
-		}
-		return (DemarcheEform::find ( $array ));
+		return DemarcheEform::lastRevision()->joinEforms()->forDemarche($this)->get();
 	}
 	
 	/**

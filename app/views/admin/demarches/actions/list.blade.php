@@ -1,34 +1,24 @@
-@extends('site.layouts.default') {{-- Web site Title --}}
-@section('title') Bienvenue sur Synapse @parent @stop {{-- Content --}}
-@section('content')
 <?php
-	$nostraDemarche=$modelInstance->nostraDemarche;
-	$manage = $modelInstance->canManage();
+/**
+ * @var Demarche $modelInstance
+ */
+$nostraDemarche=$modelInstance->nostraDemarche;
+$manage = $modelInstance->canManage();
 ?>
-<div class="page-head">
-	<h2><span class="fa fa-briefcase"></span> Actions de la démarche <em><a href="{{$modelInstance->routeGetView()}}">{{ $nostraDemarche->title }}</a></em></h2>
-</div>
 
+@extends('site.layouts.container-fluid')
+@section('title')Actions de la démarche <em>{{ $nostraDemarche->title }}</em> @stop
+@section('content')
 <form>
-	<!-- CSRF Token -->
 	<input type="hidden" id="_token" name="_token" value="{{{ csrf_token() }}}" />
-	<!-- ./ csrf token -->
 </form>
-
-<div class="cl-mcont">
-	<div class="row">
-		<div class="col-md-8">
-			@include('admin.demarches.blocs.actions')
-		</div>
-		<div class="col-md-4">
-			<div class="block-flat">
-				<div class="content no-padding">
-					@include('admin.modelInstance.partial-features')
-				</div>
-			</div>
-			@include('admin.demarches.blocs.projets_lies')
-			@include('admin.demarches.blocs.infos_nostra')
-		</div>
+<div class="row">
+	<div class="col-md-8">
+		@include('admin.demarches.blocs.actions')
+	</div>
+	<div class="col-md-4">
+		@include('admin.demarches.blocs.projets_lies')
+		@include('admin.demarches.blocs.infos_nostra')
 	</div>
 </div>
 @stop
@@ -39,4 +29,4 @@
 		$("#sidebar-collapse").trigger("click"); //fermer la sidebar
 	});
 </script>
-@stop {{-- Scripts --}}
+@stop

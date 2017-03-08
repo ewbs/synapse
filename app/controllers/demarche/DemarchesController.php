@@ -1,7 +1,10 @@
 <?php
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\MessageBag;
-class DemarcheController extends ModelController {
+use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Illuminate\Filesystem\FileNotFoundException;
+class DemarcheController extends TrashableModelController {
 	
 	/**
 	 * Inject the models.
@@ -17,53 +20,45 @@ class DemarcheController extends ModelController {
 	 * @see ModelController::features()
 	 */
 	protected function features(ManageableModel $modelInstance) {
-		return [
-			[
-				'label' => Lang::get ( 'button.view' ),
-				'url' => $modelInstance->routeGetView(),
-				'permission' => 'demarches_display',
-				'icon' => 'eye'
-			],
-			[
+		$features[]=[
+			'label' => Lang::get ( 'button.view' ),
+			'url' => $modelInstance->routeGetView(),
+			'icon' => 'eye'
+		];
+		if($modelInstance->canManage()) {
+			$features[]=[
 				'label' => Lang::get ( 'admin/demarches/messages.features.edit' ),
 				'url' => $modelInstance->routeGetEdit(),
-				'permission' => 'demarches_manage',
 				'icon' => 'pencil'
-			],
-			[
+			];
+			$features[]=[
 				'label' => Lang::get ( 'admin/ewbsactions/messages.title' ),
 				'url' => route('demarchesActionsGetIndex', $modelInstance->id),
-				'permission' => 'demarches_manage',
 				'icon' => 'magic'
-			],
-			[
+			];
+			$features[]=[
 				'label' => Lang::get ( 'admin/demarches/messages.features.components' ),
-				'permission' => 'demarches_manage',
 				'icon' => 'clipboard',
 				'sub' => [
 					[
 						'label' => Lang::get('admin/demarches/messages.features.components'),
 						'url' => route('demarchesGetComponents', $modelInstance->id),
 						'icon' => 'clipboard',
-						'permission' => 'demarches_manage',
 					],
 					[
 						'label' => Lang::get ( 'admin/demarches/messages.features.downloadSCMLight' ),
 						'url' => route('demarchesGetDownload', $modelInstance->id),
-						'permission' => 'demarches_manage',
 						'icon' => 'download'
 					],
 					[
 						'label' => Lang::get ( 'admin/demarches/messages.features.uploadSCMLight' ),
 						'url' => route('demarchesScmUploadGetFile', $modelInstance->id),
-						'permission' => 'demarches_manage',
 						'icon' => 'upload'
 					]
-				],
-			],
-
-		];
-
+				]
+			];
+		}
+		return $features;
 	}
 	
 	/**
@@ -85,17 +80,12 @@ class DemarcheController extends ModelController {
 	 * {@inheritDoc}
 	 * @see ModelController::getList()
 	 */
-	protected function getList() {
+	protected function getList($trash=false) {
 		$aRegions = Region::all ();
 		$aPublics = NostraPublic::root()->get();
-		return View::make ( 'admin/demarches/list', compact ( 'aRegions', 'aPublics' ) );
+		return View::make ( 'admin/demarches/list', compact ( 'aRegions', 'aPublics', 'trash' ) );
 	}
-
-
-	/**
-
-
-
+	
 	/**
 	 * Pour respecter la forme d'appel des autres méthode, la route appelle getDataFilteredCharges, qui appelle une autre méthode.
 	 * C'est la même construction que pour getData() qui appelle getDataJson() et que pour getDataFiltered qui appelle getDataFilteredJson.
@@ -140,6 +130,7 @@ class DemarcheController extends ModelController {
 			DB::raw ('v_demarchegains.gain_potential_administration AS gpc'),
 
 			DB::raw ( "CASE WHEN demarches.id IS NOT NULL THEN demarches.created_at ELSE NULL END AS demarche_created_at" ),									// pour afficher l'id complet ?
+			'nostra_demarches.id AS nostra_demarche_id', //ne pas changer de place : c'est envoyé à la vue puis caché
 		];
 
 		$builder = NostraDemarche
@@ -193,7 +184,7 @@ class DemarcheController extends ModelController {
 	 * {@inheritDoc}
 	 * @see ModelController::getDataJson()
 	 */
-	protected function getDataJson() {
+	protected function getDataJson($trash=false) {
 
 		// ne prendre que les démarches documentées
 		$documented = Input::has('onlyDocumented');
@@ -218,7 +209,7 @@ class DemarcheController extends ModelController {
 
 
 
-		$items = $this->getDataSql(false, $documented, $actions, $pieces, $tasks, $forms, $publics, $administrations);
+		$items = $this->getDataSql($trash, false, $documented, $actions, $pieces, $tasks, $forms, $publics, $administrations);
 
 		$dt = Datatables::of ( $items )
 			->edit_column('demarche_completeid', function ($item) {
@@ -227,14 +218,15 @@ class DemarcheController extends ModelController {
 				}
 				return DateHelper::year($item->demarche_created_at) . '-' . str_pad ( $item->demarche_completeid, 4, "0", STR_PAD_LEFT );
 			})
-			->edit_column('title', function ($item) {
-				if ( strlen($item->demarche_completeid) ) {
-					return '<a href="' . route('demarchesGetView', $item->demarche_id) . '"><strong>'.$item->title.'</strong><br/><small>'.$item->titlelong.'</small></a>';
+			->edit_column('title', function ($item) use($trash) {
+				if(!$trash) {
+					if ( strlen($item->demarche_completeid) ) {
+						return '<a href="' . route('demarchesGetView', $item->demarche_id) . '"><strong>'.$item->title.'</strong><br/><small>'.$item->titlelong.'</small></a>';
+					}
+					elseif ( Auth::user()->can('demarches_encode') ) {
+						return '<a href="' . route('demarchesGetCreate', $item->nostra_demarche_id) . '"><strong>' . $item->title . '</strong><br/><small>' . $item->titlelong . '</small></a>';
+					}
 				}
-				elseif ( Auth::user()->can('demarches_encode') ) {
-					return '<a href="' . route('demarchesGetCreate', $item->nostra_demarche_id) . '"><strong>' . $item->title . '</strong><br/><small>' . $item->titlelong . '</small></a>';
-				}
-
 				return '<strong>'.$item->title.'</strong><br/><small>'.$item->titlelong.'</small>';
 			})
 			->edit_column('count_pieces', function ($item) {
@@ -296,7 +288,7 @@ class DemarcheController extends ModelController {
 
 
 
-		$items = $this->getDataSql(true, $documented, $actions, $pieces, $tasks, $forms);
+		$items = $this->getDataSql(false, true, $documented, $actions, $pieces, $tasks, $forms);
 
 		$dt = Datatables::of ( $items )
 			->edit_column('demarche_completeid', function ($item) {
@@ -351,6 +343,7 @@ class DemarcheController extends ModelController {
 	 * Cette fonction retourne un builder, pour créer
 	 * - la liste des démarches
 	 * - la liste des démarches filtrées dans le dashboard d'un utilisateur
+	 * @param bool $trash Considérer les soft-deletés, false par défaut
 	 * @param bool $withUserFilters  ne prendre que selon les démarches filtrées par les filtres de l'utilisateur (si false : on prend toutes les démarches/nostrademarches)
 	 * @param bool $onlyDocumented : ne prendre que les documentées (donc les Demarches, sans les NostraDemarche non liées à une Demarche)
 	 * @param bool $onlyWithActions : ne prendre que les élément avec des actions EN COURS (ou DEMARREES)
@@ -361,7 +354,7 @@ class DemarcheController extends ModelController {
 	 * @param string $multipleSeparator : separateur litéraire pour les arrays transformés en strings
 	 * @return Eloquent\Builder;
 	 */
-	private function getDataSql($withUserFilters = false, $onlyDocumented=false, $onlyWithActions=false, $minPieces=false, $minTasks=false, $minForms=false, $publics=false, $administrations=false, $multipleSeparator = ', ')
+	private function getDataSql($trash=false, $withUserFilters = false, $onlyDocumented=false, $onlyWithActions=false, $minPieces=false, $minTasks=false, $minForms=false, $publics=false, $administrations=false, $multipleSeparator = ', ')
 	{
 
 		$columns = [
@@ -384,11 +377,13 @@ class DemarcheController extends ModelController {
 			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_GIVENUP . "'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_givenup")
 		];
 
-		if ($withUserFilters) { // si on est dans le dashcoard : on ne prend que les démarches de l'utilisateur (selon ses filtres)
+		if ($withUserFilters) { // si on est dans le dashboard : on ne prend que les démarches de l'utilisateur (selon ses filtres)
 			$builder = NostraDemarche::filtered();
 		} else { // sinon on prend tout par défaut
 			$builder = NostraDemarche::query(); //pas utiliser getQuery car l'objet retourné n'est pas le meme !!!!!!!!
 		}
+		
+		if($trash) $builder->onlyTrashed();
 
 		$builder->join('demarches', 'demarches.nostra_demarche_id', '=', 'nostra_demarches.id', (($onlyDocumented || $onlyWithActions) ? 'inner' : 'left'))
 			->join('ewbsActions', 'ewbsActions.demarche_id', '=', 'demarches.id', ($onlyWithActions ? 'inner' : 'left'))
@@ -928,13 +923,16 @@ class DemarcheController extends ModelController {
 					$worksheet->getCell ( "B{$line}" )->setValue ( $element->$idcol );
 					$worksheet->getCell ( "C{$line}" )->setValue ( $element->name );
 					foreach ( $columns as $colname => $colproperties ) {
-						if ($colname == 'gain_potential_citizen')
+						if ($colname == 'gain_potential_citizen') {
 							$value = "=D{$line}*E{$line}*F{$line}";
-							elseif ($colname == 'gain_potential_administration')
+						}
+						elseif ($colname == 'gain_potential_administration') {
 							$value = "=D{$line}*E{$line}*G{$line}";
-							else
-								$value = $element->$colname;
-								$worksheet->getCell ( $colproperties ['pos'] . $line )->setValue ( $value );
+						}
+						else {
+							$value = $element->$colname;
+						}
+						$worksheet->getCell ( $colproperties ['pos'] . $line )->setValue ( $value );
 					}
 				
 					// hauteur de ligne en auto (car pas mal de texte dans certaines cellules)
@@ -1102,12 +1100,13 @@ class DemarcheController extends ModelController {
 				), 200 );
 			}
 			
+			$file = Input::file ( 'file' );
+			if ( !$file->isValid ()) {
+				throw new \UnexpectedValueException ( $file->getErrorMessage() );
+			}
+			
 			// On déplace le fichier dans les uploads, et on le renomme.
 			// Le nom du fichier sera de la forme "SCM-<DEMARCHEID>-YYYYMMDDHHMMSS-<RANDOMSTRING(15)>.<EXTENSION>
-			if (! Input::file ( 'file' )->isValid ()) {
-				throw new Exception ( "Fichier invalide" );
-			}
-			$file = Input::file ( 'file' );
 			$fileName = "SCM-" . $demarche->id . "-" . Carbon::now ()->format ( "YmdHis" ) . "-" . str_random ( 15 ) . "." . $file->getClientOriginalExtension ();
 			$destinationPath = storage_path () . '/uploads/scm';
 			// Si le dossier de destination n'existe pas, on le crée
@@ -1152,19 +1151,19 @@ class DemarcheController extends ModelController {
 		try {
 			// A-t-on un fileName ?
 			if (! Input::has ( 'fileName' ))
-				throw new Exception ( "Aucun nom de fichier envoyé" );
+				throw new MissingMandatoryParametersException( "Aucun nom de fichier envoyé" );
 				
 				// La démarche et la démarche SCM existent-ils ?
 			$scm = DemarcheSCM::where ( 'filename', '=', Input::get ( 'fileName' ) )->firstOrFail ();
 			
 			// Peut on manipuler ce fichier ?
 			if(!$demarche->canManage() || $demarche->id!=$scm->demarche_id)
-				throw new Exception ( "NOTALLOWED" );
+				throw new AccessDeniedException( "NOTALLOWED" );
 				
 				// Le fichier existe-t-il ?
 			$completeFileName = $scm->getFilePath ();
 			if (! File::exists ( $completeFileName ))
-				throw new Exception ( "Fichier non trouvé" );
+				throw new FileNotFoundException( "Fichier non trouvé : {$completeFileName}" );
 				
 				/*
 			 * Structure des résultats retournés à l'utilisateur :
@@ -1231,7 +1230,8 @@ class DemarcheController extends ModelController {
 					$demarcheComponent = null;
 					
 					// Quelle est le demarcheComponent
-					switch (strtolower ( $objWorksheet->getCell ( "A{$row}" )->getValue () )) {
+					$componentType=$objWorksheet->getCell ( "A{$row}" )->getValue ();
+					switch (strtolower($componentType)) {
 						case 'tache' :
 						case 'tâche' :
 						case 'tche' :
@@ -1244,6 +1244,7 @@ class DemarcheController extends ModelController {
 							$type = 'piece';
 							$demarcheComponent = DemarchePiece::find ( $demarcheComponentId );
 							break;
+						default: throw new \UnexpectedValueException("Type de composant inattendu : $componentType");
 					}
 					
 					// on a trouvé un demarcheComponent valable à traiter
@@ -1326,7 +1327,7 @@ class DemarcheController extends ModelController {
 			} /* fin de la boucle générale */
 			
 			if (! $eofFound)
-				throw new Exception ( Lang::get ( 'admin/demarches/scmfiles.process.eof_not_found' ) );
+				throw new \ExceUnexpectedValueException( Lang::get ( 'admin/demarches/scmfiles.process.eof_not_found' ) );
 				
 				/*
 			 * Gestion des totaux et de la création éventuelle d'une révision d'une démarche
@@ -1506,6 +1507,7 @@ class DemarcheController extends ModelController {
 				$rows[] = [
 					$eform->name(),
 					$annexes,
+					$demarcheEform->nostra_id?'#'.$demarcheEform->nostra_id:'',
 					DateHelper::sortabledatetime($demarcheEform->created_at) . '<br/>' . $demarcheEform->user->username,
 					(($manage && $demarcheEform->canManage()) ? '<a href="' . route('demarchesEformsGetDelete', [$demarche->id, $demarcheEform->id]) . '" title="' . Lang::get('button.delete') . '" class="delete btn btn-xs btn-danger servermodal"><span class="fa fa-trash-o"></span></a>' : '')
 				];
@@ -1541,24 +1543,23 @@ class DemarcheController extends ModelController {
 		}
 		else {
 			//on regarde les nostra_forms liés à cette démarche pour proposer ceux-ci en "suggérés".
-			$aLinkedNostraForms = $demarche->nostraDemarche->nostraForms()->lists('id');
-			$aSuggestedEforms = Eform
-			::whereRaw("eforms.id NOT IN(SELECT eform_id FROM v_lastrevisiondemarcheeform WHERE demarche_id={$demarche->id} AND deleted_at IS NULL)")
-			->leftjoin('v_lastrevisioneforms', 'eforms.id', '=', 'v_lastrevisioneforms.eform_id')
-			->leftjoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
+			$aSuggestedEforms = $demarche->nostraDemarche->nostraForms()->getBaseQuery()
+			->join('eforms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
+			->join('v_lastrevisioneforms', 'eforms.id', '=', 'v_lastrevisioneforms.eform_id')
 			->whereNull('v_lastrevisioneforms.deleted_at')
-			->whereIn('nostra_forms.id', $aLinkedNostraForms)
+			->whereRaw("eforms.id NOT IN(SELECT eform_id FROM v_lastrevisiondemarcheeform WHERE demarche_id={$demarche->id} AND deleted_at IS NULL)")
 			->orderby('title')
 			->select(['eforms.id', DB::raw('COALESCE(nostra_forms.title, eforms.title) AS title'), 'nostra_forms.nostra_id as nostra_id', 'v_lastrevisioneforms.current_state_id', 'v_lastrevisioneforms.next_state_id'])->get();
-			// et ici on prend l'ensemble des autres formulaires
+			$aEforms=[];
+			
+			// et ici on prend les autres formulaires non liés à un formulaire nostra
 			$aEforms=Eform
-			::whereRaw("eforms.id NOT IN(SELECT eform_id FROM v_lastrevisiondemarcheeform WHERE demarche_id={$demarche->id} AND deleted_at IS NULL)")
-			->leftjoin('v_lastrevisioneforms', 'eforms.id', '=', 'v_lastrevisioneforms.eform_id')
-			->leftjoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
+			::leftjoin('v_lastrevisioneforms', 'eforms.id', '=', 'v_lastrevisioneforms.eform_id')
 			->whereNull('v_lastrevisioneforms.deleted_at')
-			->whereNotIn('nostra_forms.id', $aLinkedNostraForms)
+			->whereRaw("eforms.id NOT IN(SELECT eform_id FROM v_lastrevisiondemarcheeform WHERE demarche_id={$demarche->id} AND deleted_at IS NULL)")
+			->whereNull('eforms.nostra_form_id')
 			->orderby('title')
-			->select(['eforms.id', DB::raw('COALESCE(nostra_forms.title, eforms.title) AS title'), 'nostra_forms.nostra_id as nostra_id', 'v_lastrevisioneforms.current_state_id', 'v_lastrevisioneforms.next_state_id'])->get();
+			->select(['eforms.id', 'eforms.title', 'v_lastrevisioneforms.current_state_id', 'v_lastrevisioneforms.next_state_id'])->get();
 		}
 		$states=DemarchePieceState::allKeyById();
 		return View::make ( 'admin/demarches/components/eforms/modal-manage', compact ( 'demarche', 'demarche_eform', 'aEforms', 'aSuggestedEforms', 'errors', 'states' ) );
@@ -2390,9 +2391,7 @@ class DemarcheController extends ModelController {
 			$selectedTags = $action->tags->lists('id');
 		}
 		$returnTo = $this->getReturnTo();
-
 		return View::make ( 'admin/demarches/actions/modal-manage', array_merge(compact('demarche', 'action', 'aTaxonomy', 'selectedTags', 'returnTo'), $extra));
-		return $view;
 	}
 	
 	/**
@@ -2718,9 +2717,8 @@ class DemarcheController extends ModelController {
 	 * @return View
 	 */
 	public function ideasGetLink(Demarche $demarche) {
-		$aIdeas=DB
-		::table('ideas')
-		->leftjoin('idea_nostra_demarche', function($join) use($demarche) {
+		$aIdeas=Idea
+		::leftjoin('idea_nostra_demarche', function($join) use($demarche) {
 			$join->on('idea_nostra_demarche.idea_id', '=', 'ideas.id');
 			$join->where('idea_nostra_demarche.nostra_demarche_id', '=', $demarche->nostra_demarche_id);
 		})

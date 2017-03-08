@@ -28,7 +28,7 @@ $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRev
 					<div class="form-group {{{ $errors->has('name') ? 'has-error' : '' }}}">
 						<label class="col-md-2 control-label" for="name">Nom</label>
 						<div class="col-md-10">
-							<input class="form-control" type="text" name="name" value="{{{ Input::old('name', $action ? $action->name : null) }}}" placeholder="Nom" />
+							<input class="form-control" type="text" name="name" value="{{{ Input::old('name', $edit ? $action->name : null) }}}" placeholder="Nom" />
 							{{ $errors->first('name', '<span class="help-inline">:message</span>') }}
 						</div>
 					</div>
@@ -77,7 +77,7 @@ $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRev
 					{{-- ./ Priority --}}
 
 					{{-- Taxonomie --}}
-					<div class="form-group" {{{ $errors->has('tags') ? 'has-error' : '' }}}>
+					<div class="form-group">
 						<label class="col-md-2 control-label" form="tags">Tags</label>
 						<div class="col-md-10">
 							<!-- tags -->
@@ -95,15 +95,15 @@ $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRev
 									</optgroup>
 								@endforeach
 							</select>
-							{{ $errors->first('tags', '<span class="help-inline">:message</span>') }}
+							@optional
 						</div>
 					</div>
 					{{-- ./ Taxonomie --}}
 					
 				</div>
 				<div class="modal-footer">
-					<button type="submit" name="action" value="save" class="btn btn-primary">{{ ($edit ? 'Modifier' : 'Ajouter') }} l'action</button>
-					<button class="btn btn-default" type="button" data-dismiss="modal">Annuler</button>
+					<button class="btn btn-default" type="button" data-dismiss="modal">{{Lang::get('button.cancel')}}</button>
+					<button type="submit" name="action" value="save" class="btn btn-primary">{{Lang::get('button.save')}}</button>
 				</div>
 			</form>
 		</div>

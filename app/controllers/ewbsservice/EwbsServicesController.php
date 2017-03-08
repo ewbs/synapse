@@ -12,34 +12,6 @@ class EwbsServicesController extends TrashableModelController {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see ModelController::features()
-	 */
-	protected function features(ManageableModel $modelInstance) {
-		return [
-			[
-				'label' => Lang::get ( 'button.view' ),
-				'url' => $modelInstance->routeGetView(),
-				'permission' => 'taxonomy_display',
-				'icon' => 'eye'
-			],
-			[
-				'label' => Lang::get ( 'button.edit' ),
-				'url' => $modelInstance->routeGetEdit(),
-				'permission' => $modelInstance->permissionManage(),
-				'icon' => 'pencil'
-			],
-			[
-				'label' => Lang::get ( 'button.delete' ),
-				'url' => $modelInstance->routeGetDelete(),
-				'permission' => $modelInstance->permissionManage(),
-				'icon' => 'trash-o',
-				'class' =>'btn-danger',
-			]
-		];
-	}
-	
-	/**
-	 * {@inheritDoc}
 	 * @see ModelController::getList()
 	 */
 	protected function getList($onlyTrashed=false) {
@@ -107,7 +79,8 @@ class EwbsServicesController extends TrashableModelController {
 		$modelInstance->description = Input::get ( 'description' );
 
 		$modelInstance->save();
-		$modelInstance->tags()->sync(Input::get('tags'));
+		$tags=Input::get('tags');
+		if($tags) $modelInstance->tags()->sync($tags);
 
 		return true;
 	}

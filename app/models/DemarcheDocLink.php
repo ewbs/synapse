@@ -2,15 +2,10 @@
 /**
  * Liens (URL) de documentation d'une démarche
  * 
- * @property int            $id                   (PK)
  * @property int            $demarche_id          Obligatoire, @see Demarche
  * @property string         $name                 Obligatoire
  * @property string         $description          Obligatoire
  * @property string         $url                  Obligatoire
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- * 
  * @author jdavreux
  */
 class DemarcheDocLink extends TrashableModel {

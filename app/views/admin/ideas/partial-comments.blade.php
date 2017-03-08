@@ -78,8 +78,8 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" id="comments-modal-button-delete" class="btn btn-danger pull-left">Supprimer le commentaire</button>
-				<button type="button" id="comments-modal-button-edit" class="btn btn-primary">Modifier</button>
-				<button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">{{Lang::get('button.cancel')}}</button>
+				<button type="button" id="comments-modal-button-edit" class="btn btn-primary">{{Lang::get('button.save')}}</button>
 			</div>
 		</div>
 	</div>
@@ -100,7 +100,7 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" id="comments-modal-confirm-button-delete" class="btn btn-danger">Supprimer le commentaire</button>
-				<button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">{{Lang::get('button.cancel')}}</button>
 			</div>
 		</div>
 	</div>

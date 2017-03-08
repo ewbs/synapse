@@ -1,14 +1,9 @@
 <?php
 
+use Symfony\Component\Process\Exception\LogicException;
+
 /**
  * Classe de base à tous les modèles ayant des révisions
- * 
- * On part de l'hypothèse que les modèles étendus auront bien au minimum les propriétés ci-dessous
- * 
- * @property int            $id              (PK)
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
  * 
  * @abstract
  * @author mgrenson
@@ -173,7 +168,7 @@ abstract class RevisableModel extends TrashableModel {
 				}
 				else {
 					DB::rollBack();
-					throw new Exception(get_class($modelInstance)." {$modelInstance->id} not deleted, because revision could not be created. validationErrors : ".print_r($revision->validationErrors->toArray(), true));
+					throw new LogicException(get_class($modelInstance)." {$modelInstance->id} not deleted, because revision could not be created. validationErrors : ".print_r($revision->validationErrors->toArray(), true));
 				}
 			}
 		});

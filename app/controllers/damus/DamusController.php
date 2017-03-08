@@ -4,6 +4,15 @@ class DamusController extends BaseController {
 
 	protected function routeGetIndex() { return route('damusGetIndex'); }
 	
+	/**
+	 *
+	 * {@inheritDoc}
+	 * @see BaseController::getSection()
+	 */
+	protected function getSection(){
+		return 'damus';
+	}
+	
 	private static $TOKEN_SIZE=20;
 	
 	public function getIndex() {

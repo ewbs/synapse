@@ -2,15 +2,10 @@
 /**
  * Tarif des tâches
  *
- * @property int            $id            (PK)
  * @property string         $name          Obligatoire, maximum 1024 caractères
  * @property float          $hour_rate     Obligatoire
  * @property string         $description
  * @property string         $who           Obligatoire, maximum 255 caractères
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
- *
  * @author jdavreux
  */
 class PieceRate extends TrashableModel {

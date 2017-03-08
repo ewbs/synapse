@@ -6,9 +6,9 @@ return [
 	'no' => 'Non',
 	'no_right' => 'Vous ne disposez pas des droits nécessaires pour accéder à cette page.',
 	'no_right_action' => 'Vous ne disposez pas des droits nécessaires pour effectuer cette action.',
+	'optional' => '(facultatif)',
 	'trash' => 'Corbeille',
 	'yes' => 'Oui',
-	'cancel' => 'Annuler',
 	
 	'delete' => [
 		'error' => 'Une erreur est survenue et l\'élément n\'a pas été supprimée. Merci de réessayer. <br/>Si le problème persiste, merci de le signaler au support.',

@@ -15,6 +15,5 @@ Woodling::seed ( 'CommentOld', array (
 		'do' => function ($blueprint) {
 			$blueprint->created_at = Carbon::now ()->subWeeks ( 2 );
 			$blueprint->updated_at = Carbon::now ()->subWeeks ( 2 );
-			;
 		} 
 ) );
