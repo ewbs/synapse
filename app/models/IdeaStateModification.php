@@ -189,11 +189,25 @@ class IdeaStateModification extends Eloquent {
 	public function user() {
 		return $this->belongsTo ( 'User' );
 	}
-	public static function getAvailableStates($state = '', $accreditation = '') {
-		if (isset ( IdeaStateModification::$availableStates [$state] [$accreditation] )) {
-			return (IdeaStateModification::$availableStates [$state] [$accreditation]);
-		} else {
-			return (array ());
+	public static function getAvailableStates($fromstate = '', $accreditation = '') {
+		if (isset ( IdeaStateModification::$availableStates [$fromstate] [$accreditation] )) {
+			/* Si des états sont bien disponibles en fct de l'état de départ et de l'accréditation, repartir des états en DB et filtrer la liste obtenue :
+			 * (pour pouvoir inclure dans la liste retournée l'état actuel au bon endroit)
+			 */
+			$availableStates=IdeaStateModification::$availableStates [$fromstate] [$accreditation];
+			$states=IdeaState::orderBy('order')->get(['name']);
+			$effectiveStates=[];
+			foreach($states as $state) {
+				if($state->name==$fromstate || in_array($state->name, $availableStates)) {
+					$effectiveStates[]=$state->name;
+				}
+			}
+			return $effectiveStates;
+		} elseif (!empty($fromstate)) {
+			return array($fromstate);
+		}
+		else {
+			return [];
 		}
 	}
 }

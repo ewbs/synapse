@@ -245,8 +245,9 @@ class IdeaController extends TrashableModelController {
 		
 		if(!$create) {
 			// et on termine avec un éventuel changement d'état
-			if (Input::get ( 'changestate' ) > 0) {
-				$ideaState = IdeaState::where ( 'name', '=', Input::get ( 'state' ) )->firstOrFail ();
+			$state=Input::get ( 'state' );
+			if ($state!=$idea->getLastStateModification ()->ideaState->name) {
+				$ideaState = IdeaState::where ( 'name', '=', $state )->firstOrFail ();
 				$state = new IdeaStateModification ();
 				$state->comment = Input::get ( 'statecomment' );
 				$state->user ()->associate ( $this->getLoggedUser() );

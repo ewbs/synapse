@@ -38,6 +38,7 @@
 							{{ $idea->name }}
 						</legend>
 						<!-- ./ Etat -->
+						<?php /* FIXME : Les états ne sont pas filtrés selon les droits de l'utilisateur */ ?>
 						<div class="form-group {{{ $errors->has('state'.$idea->id) ? 'has-error' : '' }}}">
 							<label class="col-md-2 control-label" for="state{{$idea->id}}">Nouvel état</label>
 							<div class="col-md-10">

@@ -34,7 +34,6 @@ if ($modelInstance) {
 				<div class="block-flat">
 					<div class="header"><h4>Etat du projet</h4></div>
 					<div class="content">
-						<input type="hidden" name="changestate" id="changestate" value="0" />
 						<ol class="breadcrumb">
 							<li>{{$ideaState->name == 'ENCODEE' ? Lang::get('admin/ideas/states.label-ENCODEE') : Lang::get('admin/ideas/states.ENCODEE')}}</li>
 							<li>{{$ideaState->name == 'REVUE' ? Lang::get('admin/ideas/states.label-REVUE') : Lang::get('admin/ideas/states.REVUE')}}</li>
@@ -43,13 +42,6 @@ if ($modelInstance) {
 							<li>{{$ideaState->name == 'REALISEE' ? Lang::get('admin/ideas/states.label-REALISEE') : Lang::get('admin/ideas/states.REALISEE')}}</li>
 							<li>{{$ideaState->name == 'SUSPENDUE' ? Lang::get('admin/ideas/states.label-SUSPENDUE') : Lang::get('admin/ideas/states.SUSPENDUE')}}</li>
 							<li>{{$ideaState->name == 'ABANDONNEE' ? Lang::get('admin/ideas/states.label-ABANDONNEE') : Lang::get('admin/ideas/states.ABANDONNEE')}}</li>
-							@if (isset($availableStates))
-								<li class="pull-right">
-									<a href="javascript:void(0);" id="state-button-cancel" class="btn btn-danger btn-xs pull-right">{{Lang::get('button.cancel')}}</a>
-									<a href="javascript:void(0);" id="state-button-modify" class="btn btn-primary btn-xs pull-right">Modifier l'état</a>
-									
-								</li>
-							@endif
 						</ol>
 						@if (isset($availableStates))
 							<div class="form-group state-formgroup">
@@ -62,7 +54,7 @@ if ($modelInstance) {
 									</select>
 								</div>
 							</div>
-							<div class="form-group state-formgroup">
+							<div class="form-group state-comment" style="display:none">
 								<label class="col-md-2 control-label" for="statecomment">Commentaire</label>
 								<div class="col-md-10">
 									<textarea class="form-control" name="statecomment" id="statecomment" placeholder="Commentaire et/ou explicatif éventuel du changement d'état"></textarea>

@@ -357,14 +357,13 @@ class Idea extends TrashableModel {
 	 */
 	public function getAvailableStates($user, $fromstate=null) {
 		// droits d'utilisateurs sur les états de l'idée
-		//FIXME : On parle un peu trop de rôles ici, à voir cmt adapter cela
 		
 		if(!$fromstate){
 			$fromstate=$this->getLastStateModification ()->ideaState->name;
 		}
 		
 		$states=array();
-		if ($user->hasRole ( 'admin' ))
+		if ($user->hasRole ( 'admins' ))
 			$states=IdeaStateModification::getAvailableStates ( $fromstate, 'admin' );
 		elseif ($user->can ( 'ideas_manage' ))
 			$states=IdeaStateModification::getAvailableStates ( $fromstate, 'ideas_manage' );

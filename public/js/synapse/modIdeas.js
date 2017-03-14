@@ -24,20 +24,17 @@ var domToken = null;
 var domModalEdit = null;
 var domModalDelete = null;
 
-//gestion des etats
-var domStateHiddenInput = null;
-var domStateBtnModify = null;
-var domStateBtnCancel = null;
-
 /**
  * INIT
  * @param {type} param
  */
 $(document).ready( function () { 
         // pour le changement d'état (formulaire de modification d'un projet de simplif)
-        if ($("input#changestate").length) {
-            modIdeasStates_init();
-        }
+        
+        $("select#state").change( function () {
+            $("div.state-comment").show();
+        });
+        
         
         // gestion des commentaires
         if ($("#comments-list").length) {
@@ -219,41 +216,4 @@ function modIdeasComments_refreshList(withHighLight) {
                     alert('Erreur de communication avec Synapse ('+thrownError+')');
             });
         }
-}
-
-
-
-/**
- * Initialisation des modifications d'état dans le module IDEAS
- * Ceci n'existe que sur le formulaire d'édition d'un projet de simplif
- * @returns {undefined}
- */
-function modIdeasStates_init() {
-    
-        //init des variables utilisées
-        domStateHiddenInput = $("input#changestate");
-        domStateBtnCancel = $("a#state-button-cancel");
-        domStateBtnModify = $("a#state-button-modify");
-        
-        // premier affichage : masquer ce qui ne doit pas être visible
-        $("div.state-formgroup").hide();
-        domStateBtnCancel.hide();
-        domStateHiddenInput.val(0);
-        
-        //click sur "modifier l'état"
-        domStateBtnModify.click( function () {
-            domStateHiddenInput.val(1);
-            domStateBtnCancel.show();
-            domStateBtnModify.hide();
-            $("div.state-formgroup").effect('highlight', {}, 1750);
-        });
-        
-        //click sur "annuler"
-        domStateBtnCancel.click( function () {
-            domStateHiddenInput.val(0);
-            domStateBtnCancel.hide();
-            domStateBtnModify.show();
-            $("div.state-formgroup").hide();
-        });
-
 }
