@@ -6,7 +6,7 @@ return [
 	
 	'features' => [
 		'edit'=>'Documenter',
-		'components'=>'Pièces et tâches',
+		'components'=>'Formulaires / Pièces & tâches',
 		'downloadSCMLight'=>'Télécharger le SCM Light',
 		'uploadSCMLight'=>'Envoyer un SCM Light',
 	],
