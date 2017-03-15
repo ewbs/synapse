@@ -91,6 +91,5 @@
 {{ HTML::script('js/jquery.number/jquery.number.min.js') }}
 {{ HTML::script('js/jquery.nestable/jquery.nestable.js') }}
 {{ HTML::script('js/synapse/modIdeas.js') }}
-{{-- HTML::script('js/synapse/modDemarches-list.js') --}}
 {{ HTML::script('js/synapse/modDemarches-edit.js') }}
 @stop
