@@ -24,13 +24,11 @@
 						</p>
 					</div>
 					@endif
-					<?php
-						$ideaStates=IdeaState::all();
-					?>
 					{{ Lang::choice('admin/demarches/messages.idea.modalUpdate.intro', count($aIdeas)) }}
 					@foreach($aIdeas as $idea)
 					<?php
 					$currentIdeaState = $idea->getLastStateModification()->ideaState;
+					$ideaStates=$idea->getAvailableStates($currentIdeaState->name);
 					?>
 					<fieldset class="idea">
 						<legend>
@@ -38,8 +36,8 @@
 							{{ $idea->name }}
 						</legend>
 						<!-- ./ Etat -->
-						<?php /* FIXME : Les états ne sont pas filtrés selon les droits de l'utilisateur */ ?>
-						<div class="form-group {{{ $errors->has('state'.$idea->id) ? 'has-error' : '' }}}">
+
+					<div class="form-group {{{ $errors->has('state'.$idea->id) ? 'has-error' : '' }}}">
 							<label class="col-md-2 control-label" for="state{{$idea->id}}">Nouvel état</label>
 							<div class="col-md-10">
 								<select class="form-control" name="state{{$idea->id}}" id="state{{$idea->id}}"> 
