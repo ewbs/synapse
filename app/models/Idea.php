@@ -351,27 +351,19 @@ class Idea extends TrashableModel {
 	/**
 	 * Récupère les états disponibles de l'idée en fonction des droits de l'utilisateur courant
 	 * 
-	 * @param \User $user Utilisateur courant
-	 * @param string $fromstate Etat à partir duquel constituer la liste, par défaut l'état actuel de l'idée
-	 * @return array
+	 * @param string $fromstate Nom de l'état de départ
+	 * @return \Illuminate\Database\Eloquent\Collection[]|static[][]
 	 */
-	public function getAvailableStates($user, $fromstate=null) {
-		// droits d'utilisateurs sur les états de l'idée
+	public function getAvailableStates($fromstate) {
+		$user=Auth::user();
 		
-		if(!$fromstate){
-			$fromstate=$this->getLastStateModification ()->ideaState->name;
-		}
-		
-		$states=array();
 		if ($user->hasRole ( 'admins' ))
-			$states=IdeaStateModification::getAvailableStates ( $fromstate, 'admin' );
-		elseif ($user->can ( 'ideas_manage' ))
-			$states=IdeaStateModification::getAvailableStates ( $fromstate, 'ideas_manage' );
-		elseif ($user->id == $this->user_id)
-			$states=IdeaStateModification::getAvailableStates ( $fromstate, 'owner' );
-		elseif ($user->id == $this->ewbs_member_id)
-			$states=IdeaStateModification::getAvailableStates ( $fromstate, 'ewbs' );
-		
-		return $states;
+			return IdeaStateModification::getAvailableStates ( $fromstate, 'admin' );
+		if ($user->can ( 'ideas_manage' ))
+			return IdeaStateModification::getAvailableStates ( $fromstate, 'ideas_manage' );
+		if ($user->id == $this->user_id)
+			return IdeaStateModification::getAvailableStates ( $fromstate, 'owner' );
+		if ($user->id == $this->ewbs_member_id)
+			return IdeaStateModification::getAvailableStates ( $fromstate, 'ewbs' );
 	}
 }

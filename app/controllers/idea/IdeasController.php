@@ -190,13 +190,16 @@ class IdeaController extends TrashableModelController {
 
 			$aSelectedNostraDemarches = $modelInstance->getNostraDemarchesIds ();
 			$aSelectedNostraPublics = count($aSelectedNostraDemarches) ? [] : $modelInstance->getNostraPublicsIds (); //si ona une démarche, on ne prend pas les publics de la relation, mais ceux liés à la démarche
-			$availableStates=$modelInstance->getAvailableStates($this->getLoggedUser());
-
+			
+			$currentIdeaState = $modelInstance->getLastStateModification()->ideaState;
+			$availableStates=$modelInstance->getAvailableStates($currentIdeaState->name);
+			$ideaStates=IdeaState::orderBy('order')->get();
+			
 			$aSelectedTags = $modelInstance->tags->lists('id');
 
 			return $this->makeDetailView($modelInstance, 'admin/ideas/manage',
 				compact ('ewbsMembers', 'aRegions', 'aSelectedAdministrations', 'aGovernements', 'aSelectedMinisters', 'aNostraDemarches', 'aNostraPublics',
-				         'aSelectedNostraPublics', 'aSelectedNostraDemarches', 'availableStates', 'aTaxonomy', 'aSelectedTags', 'returnTo' ) );
+				         'aSelectedNostraPublics', 'aSelectedNostraDemarches', 'availableStates', 'ideaStates','currentIdeaState', 'aTaxonomy', 'aSelectedTags', 'returnTo' ) );
 		}
 		return View::make ( 'admin/ideas/manage', compact ( 'modelInstance', 'ewbsMembers', 'aRegions', 'aGovernements', 'aTaxonomy', 'aNostraDemarches', 'aNostraPublics', 'returnTo' ) );
 	}
@@ -246,14 +249,14 @@ class IdeaController extends TrashableModelController {
 		if(!$create) {
 			// et on termine avec un éventuel changement d'état
 			$state=Input::get ( 'state' );
-			if ($state!=$idea->getLastStateModification ()->ideaState->name) {
-				$ideaState = IdeaState::where ( 'name', '=', $state )->firstOrFail ();
-				$state = new IdeaStateModification ();
-				$state->comment = Input::get ( 'statecomment' );
-				$state->user ()->associate ( $this->getLoggedUser() );
-				$state->ideaState ()->associate ( $ideaState );
-				$state->idea ()->associate ( $idea );
-				$state->save ();
+			if ($state!=$idea->getLastStateModification ()->ideaState->id) {
+				$ideaState = IdeaState::findOrFail($state);
+				$ideaStateModification = new IdeaStateModification ();
+				$ideaStateModification->comment = Input::get ( 'statecomment' );
+				$ideaStateModification->user ()->associate ( $this->getLoggedUser() );
+				$ideaStateModification->ideaState ()->associate ( $ideaState );
+				$ideaStateModification->idea ()->associate ( $idea );
+				$ideaStateModification->save ();
 			}
 		}
 		else {

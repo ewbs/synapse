@@ -2,11 +2,6 @@
 /**
  * @var Idea $modelInstance
  */
-// on va plusieurs fois l'utiliser ... on le stocke en var pour éviter de refaire la requete à chaque fois.
-if ($modelInstance) {
-	$ideaState = $modelInstance->getLastStateModification()->ideaState;
-	if (!count($availableStates)) unset($availableStates);
-}
 ?>
 
 @extends('site.layouts.container-fluid')
@@ -17,7 +12,7 @@ if ($modelInstance) {
 	<!-- CSRF Token -->
 	<input type="hidden" name="_token" id="_token" value="{{{ csrf_token() }}}" />
 	<!-- ./ csrf token -->
-	<input type="hidden" name="formsubmit" value="1" /> {{-- Ceci sert à savoir si le formulaire a été posté. pour dérterminer un comportement dans le JS --}}
+	<input type="hidden" name="formsubmit" value="1" /> {{-- Ceci sert à savoir si le formulaire a été posté. pour déterminer un comportement dans le JS --}}
 
 	<div class="row">
 
@@ -35,21 +30,17 @@ if ($modelInstance) {
 					<div class="header"><h4>Etat du projet</h4></div>
 					<div class="content">
 						<ol class="breadcrumb">
-							<li>{{$ideaState->name == 'ENCODEE' ? Lang::get('admin/ideas/states.label-ENCODEE') : Lang::get('admin/ideas/states.ENCODEE')}}</li>
-							<li>{{$ideaState->name == 'REVUE' ? Lang::get('admin/ideas/states.label-REVUE') : Lang::get('admin/ideas/states.REVUE')}}</li>
-							<li>{{$ideaState->name == 'VALIDEE' ? Lang::get('admin/ideas/states.label-VALIDEE') : Lang::get('admin/ideas/states.VALIDEE')}}</li>
-							<li>{{$ideaState->name == 'ENREALISATION' ? Lang::get('admin/ideas/states.label-ENREALISATION') : Lang::get('admin/ideas/states.ENREALISATION')}}</li>
-							<li>{{$ideaState->name == 'REALISEE' ? Lang::get('admin/ideas/states.label-REALISEE') : Lang::get('admin/ideas/states.REALISEE')}}</li>
-							<li>{{$ideaState->name == 'SUSPENDUE' ? Lang::get('admin/ideas/states.label-SUSPENDUE') : Lang::get('admin/ideas/states.SUSPENDUE')}}</li>
-							<li>{{$ideaState->name == 'ABANDONNEE' ? Lang::get('admin/ideas/states.label-ABANDONNEE') : Lang::get('admin/ideas/states.ABANDONNEE')}}</li>
+							@foreach($ideaStates as $state)
+							<li>{{$state->id == $currentIdeaState->id ? Lang::get("admin/ideas/states.label-{$state->name}") : Lang::get("admin/ideas/states.{$state->name}")}}</li>
+							@endforeach
 						</ol>
-						@if (isset($availableStates))
+						@if(!$availableStates->isEmpty())
 							<div class="form-group state-formgroup">
 								<label class="col-md-2 control-label" for="state">Nouvel état</label>
 								<div class="col-md-10">
 									<select class="form-control" name="state" id="state">
 										@foreach ($availableStates as $state)
-											<option value="{{$state}}" {{{$ideaState->name == $state ? 'selected': ''}}}>{{Lang::get('admin/ideas/states.'.$state)}}</option>
+											<option value="{{$state->id}}" {{{$currentIdeaState->id == $state->id ? 'selected': ''}}}>{{Lang::get('admin/ideas/states.'.$state->name)}}</option>
 										@endforeach
 									</select>
 								</div>
