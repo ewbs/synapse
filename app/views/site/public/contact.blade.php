@@ -43,9 +43,3 @@
 	</div>
 </div>
 @stop
-
-@section('scripts')
-<script type="text/javascript">
-	console.log("contact");
-</script>
-@stop

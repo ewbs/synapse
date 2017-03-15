@@ -30,7 +30,6 @@
 
 @section('containerscripts')
 <script type="text/javascript">
-	console.log("container");
 	$(document).ready(function(){
 		$("#sidebar-collapse").trigger("click"); //fermer la sidebar
 	});
