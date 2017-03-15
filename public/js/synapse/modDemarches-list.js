@@ -10,7 +10,6 @@ var $domCheckboxOnlyDocumented = null;
 var $domCheckboxOnlyActions = null;
 var $domDivDemarchesList = null;
 var $domSpanDemarchesCounter = null;
-var $domDivItemMatrix = null;
 var $domSelectNostraPublics = null;
 var $domSelectAdministrations = null;
 var $domDivNoItem = null;
@@ -38,7 +37,6 @@ $(document).ready(function () {
 		$domCheckboxOnlyActions = $("input#demarches_onlyActions");
 		$domDivDemarchesList = $("div#demarches_list");
 		$domSpanDemarchesCounter = $("span#demarches_counter");
-		$domDivItemMatrix = $("div#itemMatrix");
 		$domSelectNostraPublics = $("select#nostra_publics");
 		$domSelectAdministrations = $("select#administrations");
 		$domDivNoItem = $("div#noItemsFound");
