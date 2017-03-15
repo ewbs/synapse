@@ -1,7 +1,7 @@
 # Release Notes
 
 ## 4.2.0 - Ministry of Silly Walks
-*Ce release de Synapse intègre principalement les interfaces de gestion des ministres, ainsi que quelques améliorations et corrections mineures.
+* Ce release de Synapse intègre principalement les interfaces de gestion des ministres, ainsi que quelques améliorations et corrections mineures.
 
 ### Démarches
 - Changed : Ajouter la notion de formulaires dans le bouton "Pièces et tâches" dans les écrans de traitement d'une démarche
