@@ -80,7 +80,19 @@ class MinistersController extends TrashableModelController {
 	 */
 	protected function getLinks(ManageableModel $modelInstance) {// TODO
 		/* @var Minister $modelInstance */
-		return [];
+		$ideas=$modelInstance->ideas()->getQuery()
+		->orderBy('name')
+		->get(['id', 'name'])->toArray();
+		
+		$links=[];
+		if(!empty($ideas)) {
+			$links[]=[
+				'route'=> 'ideasGetView',
+				'label' => Lang::get('admin/ideas/messages.title'),
+				'items' => $ideas
+			];
+		}
+		return $links;
 	}
 	
 	/**
