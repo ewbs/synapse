@@ -5,6 +5,7 @@
 
 ### Général
 - Added : Permettre de présenter  par défaut un datatable ajax en ordre descendant sur la 1e colonne
+- Changed : Présenter les champs datepicker en format yyyy-mm-dd
 
 ### Démarches
 - Changed : Ajouter la notion de formulaires dans le bouton "Pièces et tâches" dans les écrans de traitement d'une démarche

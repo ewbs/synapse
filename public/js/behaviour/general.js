@@ -522,6 +522,7 @@ var App = function() {
 				}
 
 				/* DateTimePicker */
+				// FIXME : Il faudra régler le format du datetimepicker pour avoir ce format de date "yyyy-mm-dd" (+ gérer impact sur le champ datetime utilisé dans les composants de démarches)
 				top.find(".datetimepicker").each(function() {
 					$.fn.datetimepicker.dates['fr']['today'] = 'Maintenant';
 					$(this).datetimepicker({
@@ -538,7 +539,7 @@ var App = function() {
 				top.find(".datepicker").each(function() {
 					$(this).datetimepicker({
 						autoclose : 1,
-						format : 'dd/mm/yyyy',
+						format : 'yyyy-mm-dd',
 						initialDate : new Date(),
 						minView : 2,
 						language : 'fr',
