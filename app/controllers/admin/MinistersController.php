@@ -78,7 +78,7 @@ class MinistersController extends TrashableModelController {
 	 * {@inheritDoc}
 	 * @see ModelController::getLinks()
 	 */
-	protected function getLinks(ManageableModel $modelInstance) {// TODO
+	protected function getLinks(ManageableModel $modelInstance) {
 		/* @var Minister $modelInstance */
 		$ideas=$modelInstance->ideas()->getQuery()
 		->orderBy('name')
