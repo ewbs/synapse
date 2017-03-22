@@ -11,6 +11,11 @@ class Minister extends TrashableModel {
 	
 	protected $table = 'ministers';
 	
+	public static $rules=[
+		'firstname' => 'required',
+		'lastname' => 'required',
+	];
+	
 	/**
 	 * 
 	 * {@inheritDoc}
@@ -43,5 +48,13 @@ class Minister extends TrashableModel {
 	 */
 	public function governements() {
 		return $this->belongsToMany ( 'Governement' );
+	}
+	
+	/**
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function mandates() {
+		return $this->hasMany ( 'Mandate' );
 	}
 }

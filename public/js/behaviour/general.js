@@ -39,8 +39,10 @@ var App = function() {
 	 * Méthode permettant d'initialiser des datatables ajax (qui ont donc au moins un attribut "data-ajaxurl")
 	 * 
 	 * A la particularité de demander au plugin le destroy du datatable s'il existait déjà (ce qui permet donc le déclenchement d'un refresh).
-	 * Permet actuellement de définir via des attributs html5 si le datatable doit permettre le filtre, le tri et la pagination (data-bfilter, data-bpaginate, data-bsort).
-	 * Précision : alors que le plugin datatables active ces 3 options par défaut, ici ils sont justement désactivés par défaut.
+	 * Permet actuellement de définir via des attributs html5 :
+	 * - Si le datatable doit permettre le filtre, le tri et la pagination (data-bfilter, data-bpaginate, data-bsort)
+	 *   (Précision : alors que le plugin datatables active ces 3 options par défaut, ici ils sont justement désactivés par défaut.)
+	 * - Si les résultats doivent être présentés en ordre descendant de la 1e colonne (data-desc), ou ascendant si le paramètre n'est pas passé
 	 */
 	function initDatatableAjax(datatable) {
 	datatable.dataTable({
@@ -48,6 +50,7 @@ var App = function() {
 			'bFilter': (datatable.data('bfilter'))?true:false,
 			'bPaginate': (datatable.data('bpaginate'))?true:false,
 			'bSort': (datatable.data('bsort'))?true:false,
+			"aaSorting": [ [0,datatable.data('desc')?'desc':'asc'] ],
 			'sAjaxSource': datatable.data('ajaxurl'),
 		});
 	}

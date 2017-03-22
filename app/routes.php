@@ -42,6 +42,7 @@ $bindings=[
 	['idea', 'Idea'],
 	['ideaComment', 'IdeaComment'],
 	['job', 'Barryvdh\Queue\Models\Job'],
+	['mandate', 'Mandate'],
 	['minister', 'Minister'],
 	['piece', 'Piece'],
 	['role', 'Role'],

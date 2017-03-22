@@ -3,11 +3,17 @@
 ## 4.2.0 - Ministry of Silly Walks
 * Ce release de Synapse intègre principalement les interfaces de gestion des ministres, ainsi que quelques améliorations et corrections mineures.
 
+### Général
+- Added : Permettre de présenter  par défaut un datatable ajax en ordre descendant sur la 1e colonne
+
 ### Démarches
 - Changed : Ajouter la notion de formulaires dans le bouton "Pièces et tâches" dans les écrans de traitement d'une démarche
 - Changed : Externaliser le javascript exécuté dans la liste des démarches
 - Fixed bug : Lors de la MAJ de l'état d'un projet après traitement d'une pièce ou tâche, filtrer les états selon les droits de l'utilisateur
-- Fixed bug : Permettre de retirer un public ou une administration des listes de filtres après rechargement de la page de liste des démarches 
+- Fixed bug : Permettre de retirer un public ou une administration des listes de filtres après rechargement de la page de liste des démarches
+
+### Ministres
+- Added : Interfaces de visualisation et de gestion des ministres et de leurs mandats, pour les administrateurs
 
 ### Projets
 - Changed : Rendre directement l'état éditable dans l'édition d'un projet
