@@ -1,5 +1,11 @@
 # Release Notes
 
+## 4.1.2 - Never forget (04/04/2017)
+*Release contenant le backport du query runner.*
+
+### Général
+- Added : Implémentation d'un query runner
+
 ## 4.1.1 - Never forget (07/03/2017)
 *Release correctif suite à un souci sur l'import des données Nostra.*
 

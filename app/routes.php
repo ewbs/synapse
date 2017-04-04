@@ -108,6 +108,9 @@ Route::group(['prefix' => 'admin', 'before' => 'auth'], function() {
 
 	# Dashboard
 	require ( __DIR__ . '/routes/admin/dashboard.php');
+	
+	# Maintenance
+	require ( __DIR__ . '/routes/admin/maintenance.php');
 
 	# Utilisateurs /admin/users/*
 	require( __DIR__ . '/routes/admin/users.php');
