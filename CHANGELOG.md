@@ -5,6 +5,7 @@
 
 ### Général
 - Added : Permettre de présenter  par défaut un datatable ajax en ordre descendant sur la 1e colonne
+- Added : Implémentation d'un query runner
 - Changed : Présenter les champs datepicker en format yyyy-mm-dd
 
 ### Démarches
