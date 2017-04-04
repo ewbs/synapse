@@ -85,7 +85,6 @@ class Mandate extends Ardent {
 		;
 	}
 	
-	
 	/**
 	 * 
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
