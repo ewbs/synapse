@@ -1,5 +1,4 @@
 <?php
-use Zizaco\Entrust\HasRole;
 
 class MaintenanceController extends BaseController {
 	
