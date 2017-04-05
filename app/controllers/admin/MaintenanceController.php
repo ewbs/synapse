@@ -1,5 +1,4 @@
 <?php
-use Zizaco\Entrust\HasRole;
 
 class MaintenanceController extends BaseController {
 	
@@ -72,15 +71,16 @@ class MaintenanceController extends BaseController {
 					default       : $results["{$cpt}. statement : {$q}"]=DB::statement($q);
 				};
 			}
-			return $this->queryrunnerGetIndex(['results'=>$results]);
+			if($transaction=='commit')
+				DB::commit();
+				else
+					DB::rollBack();
+					return $this->queryrunnerGetIndex(['results'=>$results]);
 		}
 		catch(Exception $e) {
+			DB::rollBack();
 			Log::warning($e->getMessage());
 			return $this->queryrunnerGetIndex(['error'=>$e->getMessage()]);
-		}
-		finally {
-			if($transaction=='commit') DB::commit();
-			else DB::rollBack();
 		}
 	}
 	
