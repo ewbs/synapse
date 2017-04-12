@@ -13,7 +13,7 @@ $ideas=$modelInstance->ideas()->getQuery()->orderBy('id')->get(['id', 'name']);
 	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="header">
-				<h3>Mandats</h3>
+				<h3>Fonctions</h3>
 			</div>
 			<div class="content">
 				<div class="table-responsive mandates">
@@ -33,7 +33,7 @@ $ideas=$modelInstance->ideas()->getQuery()->orderBy('id')->get(['id', 'name']);
 				</div>
 				@if($modelInstance->canManage())
 				<div class="form-group">
-					<a class="btn btn-sm btn-primary servermodal" href="{{route('ministersMandatesGetCreate', [$modelInstance->id])}}" data-reload-datatable="div.mandates table.datatable"><i class="fa fa-plus"></i> Ajouter un mandat</a>
+					<a class="btn btn-sm btn-primary servermodal" href="{{route('ministersMandatesGetCreate', [$modelInstance->id])}}" data-reload-datatable="div.mandates table.datatable"><i class="fa fa-plus"></i> Ajouter une fonction</a>
 				</div>
 				@endif
 			</div>

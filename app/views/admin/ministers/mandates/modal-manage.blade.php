@@ -14,7 +14,7 @@ $governement=Input::old('governement', $edit ? $mandate->governement_id : null);
 				<div class="modal-header">
 					<button class="close" aria-label="Fermer" type="button" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
 					<h3 class="modal-title" id="servermodal-title">
-						{{ ($edit ? 'Edition' : 'Création') }} d'un mandat
+						{{ ($edit ? 'Edition' : 'Création') }} d'une fonction
 						<span></span>
 					</h3>
 				</div>
