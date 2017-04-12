@@ -38,7 +38,7 @@
 					<!-- Actions -->
 					<div class="form-group">
 						<div class="col-md-offset-2 col-md-10">
-							<a class="btn btn-cancel" href="{{ $modelInstance->routeGetView() }}">{{Lang::get('button.cancel')}}</a>
+							<a class="btn btn-cancel" href="{{ $modelInstance ? $modelInstance->routeGetView() : $model->routeGetIndex() }}">{{Lang::get('button.cancel')}}</a>
 							<button type="submit" class="btn btn-primary">{{Lang::get('button.save')}}</button>
 						</div>
 					</div>
