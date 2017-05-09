@@ -35,7 +35,9 @@ class Mandate extends Ardent {
 	 * @return string
 	 */
 	public function getStart() {
-		return DB::selectOne('SELECT LOWER(?::daterange) AS start',[$this->mandate_range])->start;
+		return DB::selectOne(DB::raw('SELECT LOWER(\''.$this->mandate_range.'\'::daterange) AS start'))->start;
+		// Note : Pour une raison indéterminée, cette manière de construire la requête rendait un résultat null en test, et pas en dév.
+		//return DB::selectOne('SELECT LOWER(?::daterange) AS start',[$this->mandate_range])->start;
 	}
 	
 	/**
@@ -44,7 +46,9 @@ class Mandate extends Ardent {
 	 * @return string
 	 */
 	public function getEnd() {
-		return DB::selectOne('SELECT UPPER(?::daterange)-1 AS end',[$this->mandate_range])->end;
+		return DB::selectOne(DB::raw('SELECT UPPER(\''.$this->mandate_range.'\'::daterange) AS end'))->end;
+		// Note : Pour une raison indéterminée, cette manière de construire la requête rendait un résultat null en test, et pas en dév.
+		//return DB::selectOne('SELECT UPPER(?::daterange)-1 AS end',[$this->mandate_range])->end;
 	}
 	
 	/**
