@@ -322,7 +322,7 @@
 								@foreach($aGovernements as $governement)
 									<optgroup label="{{$governement->name}}">
 										@foreach($governement->ministers as $minister)
-											<option value="{{$minister->id}}"{{ in_array($minister->id, $aSelectedMinisters) ? ' selected' : '' }}>{{$minister->lastname}} {{$minister->firstname}}</option>
+											<option value="{{$minister->id}}"{{ in_array($minister->id, $aSelectedMinisters) ? ' selected' : '' }}>{{$minister->name()}}</option>
 										@endforeach
 									</optgroup>
 								@endforeach

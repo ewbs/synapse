@@ -24,7 +24,7 @@ class MinistersController extends TrashableModelController {
 	 * @see ModelController::getDataJson()
 	 */
 	protected function getDataJson($onlyTrashed=false) {
-		$select = array('ministers.id', DB::raw("concat(ministers.lastname,' ', ministers.firstname) AS name"));
+		$select = array('ministers.id', DB::raw("concat(upper(ministers.lastname),' ', ministers.firstname) AS name"));
 		$builder = $this->getModel()->query();
 		
 		if($onlyTrashed) {

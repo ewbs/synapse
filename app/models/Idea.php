@@ -71,7 +71,7 @@ class Idea extends TrashableModel {
 		return $this->belongsToMany ( 'Administration' );
 	}
 	public function ministers() {
-		return $this->belongsToMany ( 'Minister' );
+		return $this->belongsToMany ( 'Minister' )->orderBy('lastname');
 	}
 
 

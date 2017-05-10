@@ -414,8 +414,8 @@ class IdeaController extends TrashableModelController {
 				$worksheet->getStyle ( "G$line" )->getAlignment ()->setWrapText ( true );
 				// ministre
 				$elements = array ();
-				foreach ( $idea->ministers ()->get () as $minister ) {
-					array_push ( $elements, ($minister->firstname . ' ' . strtoupper ( $minister->lastname )) );
+				foreach ( $idea->ministers as $minister ) {
+					array_push ( $elements, $minister->name());
 				}
 				$worksheet->getCell ( "H$line" )->setValue ( implode ( "\n", $elements ) );
 				$worksheet->getStyle ( "H$line" )->getAlignment ()->setWrapText ( true );

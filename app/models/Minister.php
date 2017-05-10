@@ -31,7 +31,7 @@ class Minister extends TrashableModel {
 	 * @see ManageableModel::name()
 	 */
 	public function name() {
-		return $this->lastname.' '.$this->firstname;
+		return Str::upper($this->lastname).' '.$this->firstname;
 	}
 	
 	/**

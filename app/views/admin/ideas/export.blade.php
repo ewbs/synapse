@@ -56,7 +56,7 @@
 								@foreach($arrayOfGovernements as $governement)
 								<optgroup label="{{$governement->name}}">
 									@foreach($governement->ministers as $minister)
-									<option value="{{$minister->id}}">{{{$minister->lastname . ' '. $minister->firstname}}}</option>
+									<option value="{{$minister->id}}">{{$minister->name()}}</option>
 									@endforeach
 								</optgroup>
 								@endforeach
