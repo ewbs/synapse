@@ -16,7 +16,7 @@ class Governement extends TrashableModel {
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */
 	public function ministers() {
-		return $this->belongsToMany ( 'Minister' );
+		return $this->belongsToMany ( 'Minister' )->distinct()->orderBy('lastname');
 	}
 	
 	/**
