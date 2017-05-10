@@ -13,10 +13,10 @@ class Governement extends TrashableModel {
 	
 	/**
 	 * 
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */
 	public function ministers() {
-		return $this->hasMany ( 'Minister' );
+		return $this->belongsToMany ( 'Minister' );
 	}
 	
 	/**
