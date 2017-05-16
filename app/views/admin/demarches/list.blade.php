@@ -6,9 +6,9 @@
 		<div class="block-flat">
 			<div class="header">
 				@if(!$trash)
-				<h3>Liste des démarches</h3>
 				<div class="pull-right"><a id="demarcheExport" href="javascript:void(0);" class="btn btn-small btn-default"><i class="glyphicon glyphicon-download"></i> Exporter au format XLS</a></div>
 				<div class="pull-right"><a href="{{ route('damusGetRequestCreateDemarche') }}" class="btn btn-small btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Demander l'ajout d'une démarche dans NOSTRA</a></div>
+				<h3>Liste des démarches</h3>
 				@else
 				<h3>Liste des démarches supprimées</h3>
 				@endif
