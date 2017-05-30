@@ -240,9 +240,7 @@ class importFromNostraV2 extends Command {
 					"nostra_id" => $element['id']
 			) );
 			$object->nostra_id = $element['id'];
-			if($parent) {
-				$object->parent_id=$parent->id;
-			}
+			$object->parent_id = is_null ( $parent ) ? 0 : $parent->id;
 			$object->title = HTML::decode ( $element['title'] );
 			$object->nostra_state = $date;
 			$object->save ();
@@ -285,9 +283,7 @@ class importFromNostraV2 extends Command {
 				"nostra_id" => $element['id'] 
 			) );
 			$object->nostra_id = $element['id'];
-			if($parent) {
-				$object->parent_id=$parent->id;
-			}
+			$object->parent_id = is_null ( $parent ) ? 0 : $parent->id;
 			$object->title = HTML::decode ( $element['title'] );
 			$object->nostra_state = $date;
 			$object->save ();
@@ -490,9 +486,7 @@ class importFromNostraV2 extends Command {
 				"nostra_id" => $element['id'] 
 			));
 			$object->nostra_id = $element['id'];
-			if($parent) {
-				$object->parent_id = $parent->id;
-			}
+			$object->parent_id = is_null ( $parent ) ? 0 : $parent->id;
 			$object->title = HTML::decode ( $element['title']);
 			$object->nostra_state = $date;
 			$object->save ();
