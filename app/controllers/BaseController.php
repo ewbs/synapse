@@ -279,7 +279,7 @@ abstract class BaseController extends Controller {
 			[ // Admin
 				'label'      => Lang::get ( 'general.admin' ),
 				'section'    => 'admin',
-				'permission' => ['administrations_manage', 'ewbsmembers_manage', 'manage_roles', 'manage_users', 'jobs_manage'],
+				'permission' => ['administrations_manage', 'ewbsmembers_manage', 'manage_roles', 'manage_users', 'jobs_manage', 'ministers_manage'],
 				'submenu'    => [
 					[
 						'label'      => Lang::get ( 'admin/administrations/messages.menu' ),
@@ -301,6 +301,11 @@ abstract class BaseController extends Controller {
 						'section'    => 'failedjobs',
 						'route'      => 'failedjobsGetIndex',
 						'permission' => 'jobs_manage',
+					],[
+						'label'      => Lang::get ( 'admin/ministers/messages.menu' ),
+						'section'    => 'ministers',
+						'route'      => 'ministersGetIndex',
+						'permission' => 'ministers_manage',
 					],[
 						'label'      => Lang::get ( 'admin/roles/messages.menu' ),
 						'section'    => 'roles',
@@ -343,6 +348,11 @@ abstract class BaseController extends Controller {
 						'section'    => 'eforms-trash',
 						'route'      => 'eformsGetTrash',
 						'permission' => 'formslibrary_display',
+					],[
+						'label'      => Lang::get ( 'admin/ministers/messages.menu' ),
+						'section'    => 'ministers-trash',
+						'route'      => 'ministersGetTrash',
+						'permission' => 'ministers_manage',
 					],[
 						'label'      => Lang::get ( 'admin/ideas/messages.menu' ),
 						'section'    => 'ideas-trash',

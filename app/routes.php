@@ -42,6 +42,8 @@ $bindings=[
 	['idea', 'Idea'],
 	['ideaComment', 'IdeaComment'],
 	['job', 'Barryvdh\Queue\Models\Job'],
+	['mandate', 'Mandate'],
+	['minister', 'Minister'],
 	['piece', 'Piece'],
 	['role', 'Role'],
 	//['rate', 'PieceRate'],
@@ -153,6 +155,9 @@ Route::group(['prefix' => 'admin', 'before' => 'auth'], function() {
 	
 	#Administrations /admin/jobs/*
 	require ( __DIR__ . '/routes/admin/jobs.php' );
+	
+	#Administrations /admin/jobs/*
+	require ( __DIR__ . '/routes/admin/ministers.php' );
 
 	# Types /admin/piecestypes/*
 	/*Route::group(['prefix' => 'piecestypes'], function() {

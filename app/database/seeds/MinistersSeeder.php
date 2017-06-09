@@ -101,7 +101,7 @@ class MinistersSeeder extends Seeder {
 		;
 		
 		DB::table ( 'ministers' )->insert ( $ministers );
-		
+		//FIXME Remplacer les dates par des rangedate
 		$govs = array (
 				array (
 						'minister_id' => 1,

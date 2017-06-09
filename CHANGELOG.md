@@ -1,5 +1,29 @@
 # Release Notes
 
+## 4.2.0 - Ministry of Silly Walks
+* Ce release de Synapse intègre principalement les interfaces de gestion des ministres, ainsi que quelques améliorations et corrections mineures.
+
+### Imports
+- Fixed bug : Erreur d'import Nostra sur les thématiques abc/adm/publics lorsqu'ils n'ont pas de parent (bug introduit par du refactoring de code)
+
+### Général
+- Added : Permettre de présenter  par défaut un datatable ajax en ordre descendant sur la 1e colonne
+- Added : Implémentation d'un query runner
+- Changed : Présenter les champs datepicker en format yyyy-mm-dd
+
+### Démarches
+- Changed : Ajouter la notion de formulaires dans le bouton "Pièces et tâches" dans les écrans de traitement d'une démarche
+- Changed : Externaliser le javascript exécuté dans la liste des démarches
+- Fixed bug : Lors de la MAJ de l'état d'un projet après traitement d'une pièce ou tâche, filtrer les états selon les droits de l'utilisateur
+- Fixed bug : Permettre de retirer un public ou une administration des listes de filtres après rechargement de la page de liste des démarches
+
+### Ministres
+- Added : Interfaces de visualisation et de gestion des ministres et de leurs mandats, pour les administrateurs
+
+### Projets
+- Changed : Rendre directement l'état éditable dans l'édition d'un projet
+- Changed : Refactoring et documentation de la partie gérant les états des projets
+
 ## 4.1.2 - Never forget (04/04/2017)
 *Release contenant le backport du query runner.*
 

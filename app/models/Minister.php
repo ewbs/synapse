@@ -2,34 +2,59 @@
 /**
  * Ministres
  *
- * @property int            $id              (PK)
  * @property string         $firstname       Maximum 255 caractères
  * @property string         $lastname        Maximum 255 caractères
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
  *
  * @author jdavreux
  */
-class Minister extends Eloquent {
+class Minister extends TrashableModel {
 	
-	use SoftDeletingTrait;
 	protected $table = 'ministers';
+	
+	public static $rules=[
+		'firstname' => 'required',
+		'lastname' => 'required',
+	];
+	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see ManageableModel::hasView()
+	 */
+	public function hasView() {
+		return true;
+	}
+	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see ManageableModel::name()
+	 */
+	public function name() {
+		return Str::upper($this->lastname).' '.$this->firstname;
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
 	public function ideas() {
 		return $this->belongsToMany ( 'Idea' );
 	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
 	public function governements() {
 		return $this->belongsToMany ( 'Governement' );
 	}
 	
-	/*
-	 * public static function getAMinistersByGovernementId( $governementId ) {
+	/**
 	 *
-	 * return Minister::where('regions_id', '=', $regionId)->get();
-	 *
-	 * }
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
 	 */
-	public static function getArrayOfGovernementsAndMinisters() {
-		return Governement::getGovernementsByAlphabeticalOrder ();
+	public function mandates() {
+		return $this->hasMany ( 'Mandate' );
 	}
 }

@@ -18,8 +18,9 @@ class IdeaStateModification extends Eloquent {
 	use SoftDeletingTrait;
 	protected $table = 'ideaStateModifications';
 	
-	// Lien entre les rôles/permissions de Synapse et les status applicables selon le statut en cours ...
-	// Structure : "status en cours" -> "rôle" -> "statut disponibles"
+	/**
+	 * @var array Lien entre les rôles/permissions de Synapse et les status applicables selon le statut en cours (Structure : "status en cours" -> "rôle" -> "statut disponibles")
+	 */
 	protected static $availableStates = array (
 		'ENCODEE' => array (
 			'admin' => array (
@@ -180,20 +181,46 @@ class IdeaStateModification extends Eloquent {
 			) 
 		) 
 	);
+	
+	/**
+	 * Récupère les états appliquables à partir de l'état de départ et l'accréditation fournie
+	 *
+	 * @param string $fromstate Nom de l'état de départ
+	 * @param string $accreditation Intitulé de l'accréditation (admin, ideas_manage, owner, ewbs)
+	 * @return \Illuminate\Database\Eloquent\Collection[]|static[][]
+	 */
+	public static function getAvailableStates($fromstate, $accreditation) {
+		$availableStates=[];
+		if (isset ( IdeaStateModification::$availableStates [$fromstate] [$accreditation] )) {
+			$availableStates=IdeaStateModification::$availableStates [$fromstate] [$accreditation];
+		}
+		if(!in_array($fromstate, $availableStates)) { // Ajouter l'état actuel dans la liste
+			$availableStates[]=$fromstate;
+		}
+		return IdeaState::whereIn('name', $availableStates)->orderBy('order')->get();
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
 	public function ideaState() {
 		return $this->belongsTo ( 'IdeaState' );
 	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
 	public function idea() {
 		return $this->belongsTo ( 'Idea' );
 	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
 	public function user() {
 		return $this->belongsTo ( 'User' );
-	}
-	public static function getAvailableStates($state = '', $accreditation = '') {
-		if (isset ( IdeaStateModification::$availableStates [$state] [$accreditation] )) {
-			return (IdeaStateModification::$availableStates [$state] [$accreditation]);
-		} else {
-			return (array ());
-		}
 	}
 }

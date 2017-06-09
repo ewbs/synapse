@@ -87,8 +87,12 @@ $ideaState = $modelInstance->getLastStateModification ()->ideaState;
 				<h4>Ministre(s) compétent(s)</h4>
 			</div>
 			<div class="content">
-				@foreach ( $modelInstance->ministers as $min )
-					<span class="label label-default">{{$min->firstname}} {{$min->lastname}}</span>
+				@foreach ( $modelInstance->ministers as $minister )
+					@if($minister->canManage())
+					<a href="{{$minister->routeGetView()}}"><span class="label label-default">{{$minister->name()}}</span></a>
+					@else
+					<span class="label label-default">{{$minister->name()}}</span>
+					@endif
 				@endforeach
 			</div>
 		</div>

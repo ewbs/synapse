@@ -1,23 +1,23 @@
 <?php
 
 class MaintenanceController extends BaseController {
-	
+
 	/**
-	 * 
+	 *
 	 * {@inheritDoc}
 	 * @see BaseController::routeGetIndex()
 	 */
 	protected function routeGetIndex() { return route('queryrunnerGetIndex'); }
-	
+
 	/**
-	 * 
+	 *
 	 * {@inheritDoc}
 	 * @see BaseController::getIndex()
 	 */
 	public function getIndex() {
 		return $this->queryrunnerGetIndex();
 	}
-	
+
 	/**
 	 *
 	 * {@inheritDoc}
@@ -26,9 +26,9 @@ class MaintenanceController extends BaseController {
 	protected function getSection(){
 		return 'maintenance';
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param array $data
 	 * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
 	 */
@@ -38,9 +38,9 @@ class MaintenanceController extends BaseController {
 		}
 		return View::make ( 'admin/maintenance/queryrunner', $data);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
 	 */
 	public function queryrunnerPostIndex() {
@@ -48,12 +48,12 @@ class MaintenanceController extends BaseController {
 		if(!$user->hasRole('admin')) {
 			return $this->redirectNoRight(route('getIndex'));
 		}
-		
+
 		$transaction=Input::get('transaction', 'rollback');
 		Input::flash();
 		DB::beginTransaction();
 		$results=[];
-		
+
 		try {
 			$cpt=0;
 			foreach(explode(';',Input::get('q')) as $q) { // Parcourir chaque requête
@@ -83,5 +83,5 @@ class MaintenanceController extends BaseController {
 			return $this->queryrunnerGetIndex(['error'=>$e->getMessage()]);
 		}
 	}
-	
+
 }
