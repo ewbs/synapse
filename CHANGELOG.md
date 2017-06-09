@@ -1,7 +1,7 @@
 # Release Notes
 
 ## 4.2.0 - Ministry of Silly Walks
-* Ce release de Synapse intègre principalement les interfaces de gestion des ministres, ainsi que quelques améliorations et corrections mineures.
+*Ce release de Synapse intègre principalement les interfaces de gestion des ministres, ainsi que quelques améliorations et corrections mineures.*
 
 ### Imports
 - Fixed bug : Erreur d'import Nostra sur les thématiques abc/adm/publics lorsqu'ils n'ont pas de parent (bug introduit par du refactoring de code)
