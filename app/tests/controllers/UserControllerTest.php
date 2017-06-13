@@ -13,7 +13,7 @@ class UserControllerTest extends BaseControllerTestCase {
 		
 		$this->withInput ( $credentials )->requestAction ( 'POST', 'UserController@postLogin' );
 		
-		$this->assertRedirection ( URL::action ( 'BlogController@getIndex' ) );
+		$this->assertRedirection ( route('getIndex') );
 	}
 	public function testShouldNotDoLoginWhenWrong() {
 		$credentials = array (
@@ -54,6 +54,6 @@ class UserControllerTest extends BaseControllerTestCase {
 		
 		$this->requestAction ( 'GET', 'UserController@getLogin' );
 		
-		$this->assertRedirection ( URL::to ( '/' ) );
+		$this->assertRedirection ( route('getIndex') );
 	}
 }
