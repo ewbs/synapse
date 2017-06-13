@@ -243,7 +243,7 @@ class DemarcheController extends TrashableModelController {
 						if($count=$item->getAttribute("count_state_{$state}"))
 							$tooltip.="<li>".Lang::choice("admin/ewbsactions/messages.wording.{$state}", $count)."</li>";
 					$tooltip.='</ul>';
-					return '<a href="'.route('demarchesActionsGetIndex', $item->demarche_id).'" data-toggle="popover" data-content="'.$tooltip.'" data-html="true"><span class="label label-'.EwbsActionRevision::stateToClass($globalState).'">'.($item->count_state_todo + $item->count_state_progress + $item->count_state_done + $item->count_state_givenup).'</span></a>';
+					return '<a href="'.route('demarchesActionsGetIndex', $item->demarche_id).'" data-toggle="popover" data-content="'.$tooltip.'" data-html="true"><span class="label label-'.EwbsActionRevision::stateToClass($globalState).'">'.($item->count_state_todo + $item->count_state_progress + $item->count_state_done + $item->count_state_standby + $item->count_state_givenup).'</span></a>';
 				}
 			})
 			->remove_column('titlelong')
@@ -254,6 +254,7 @@ class DemarcheController extends TrashableModelController {
 			->remove_column('count_state_todo')
 			->remove_column('count_state_progress')
 			->remove_column('count_state_done')
+			->remove_column('count_state_standby')
 			->remove_column('count_state_givenup');
 
 		return $dt->make ();
@@ -321,7 +322,7 @@ class DemarcheController extends TrashableModelController {
 						if($count=$item->getAttribute("count_state_{$state}"))
 							$tooltip.="<li>".Lang::choice("admin/ewbsactions/messages.wording.{$state}", $count)."</li>";
 					$tooltip.='</ul>';
-					return '<a href="'.route('demarchesActionsGetIndex', $item->demarche_id).'" data-toggle="popover" data-content="'.$tooltip.'" data-html="true"><span class="label label-'.EwbsActionRevision::stateToClass($globalState).'">'.($item->count_state_todo + $item->count_state_progress + $item->count_state_done + $item->count_state_givenup).'</span></a>';
+					return '<a href="'.route('demarchesActionsGetIndex', $item->demarche_id).'" data-toggle="popover" data-content="'.$tooltip.'" data-html="true"><span class="label label-'.EwbsActionRevision::stateToClass($globalState).'">'.($item->count_state_todo + $item->count_state_progress + $item->count_state_done + $item->count_state_standby + $item->count_state_givenup).'</span></a>';
 				}
 			})
 			->remove_column('titlelong')
@@ -332,6 +333,7 @@ class DemarcheController extends TrashableModelController {
 			->remove_column('count_state_todo')
 			->remove_column('count_state_progress')
 			->remove_column('count_state_done')
+			->remove_column('count_state_standby')
 			->remove_column('count_state_givenup');
 
 		return $dt->make ();
@@ -374,6 +376,7 @@ class DemarcheController extends TrashableModelController {
 			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_TODO . "'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_todo"),
 			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_PROGRESS . "' THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_progress"),
 			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_DONE . "'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_done"),
+			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_STANDBY . "'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_standby"),
 			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_GIVENUP . "'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_givenup")
 		];
 
@@ -647,6 +650,7 @@ class DemarcheController extends TrashableModelController {
 				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_TODO."'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_todo" ),
 				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_PROGRESS."' THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_progress" ),
 				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_DONE."'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_done" ),
+				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_STANDBY."'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_standby" ),
 				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_GIVENUP."'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_givenup" ),
 				DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT eforms.title), '{$multipleSeparator}', '') AS eforms"),
 				DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nostra_forms.title), '{$multipleSeparator}', '') AS nostra_forms"),

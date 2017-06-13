@@ -6,6 +6,9 @@
 ### Monitoring
 - Added : Database - Ajout d'un check sur la présence de l'extension btree_gist
 
+### Actions
+- Added : Nouvel état "En standby"
+
 ## 4.2.0 - Ministry of Silly Walks
 *Ce release de Synapse intègre principalement les interfaces de gestion des ministres, ainsi que quelques améliorations et corrections mineures.*
 

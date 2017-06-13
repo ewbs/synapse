@@ -390,14 +390,15 @@ class EwbsAction extends RevisableModel {
 	/**
 	 * Retourne un état global selon un nombre d'actions à différents états.
 	 * 
-	 * La particularité est que l'état est globalement en progrès si des actions sont en todo ET en done.
-	 * @param Object, ayant comme propriétés minimum les entiers suivants $count_state_todo, $count_state_progress, $count_state_done, $count_state_givenup
+	 * La particularité est que l'état est globalement en progrès si des actions sont dans 2 des 3 états todo/standby/done.
+	 * @param Object, ayant comme propriétés minimum les entiers suivants $count_state_todo, $count_state_progress, $count_state_done, $count_state_standby, $count_state_givenup
 	 * @return string|NULL
 	 */
 	public static function globalState($obj) {
-		if($obj->count_state_progress || ($obj->count_state_todo && $obj->count_state_done)) return EwbsActionRevision::$STATE_PROGRESS;
+		if($obj->count_state_progress || ($obj->count_state_todo && $obj->count_state_done)|| ($obj->count_state_todo && $obj->count_state_standby)|| ($obj->count_state_standby && $obj->count_state_done)) return EwbsActionRevision::$STATE_PROGRESS;
 		if($obj->count_state_todo) return EwbsActionRevision::$STATE_TODO;
 		if($obj->count_state_done) return EwbsActionRevision::$STATE_DONE;
+		if($obj->count_state_standby) return EwbsActionRevision::$STATE_STANDBY;
 		if($obj->count_state_givenup) return EwbsActionRevision::$STATE_GIVENUP;
 		return null;
 	}
