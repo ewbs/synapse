@@ -1,5 +1,8 @@
 # Release Notes
 
+## 4.3.0
+*Ce release de Synapse intègre principalement diverses améliorations sur le module actions, ainsi que quelques améliorations et corrections mineures.*
+
 ## 4.2.0 - Ministry of Silly Walks
 *Ce release de Synapse intègre principalement les interfaces de gestion des ministres, ainsi que quelques améliorations et corrections mineures.*
 
