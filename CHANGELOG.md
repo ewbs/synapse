@@ -3,6 +3,9 @@
 ## 4.3.0
 *Ce release de Synapse intègre principalement diverses améliorations sur le module actions, ainsi que quelques améliorations et corrections mineures.*
 
+### Monitoring
+- Added : Database - Ajout d'un check sur la présence de l'extension btree_gist
+
 ## 4.2.0 - Ministry of Silly Walks
 *Ce release de Synapse intègre principalement les interfaces de gestion des ministres, ainsi que quelques améliorations et corrections mineures.*
 
