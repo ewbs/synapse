@@ -3,6 +3,9 @@
 ## 4.3.0
 *Ce release de Synapse intègre principalement diverses améliorations sur le module actions, ainsi que quelques améliorations et corrections mineures.*
 
+### Migrations
+- Bugfix : Renommer le script de migration des users, car il interfère avec celui qui se trouve dans Confide
+
 ### Monitoring
 - Added : Database - Ajout d'un check sur la présence de l'extension btree_gist
 
