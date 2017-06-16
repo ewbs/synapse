@@ -27,6 +27,7 @@ Thumbs.db
 /app/config/test/
 /app/config/local-mgr/
 /app/config/valid/
+/app/config/testing/
 
 #spécifique Vagrant
 /.vagrant/
