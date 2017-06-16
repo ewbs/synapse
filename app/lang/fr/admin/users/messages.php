@@ -6,6 +6,8 @@ return [
 		'success' => 'L\'utilisateur été sauvegardé. Merci.',
 	],
 		
+	'password_does_not_match' => 'Le mot de passe ne correspond pas à sa confirmation',
+		
 	'delete' => [
 		'subtitle' => 'Suppression d\'un utilisateur',
 		'linked' => 'Cet utilisateur est lié à un ou plusieurs éléments',

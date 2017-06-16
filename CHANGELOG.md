@@ -9,6 +9,9 @@
 ### Actions
 - Added : Nouvel état "En standby"
 
+### Users
+- Bugfix : Adaptation des la construction des routes, suppression de code non utilisé, ajout d'un message manquant
+
 ## 4.2.0 - Ministry of Silly Walks
 *Ce release de Synapse intègre principalement les interfaces de gestion des ministres, ainsi que quelques améliorations et corrections mineures.*
 

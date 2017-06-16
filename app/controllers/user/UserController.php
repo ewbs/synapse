@@ -42,23 +42,7 @@ class UserController extends BaseController {
 		// Show the page
 		return View::make ( 'site/user/index', compact ( 'user' ) );
 	}
-	/**
-	 * Stores new user
-	 */
-	public function postIndex() {
-		$user = $this->userRepo->signup ( Input::all () );
-		if ($user->id) {
-			if (Config::get ( 'confide::signup_email' )) {
-				Mail::queueOn ( Config::get ( 'confide::email_queue' ), Config::get ( 'confide::email_account_confirmation' ), compact ( 'user' ), function ($message) use($user) {
-					$message->to ( $user->email, $user->username )->subject ( Lang::get ( 'confide::confide.email.account_confirmation.subject' ) );
-				} );
-			}
-			return Redirect::secure ( 'user/login' )->with ( 'success', Lang::get ( 'user/user.user_account_created' ) );
-		} else {
-			$error = $user->errors ()->all ( ':message' );
-			return Redirect::secure ( 'user/create' )->withInput ( Input::except ( 'password' ) )->with ( 'error', $error );
-		}
-	}
+	
 	/**
 	 * Edits a user
 	 * 
@@ -75,17 +59,17 @@ class UserController extends BaseController {
 			if ($password != $passwordConfirmation) {
 				// Redirect to the new user page
 				$error = Lang::get ( 'admin/users/messages.password_does_not_match' );
-				return Redirect::secure ( 'user' )->with ( 'error', $error );
+				return Redirect::route( 'userGetIndex' )->with ( 'error', $error );
 			} else {
 				$user->password = $password;
 				$user->password_confirmation = $passwordConfirmation;
 			}
 		}
 		if ($this->userRepo->save ( $user )) {
-			return Redirect::secure ( 'user' )->with ( 'success', Lang::get ( 'user/user.user_account_updated' ) );
+			return Redirect::route( 'userGetIndex' )->with ( 'success', Lang::get ( 'user/user.user_account_updated' ) );
 		} else {
 			$error = $user->errors ()->all ( ':message' );
-			return Redirect::secure ( 'user' )->withInput ( Input::except ( 'password', 'password_confirmation' ) )->with ( 'error', $error );
+			return Redirect::route( 'userGetIndex' )->withInput ( Input::except ( 'password', 'password_confirmation' ) )->with ( 'error', $error );
 		}
 	}
 	/**
@@ -100,7 +84,7 @@ class UserController extends BaseController {
 	public function getLogin() {
 		$user = Auth::user ();
 		if (! empty ( $user->id )) {
-			return Redirect::secure ( '/' );
+			return Redirect::route ( 'adminDashboardGetIndex' );
 		}
 		return View::make ( 'site/user/login' );
 	}
@@ -111,7 +95,7 @@ class UserController extends BaseController {
 		$repo = App::make ( 'UserRepository' );
 		$input = Input::all ();
 		if ($this->userRepo->login ( $input )) {
-			return Redirect::intended ( '/admin', 302, array (), true );
+			return Redirect::route ( 'adminDashboardGetIndex' );
 		} else {
 			if ($this->userRepo->isThrottled ( $input )) {
 				$err_msg = Lang::get ( 'confide::confide.alerts.too_many_attempts' );
@@ -120,7 +104,7 @@ class UserController extends BaseController {
 			} else {
 				$err_msg = Lang::get ( 'confide::confide.alerts.wrong_credentials' );
 			}
-			return Redirect::secure ( 'user/login' )->withInput ( Input::except ( 'password' ) )->with ( 'error', $err_msg );
+			return Redirect::route( 'userGetLogin' )->withInput ( Input::except ( 'password' ) )->with ( 'error', $err_msg );
 		}
 	}
 	/**
@@ -131,9 +115,9 @@ class UserController extends BaseController {
 	 */
 	public function getConfirm($code) {
 		if (Confide::confirm ( $code )) {
-			return Redirect::secure ( 'user/login' )->with ( 'notice', Lang::get ( 'confide::confide.alerts.confirmation' ) );
+			return Redirect::route( 'userGetLogin' )->with ( 'notice', Lang::get ( 'confide::confide.alerts.confirmation' ) );
 		} else {
-			return Redirect::secure ( 'user/login' )->with ( 'error', Lang::get ( 'confide::confide.alerts.wrong_confirmation' ) );
+			return Redirect::route( 'userGetLogin' )->with ( 'error', Lang::get ( 'confide::confide.alerts.wrong_confirmation' ) );
 		}
 	}
 	/**
@@ -148,10 +132,10 @@ class UserController extends BaseController {
 	public function postForgotPassword() {
 		if (Confide::forgotPassword ( Input::get ( 'email' ) )) {
 			$notice_msg = Lang::get ( 'confide::confide.alerts.password_forgot' );
-			return Redirect::secure ( 'user/forgot' )->with ( 'notice', $notice_msg );
+			return Redirect::route( 'userGetLogin' )->with ( 'notice', $notice_msg );
 		} else {
 			$error_msg = Lang::get ( 'confide::confide.alerts.wrong_password_forgot' );
-			return Redirect::secure ( 'user/login' )->withInput ()->with ( 'error', $error_msg );
+			return Redirect::route( 'userGetForgotPassword' )->withInput ()->with ( 'error', $error_msg );
 		}
 	}
 	/**
@@ -173,10 +157,10 @@ class UserController extends BaseController {
 		// By passing an array with the token, password and confirmation
 		if ($this->userRepo->resetPassword ( $input )) {
 			$notice_msg = Lang::get ( 'confide::confide.alerts.password_reset' );
-			return Redirect::secure ( 'user/login' )->with ( 'notice', $notice_msg );
+			return Redirect::route( 'userGetLogin' )->with ( 'notice', $notice_msg );
 		} else {
 			$error_msg = Lang::get ( 'confide::confide.alerts.wrong_password_reset' );
-			return Redirect::secure ( 'user/reset_password/'.$input ['token'] )->withInput ()->with ( 'error', $error_msg );
+			return Redirect::route( 'userGetReset', $input ['token'] )->withInput ()->with ( 'error', $error_msg );
 		}
 	}
 	/**
@@ -184,7 +168,7 @@ class UserController extends BaseController {
 	 */
 	public function getLogout() {
 		Confide::logout ();
-		return Redirect::secure ( '/' );
+		return Redirect::route('getIndex');
 	}
 	/**
 	 * Get user's profile
@@ -218,16 +202,14 @@ class UserController extends BaseController {
 	 * @return \Illuminate\View\View
 	 */
 	public function getFilters() {
-
 		$regions = Region::all();
 		$publics = NostraPublic::orderBy('title')->get();
 		$taxonomyCategories = TaxonomyCategory::orderBy('name')->get();
-
-
+		
 		$selectedAdministrationsIds = Auth::user()->filtersAdministration->lists('administration_id'); //lists() permet de ne sélectionner que certains attributs
 		$selectedTagsIds = Auth::user()->filtersTag->lists('taxonomy_tag_id');
 		$selectedPublicsIds = Auth::user()->filtersPublic->lists('nostra_public_id');
-
+		
 		return View::make('site.user.filters', compact('regions', 'publics', 'taxonomyCategories', 'selectedAdministrationsIds', 'selectedTagsIds', 'selectedPublicsIds'));
 	}
 
@@ -235,12 +217,10 @@ class UserController extends BaseController {
 	 * Sauvegarde des filtres
 	 */
 	public function postFilters() {
-
 		// on  ne travaille pas avec une relation n-m entre user et administration mais avec un modèle à part entière
 		// donc il ne faut pas se contenter de créer des relations, mais il faut bien instancier des nouveaux modèles
-
 		UserFilterAdministration::where('user_id', '=', Auth::user()->id)->delete(); // on supprime toute relation existante
-
+		
 		// on crée les nouvelles
 		if (Input::has('administrations')) {
 			$data = [];
@@ -249,10 +229,8 @@ class UserController extends BaseController {
 			}
 			UserFilterAdministration::insert($data);
 		}
-
-
+		
 		// on travaille de la meme manière avec les tags
-
 		UserFilterTag::where('user_id', '=', Auth::user()->id)->delete();
 		if (Input::has('tags')) {
 			$data = [];
@@ -261,10 +239,8 @@ class UserController extends BaseController {
 			}
 			UserFilterTag::insert($data);
 		}
-
-
+		
 		// on travaille de la meme manière avec les publics
-
 		UserFilterPublic::where('user_id', '=', Auth::user()->id)->delete();
 		if (Input::has('publics')) {
 			$data = [];
@@ -273,16 +249,13 @@ class UserController extends BaseController {
 			}
 			UserFilterPublic::insert($data);
 		}
-
-
+		
 		// et on détruit les anciens filtres qu'on avait mis en session pour économiser les requetes (voir TraitFilterable pour le détail)
 		Auth::user()->sessionDestroy('filteredAdministrationIds');
 		Auth::user()->sessionDestroy('filteredTagsIds');
 		Auth::user()->sessionDestroy('filteredPublicsIds');
-
-
+		
 		return Redirect::route('adminDashboardGetIndex')->with ( 'success', Lang::get ( 'user/user.filters.success' ) );
-
 	}
 
 
