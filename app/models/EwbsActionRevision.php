@@ -173,6 +173,17 @@ class EwbsActionRevision extends RevisionModel {
 		 * (et que la transaction soit commitée)
 		 */
 		parent::boot();
+		
+		/**
+		 * Traitement avant création de la révision d'action
+		 */
+		self::creating(function(EwbsActionRevision $modelInstance) {
+			
+			// L'action est par défaut assignée au créateur de la révision
+			if(!$modelInstance->responsible_id)
+				$modelInstance->responsible_id=$modelInstance->user_id;
+		});
+		
 		/**
 		 * Traitements suite au create/update/restore d'une action ou sous-action :
 		 * Recalculer l'état de l'action selon l'état de ses sous-actions
