@@ -35,28 +35,6 @@ class User extends TrashableModel implements ConfideUserInterface {
 		return $this->username;
 	}
 	
-	public function EWBSMember() {
-		return $this->hasOne ( 'EWBSMember' );
-	}
-	
-	// Utiliser pour gérer des ACL entre utilisateurs et Administration (restriction de contenu)
-	public function administrations() {
-		return ($this->belongsToMany ( 'Administration' ));
-	}
-
-	public function filtersAdministration() {
-		return $this->hasMany('UserFilterAdministration');
-	}
-
-	public function filtersTag() {
-		return $this->hasMany('UserFilterTag');
-	}
-
-	public function filtersPublic() {
-		return $this->hasMany('UserFilterPublic');
-	}
-
-	
 	/**
 	 * Vérifie si l'utilisateur est soumis à des restrictions par administrations
 	 * 
@@ -240,9 +218,7 @@ class User extends TrashableModel implements ConfideUserInterface {
 	public function demarches() {
 		return $this->hasMany ( 'Demarche' );
 	}
-
-
-
+	
 	/**
 	 * Gestion des données de session
 	 * Cette section permet d'utiliser les sessions pour conserver des paramètres dans toute l'application.
@@ -259,5 +235,55 @@ class User extends TrashableModel implements ConfideUserInterface {
 
 	public function sessionDestroy($key) {
 		Session::forget('user_'.$key);
+	}
+	
+	/**
+	 * 
+	 * Relation entre le user et les administrations dont il fait partie.
+	 * Attention, utiliser pour gérer des ACL entre utilisateurs et Administration (restriction de contenu)
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function administrations() {
+		return ($this->belongsToMany ( 'Administration' ));
+	}
+	
+	/**
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function ewbsActionRevisions() {
+		return $this->hasMany('EwbsActionRevision');
+	}
+	
+	/**
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
+	 */
+	public function EWBSMember() {
+		return $this->hasOne ( 'EWBSMember' );
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function filtersAdministration() {
+		return $this->hasMany('UserFilterAdministration');
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function filtersPublic() {
+		return $this->hasMany('UserFilterPublic');
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function filtersTag() {
+		return $this->hasMany('UserFilterTag');
 	}
 }

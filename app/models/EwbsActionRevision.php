@@ -6,6 +6,7 @@
  * @property string         $state           Maximum 255 caractères
  * @property string         $priority
  * @property string         $description
+ * @property int            $responsible_id  Obligatoire, @see User
  * @author mgrenson
  */
 class EwbsActionRevision extends RevisionModel {
@@ -153,13 +154,12 @@ class EwbsActionRevision extends RevisionModel {
 	}
 	
 	/**
-	 * {@inheritDoc}
-	 * @see RevisionModel::user()
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
-	public function user() {
+	public function responsible() {
 		return $this->belongsTo ( 'User' );
 	}
-	
 	
 	/**
 	 * Liste les événements à enregistrer pour le modèle courant
