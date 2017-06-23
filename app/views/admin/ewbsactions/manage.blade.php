@@ -4,9 +4,13 @@
  * 
  * @var EwbsAction $modelInstance
  * @var EwbsActionRevision $revision
+ * @var Illuminate\Database\Eloquent\Collection $aTaxonomy
+ * @var array $aSelectedTags
+ * @var array $aExpertises
  */
 
 $state=Input::old('state', $revision ? $revision->state : EwbsActionRevision::$STATE_TODO);
+$name=Input::old('name', $modelInstance ? $modelInstance->name():null);
 $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRevision::$PRIORITY_NORMAL);
 ?>
 @extends('site.layouts.container-fluid')
@@ -19,8 +23,20 @@ $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRev
 			<form class="form-horizontal" method="post" autocomplete="off" action="{{ $modelInstance->routeGetEdit() }}">
 				{{-- CSRF Token --}}
 				<input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
-				<input type="hidden" name="name" value="{{$modelInstance->name}}" /> {{-- le validator demande à ce que name soit présent --}}
 				{{-- ./ csrf token --}}
+				
+				{{-- Name --}}
+				<div class="form-group">
+					<label class="col-md-2 control-label" for="state">Nom</label>
+					<div class="col-md-10">
+						<select class="form-control" name="name">
+						@foreach($aExpertises as $expertise)
+							<option {{ $expertise==$name ? ' selected': '' }}>{{$expertise}}</option>
+						@endforeach
+						</select>
+					</div>
+				</div>
+				{{-- ./ Name --}}
 				
 				{{-- Description --}}
 				<div class="form-group {{{ $errors->has('description') ? 'has-error' : '' }}}">

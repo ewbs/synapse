@@ -156,15 +156,22 @@ class EwbsActionController extends TrashableModelController {
 	 * @see ModelController::getManage()
 	 */
 	protected function getManage(ManageableModel $modelInstance=null){
-
+		
 		$aTaxonomy = TaxonomyCategory::orderBy('name')->get();
 		$aSelectedTags = $modelInstance->tags->lists('id');
-
+		$aExpertises=DB::table('expertises')->orderBy('order')->lists('name');
+		
+		$params=compact('modelInstance', 'aTaxonomy', 'aSelectedTags');
+		
 		if($modelInstance){
-			$revision = $modelInstance->getLastRevision();
-			return $this->makeDetailView($modelInstance, 'admin/ewbsactions/manage', ['revision' => $revision, 'aTaxonomy' => $aTaxonomy, 'aSelectedTags' => $aSelectedTags]);
+			$params['revision']=$modelInstance->getLastRevision();
+			
+			// Insérer en début de tableau l'éventuel nom de l'action si elle ne correspond pas à une des expertises
+			if(!in_array($modelInstance->name(), $aExpertises))
+				array_unshift($aExpertises, $modelInstance->name());
 		}
-		return View::make ( 'admin/ewbsactions/manage', compact ( 'modelInstance', 'aTaxonomy', 'aSelectedTags' ) );
+		$params['aExpertises']=$aExpertises;
+		return $this->makeDetailView($modelInstance, 'admin/ewbsactions/manage', $params);
 	}
 	
 	/**
@@ -185,7 +192,8 @@ class EwbsActionController extends TrashableModelController {
 		if($this->getLoggedUser()->hasRole('admin')) { // et SSI on a le droit et qu'elle est passée, on prend celle-ci
 			$ewbsAction->sub=(Input::get('sub')?true:false);
 		}
-
+		$ewbsAction->name=Input::get('name');
+		
 		// on adapte la taxonomie
 		$ewbsAction->tags()->sync( is_array( Input::get('tags') ) ? Input::get('tags') : []);
 
