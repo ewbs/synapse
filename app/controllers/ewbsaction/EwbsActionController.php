@@ -161,7 +161,10 @@ class EwbsActionController extends TrashableModelController {
 		$aSelectedTags = $modelInstance->tags->lists('id');
 		$aExpertises=DB::table('expertises')->orderBy('order')->lists('name');
 		
-		$params=compact('modelInstance', 'aTaxonomy', 'aSelectedTags');
+		//FIXME : Il faudrait aussi ajouter les conditions nécessaires pour inclure le user supprimé qui serait en fait celui lié à l'action courante (afin que le lien ne se perde pas)
+		$aUsers=User::query()->leftjoin('ewbs_members', 'ewbs_members.user_id', '=', 'users.id')->whereNotNull('ewbs_members.id')->orWhere('users.id', '=', $this->getLoggedUser()->id)->orderBy('username')->get(['users.id', 'users.username']);
+		
+		$params=compact('modelInstance', 'aTaxonomy', 'aSelectedTags', 'aUsers');
 		
 		if($modelInstance){
 			$params['revision']=$modelInstance->getLastRevision();
@@ -202,7 +205,8 @@ class EwbsActionController extends TrashableModelController {
 		$ewbsAction->addRevisionAttributes([
 			'description' => Input::get('description'),
 			'state' => Input::get('state', ($lastRevision ? $lastRevision->state : EwbsActionRevision::$STATE_TODO)),
-			'priority' => $priority
+			'priority' => $priority,
+			'responsible_id' => Input::get('responsible_id')
 		]);
 
 

@@ -37,7 +37,7 @@ class EwbsActionRevision extends RevisionModel {
 	 * @see RevisionModel::attributes()
 	 */
 	public function attributes(){
-		return ['description', 'state', 'priority'];
+		return ['description', 'state', 'priority', 'responsible_id'];
 	}
 	
 	/**
