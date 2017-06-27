@@ -430,9 +430,10 @@ class EwbsAction extends RevisableModel {
 		return EwbsActionRevision
 			::withTrashed ()
 			->leftjoin('users', 'users.id', '=', 'ewbsActionsRevisions.user_id')
+			->leftjoin('users as responsibles', 'responsibles.id', '=', 'ewbsActionsRevisions.responsible_id')
 			->where ( 'ewbsActionsRevisions.ewbs_action_id', '=', $this->id )
 			->orderBy ( 'ewbsActionsRevisions.created_at', 'DESC' )
-			->get (['ewbsActionsRevisions.id as revision_id', 'users.username', 'users.email AS usermail', 'ewbsActionsRevisions.state', 'ewbsActionsRevisions.priority', 'ewbsActionsRevisions.description', 'ewbsActionsRevisions.created_at', 'ewbsActionsRevisions.deleted_at']);
+			->get (['ewbsActionsRevisions.id as revision_id', 'users.username', 'users.email AS usermail', 'responsibles.username as responsible_username', 'ewbsActionsRevisions.state', 'ewbsActionsRevisions.priority', 'ewbsActionsRevisions.description', 'ewbsActionsRevisions.created_at', 'ewbsActionsRevisions.deleted_at']);
 	}
 	
 	/**
