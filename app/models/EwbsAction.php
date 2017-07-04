@@ -97,13 +97,43 @@ class EwbsAction extends RevisableModel {
 	 * Query scope listant les actions principales (=qui n'ont pas de parent) avec leur dernière révision, les composants liés (pièce ou tâche), les éléments éventuellement liés (démarche, eform, idée), et le dernier user l'ayant sauvegardé
 	 *
 	 * @param Builder $query
+	 * @return Builder
+	 */
+	public function scopeDistinctResponsibles(Builder $query) {
+		return $query->joinResponsibles()->distinct()->addSelect(['resp.id','resp.username']);
+	}
+	/**
+	 * Query scope liant à la requête les responsables des actions
+	 * 
+	 * @param Builder $query
+	 * @param string $trashed
+	 * @return unknown
+	 */
+	public function scopeJoinResponsibles(Builder $query, $trashed=false) {
+		return $query->main()->joinLastRevision($trashed, false)->join('users as resp', 'resp.id', '=', 'v_lastrevisionewbsaction.responsible_id');
+	}
+	
+	/**
+	 * Query scope ciblant les actions principales (=qui n'ont pas de parent)
+	 *
+	 * @param Builder $query
+	 * @return Builder
+	 */
+	public function scopeMain(Builder $query) {
+		return $query->whereNull('ewbsActions.parent_id');
+	}
+	
+	/**
+	 * Query scope listant les actions principales (=qui n'ont pas de parent) avec leur dernière révision, les composants liés (pièce ou tâche), les éléments éventuellement liés (démarche, eform, idée), et le dernier user l'ayant sauvegardé
+	 *
+	 * @param Builder $query
 	 * @param string $trashed Prendre les soft-deletés, false par défaut
 	 * @return Builder
 	 */
 	public function scopeEach(Builder $query, $trashed=false) {
 		return $query
 		->addSelect(['ewbsActions.id AS action_id', 'ewbsActions.name'])
-		->whereNull('ewbsActions.parent_id')
+		->main()
 		->joinComponents()->joinLastRevision($trashed)->joinLinkedElement();
 	}
 	
@@ -131,6 +161,12 @@ class EwbsAction extends RevisableModel {
 	public function scopeForDemarche(Builder $query, Demarche $demarche) {
 		return $query->where('ewbsActions.demarche_id', '=', $demarche->id);
 	}
+	
+	public function scopeForResponsibles(Builder $query, array $values, $trashed=false) {
+		if($values) return $query->whereIn('v_lastrevisionewbsaction.responsible_id', $values);
+		else return $query;
+	}
+	
 
 	/**
 	 * Ne retourner que les actions liées à des démarches (sans prendre celles liées à des pièces et des taches)
@@ -243,20 +279,24 @@ class EwbsAction extends RevisableModel {
 	 * @param Builder $query
 	 * @return Builder
 	 */
-	public function scopeJoinLastRevision(Builder $query, $trashed=false) {
-		return $query
-		->addSelect([
-			'v_lastrevisionewbsaction.id AS revision_id',
-			'v_lastrevisionewbsaction.description',
-			'v_lastrevisionewbsaction.state',
-			'v_lastrevisionewbsaction.priority',
-			'v_lastrevisionewbsaction.created_at',
-			'v_lastrevisionewbsaction.deleted_at',
-			'users.username'
-		])
+	public function scopeJoinLastRevision(Builder $query, $trashed=false, $addColumn=true) {
+		$query
 		->join('v_lastrevisionewbsaction', 'ewbsActions.id', '=', 'v_lastrevisionewbsaction.ewbs_action_id')
 		->leftjoin('users', 'users.id', '=', 'v_lastrevisionewbsaction.user_id')
 		->whereRaw('v_lastrevisionewbsaction.deleted_at '.($trashed?'is not null':'is null'));
+		
+		if($addColumn) {
+			$query->addSelect([
+				'v_lastrevisionewbsaction.id AS revision_id',
+				'v_lastrevisionewbsaction.description',
+				'v_lastrevisionewbsaction.state',
+				'v_lastrevisionewbsaction.priority',
+				'v_lastrevisionewbsaction.created_at',
+				'v_lastrevisionewbsaction.deleted_at',
+				'users.username'
+			]);
+		}
+		return $query;
 	}
 
 
