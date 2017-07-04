@@ -65,6 +65,10 @@ class User extends TrashableModel implements ConfideUserInterface {
 		
 		return false;
 	}
+	
+	/**
+	 * 
+	 */
 	public function getRestrictedAdministrationsIds() {
 		$return = array ();
 		if ($this->hasRestrictionsByAdministrations ()) {
@@ -78,8 +82,7 @@ class User extends TrashableModel implements ConfideUserInterface {
 	/**
 	 * Get user by username
 	 * 
-	 * @param
-	 *        	$username
+	 * @param $username
 	 * @return mixed
 	 */
 	public function getUserByUsername($username) {
@@ -89,8 +92,7 @@ class User extends TrashableModel implements ConfideUserInterface {
 	/**
 	 * Find the user and check whether they are confirmed
 	 *
-	 * @param array $identity
-	 *        	an array with identities to check (eg. ['username' => 'test'])
+	 * @param array $identity an array with identities to check (eg. ['username' => 'test'])
 	 * @return boolean
 	 */
 	public function isConfirmed($identity) {
@@ -110,8 +112,7 @@ class User extends TrashableModel implements ConfideUserInterface {
 	/**
 	 * Save roles inputted from multiselect
 	 * 
-	 * @param
-	 *        	$inputRoles
+	 * @param $inputRoles
 	 */
 	public function saveRoles($inputRoles) {
 		if (! empty ( $inputRoles )) {
@@ -212,27 +213,35 @@ class User extends TrashableModel implements ConfideUserInterface {
 	public function getReminderEmail() {
 		return $this->email;
 	}
-	public function ideas() {
-		return $this->hasMany ( 'Idea' );
-	}
-	public function demarches() {
-		return $this->hasMany ( 'Demarche' );
-	}
 	
 	/**
-	 * Gestion des données de session
-	 * Cette section permet d'utiliser les sessions pour conserver des paramètres dans toute l'application.
-	 * Comme par exemple, un formulaire de recherche qui retrouve son état tel qu'on l'a quitté avant de passer à une autre page
+	 * Surcharge de la méthode plaçant une info dans la session, afin de la restreindre au scope user
+	 * 
+	 * @param string|array $key
+	 * @param mixed|null $value
+	 * @return void 
 	 */
-
 	public function sessionSet($key, $value) {
 		Session::put('user_'.$key, $value);
 	}
-
-	public function sessionGet($key, $default=null) {
-		return Session::get('user_'.$key, $default);
+	
+	/**
+	 * Surcharge de la méthode récupérant une info de la session, afin de la restreindre au scope user
+	 * 
+	 * @param string $name The attribute name
+	 * @param mixed $default The default value if not found.
+	 * @return mixed
+	 */
+	public function sessionGet($name, $default=null) {
+		return Session::get('user_'.$name, $default);
 	}
-
+	
+	/**
+	 * Surcharge de la méthode supprimant une info de la session, afin de la restreindre au scope user
+	 * 
+	 * @param string $key
+	 * @return void 
+	 */
 	public function sessionDestroy($key) {
 		Session::forget('user_'.$key);
 	}
@@ -245,6 +254,14 @@ class User extends TrashableModel implements ConfideUserInterface {
 	 */
 	public function administrations() {
 		return ($this->belongsToMany ( 'Administration' ));
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function demarches() {
+		return $this->hasMany ( 'Demarche' );
 	}
 	
 	/**
@@ -285,5 +302,13 @@ class User extends TrashableModel implements ConfideUserInterface {
 	 */
 	public function filtersTag() {
 		return $this->hasMany('UserFilterTag');
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function ideas() {
+		return $this->hasMany ( 'Idea' );
 	}
 }
