@@ -93,6 +93,7 @@ var App = function() {
 		if(useform.length) {
 			var parameters=useform.serialize();
 			if(parameters) url+=(url.indexOf('?')>-1?'&':'?')+parameters;
+			//FIXME : Il faudra sans doute encoder les valeurs des paramètres (cf. exemple avec un " qui a posé souci sur le filtre d'actions par type/nom)
 		}
 		return url;
 	}
