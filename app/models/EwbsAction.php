@@ -94,6 +94,16 @@ class EwbsAction extends RevisableModel {
 	}
 	
 	/**
+	 * Query scope listant les différents noms des actions
+	 *
+	 * @param Builder $query
+	 * @return Builder
+	 */
+	public function scopeDistinctNames(Builder $query) {
+		return $query->distinct()->main()->addSelect(['name'])->orderBy('name');
+	}
+	
+	/**
 	 * Query scope listant les actions principales (=qui n'ont pas de parent) avec leur dernière révision, les composants liés (pièce ou tâche), les éléments éventuellement liés (démarche, eform, idée), et le dernier user l'ayant sauvegardé
 	 *
 	 * @param Builder $query
@@ -162,8 +172,27 @@ class EwbsAction extends RevisableModel {
 		return $query->where('ewbsActions.demarche_id', '=', $demarche->id);
 	}
 	
+	/**
+	 * 
+	 * @param Builder $query
+	 * @param array $values
+	 * @param string $trashed
+	 * @return unknown|\Illuminate\Database\Eloquent\Builder
+	 */
 	public function scopeForResponsibles(Builder $query, array $values, $trashed=false) {
 		if($values) return $query->whereIn('v_lastrevisionewbsaction.responsible_id', $values);
+		else return $query;
+	}
+	
+	/**
+	 * 
+	 * @param Builder $query
+	 * @param array $values
+	 * @param string $trashed
+	 * @return unknown|\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeForNames(Builder $query, array $values, $trashed=false) {
+		if($values) return $query->whereIn('ewbsActions.name', $values);
 		else return $query;
 	}
 	

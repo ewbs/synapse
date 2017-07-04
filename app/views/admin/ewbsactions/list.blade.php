@@ -20,9 +20,19 @@
 						<div class="col-md-4">
 							<div class="form-group">
 								<label>Par assignation</label>
-								<select class="select2 nostra" multiple name="responsibles[]">
+								<select class="select2" multiple name="responsibles[]">
 									@foreach($responsibles as $responsible)
 										<option value="{{$responsible->id}}" {{in_array($responsible->id, $selectedResponsibles) ? 'selected="selected"':''}}>{{$responsible->username}}</option>
+									@endforeach
+								</select>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label>Par type/nom</label>
+								<select class="select2" multiple name="names[]">
+									@foreach($names as $name)
+										<option value="{{$name->name}}" {{in_array($name->name, $selectedNames) ? 'selected="selected"':''}}>{{$name->name}}</option>
 									@endforeach
 								</select>
 							</div>

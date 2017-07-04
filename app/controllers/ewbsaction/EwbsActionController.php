@@ -18,8 +18,11 @@ class EwbsActionController extends TrashableModelController {
 	protected function getList($onlyTrashed=false) {
 		$params=['trash'=>$onlyTrashed];
 		if(!$onlyTrashed) {
-			$params['responsibles']=EwbsAction::DistinctResponsibles()->get();
+			$params['responsibles']=EwbsAction::distinctResponsibles()->get();
 			$params['selectedResponsibles']=Auth::user()->sessionGet('ewbsactions_selectedResponsibles', []);
+			
+			$params['names']=EwbsAction::distinctNames()->get();
+			$params['selectedNames']=Auth::user()->sessionGet('ewbsactions_selectedNames', []);
 		}
 		return View::make ('admin/ewbsactions/list', $params);
 	}
@@ -41,8 +44,12 @@ class EwbsActionController extends TrashableModelController {
 		
 		$selectedResponsibles = Input::get('responsibles', []);
 		Auth::user()->sessionSet('ewbsactions_selectedResponsibles', $selectedResponsibles);
+		
+		$selectedNames = Input::get('names', []);
+		Auth::user()->sessionSet('ewbsactions_selectedNames', $selectedNames);
+		
 		$array=[];
-		foreach ( EwbsAction::each()->forResponsibles($selectedResponsibles)->joinSubActions()->joinTaxonomy()->get() as $item ) {
+		foreach ( EwbsAction::each()->forResponsibles($selectedResponsibles)->forNames($selectedNames)->joinSubActions()->joinTaxonomy()->get() as $item ) {
 			$entry=[];
 			$entry[]=str_pad ( $item->action_id, 5, "0", STR_PAD_LEFT );
 			if($onlyTrashed) {
