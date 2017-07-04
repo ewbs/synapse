@@ -35,6 +35,8 @@ class ModifyEwbsActions43 extends Migration {
 			$table->foreign( 'responsible_id' )->references( 'id' )->on( 'users' )->onDelete( 'set null' );
 		});
 		
+		//FIXME : est-ce qu'il ne faudrait pas plutôt avoir une contrainte conditionnelle de type check ? (not null si action parente, d'office null si sous-action)
+		
 		$this->output->writeln("Initialisation par défaut du responsible_id avec le user_id pour la table ewbsActionsRevisions");
 		// Note : Cette requête n'est pas mise en seed, car on veut forcer une contrainte not null juste après. Ce n'est qu'une parade à l'impossibilité d'utiliser le default lors de l'ajout de la colonne
 		DB::statement('UPDATE "ewbsActionsRevisions" SET responsible_id=user_id');
