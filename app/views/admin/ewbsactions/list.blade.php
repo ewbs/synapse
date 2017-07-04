@@ -13,8 +13,25 @@
 				<h3>Liste des actions @if ($trash) supprimées @endif</h3>
 			</div>
 			<div class="content">
+				@if(!$trash)
+				<h4>Recherche avancée :</h4>
+				<form id="actions_filter" class="form-inline" data-dontobserve="1">
+					<div class="row no-padding no-margin">
+						<div class="col-md-4">
+							<div class="form-group">
+								<label>Par assignation</label>
+								<select class="select2 nostra" multiple name="responsibles[]">
+									@foreach($responsibles as $responsible)
+										<option value="{{$responsible->id}}" {{in_array($responsible->id, $selectedResponsibles) ? 'selected="selected"':''}}>{{$responsible->username}}</option>
+									@endforeach
+								</select>
+							</div>
+						</div>
+					</div>
+				</form>
+				@endif
 				<div class="table-responsive">
-					<table class="table table-hover datatable" data-ajaxurl="{{ $trash?$model->routeGetDataTrash():$model->routeGetData() }}" data-bFilter="true" data-bSort="true" data-bPaginate="true">
+					<table class="table table-hover datatable" data-ajaxurl="{{ $trash?$model->routeGetDataTrash():$model->routeGetData() }}" data-bFilter="true" data-bSort="true" data-bPaginate="true" data-useform="#actions_filter">
 						<thead>
 							<tr>
 								@if ($trash)
