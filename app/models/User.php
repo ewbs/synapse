@@ -229,8 +229,8 @@ class User extends TrashableModel implements ConfideUserInterface {
 		Session::put('user_'.$key, $value);
 	}
 
-	public function sessionGet($key) {
-		return Session::get('user_'.$key, false);
+	public function sessionGet($key, $default=null) {
+		return Session::get('user_'.$key, $default);
 	}
 
 	public function sessionDestroy($key) {
