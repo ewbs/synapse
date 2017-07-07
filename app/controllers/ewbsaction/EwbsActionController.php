@@ -23,6 +23,9 @@ class EwbsActionController extends TrashableModelController {
 			
 			$params['names']=EwbsAction::distinctNames()->get();
 			$params['selectedNames']=Auth::user()->sessionGet('ewbsactions_selectedNames', []);
+			
+			$params['regions']=Region::all ();
+			$params['selectedAdministrations']=Auth::user()->sessionGet('ewbsactions_selectedAdministrations', []);
 		}
 		return View::make ('admin/ewbsactions/list', $params);
 	}
@@ -48,8 +51,11 @@ class EwbsActionController extends TrashableModelController {
 		$selectedNames = Input::get('names', []);
 		Auth::user()->sessionSet('ewbsactions_selectedNames', $selectedNames);
 		
+		$selectedAdministrations = Input::get('administrations', []);
+		Auth::user()->sessionSet('ewbsactions_selectedAdministrations', $selectedAdministrations);
+		
 		$array=[];
-		foreach ( EwbsAction::each()->forResponsibles($selectedResponsibles)->forNames($selectedNames)->joinSubActions()->joinTaxonomy()->get() as $item ) {
+		foreach ( EwbsAction::each()->forResponsibles($selectedResponsibles)->forNames($selectedNames)->forAdministrations($selectedAdministrations)->joinTaxonomy()->get() as $item ) {
 			$entry=[];
 			$entry[]=str_pad ( $item->action_id, 5, "0", STR_PAD_LEFT );
 			if($onlyTrashed) {
@@ -68,17 +74,7 @@ class EwbsActionController extends TrashableModelController {
 			$entry[] = $string;
 			$entry[]=EwbsActionRevision::graphicState ( $item->state );
 			$entry[]=( EwbsActionRevision::graphicPriority($item->priority) );
-
-			if(!$item->subactions)$entry[]='';
-			else {
-				$subactions=explode(',', $item->subactions);
-				$tooltip='<ul>';
-				foreach($subactions as $subaction) $tooltip.="<li>".$subaction."</li>";
-				$tooltip.='</ul>';
-				$entry[]='<a class="btn btn-xs btn-default" " href="' . route ( 'ewbsactionsGetView', $item->action_id ) . '#subactions" data-toggle="popover" data-content="'.$tooltip.'" data-html="true">'.count($subactions).'</a>';
-			}
 			
-
 			if($item->demarche_id) {
 				$string = '<a href="' . route('demarchesGetView', $item->demarche_id) . '" target="_blank" title="' . Lang::get('admin/demarches/messages.item') . '"><i class="fa fa-briefcase"></i>' . $item->demarche_name . '</a><br/>';
 				if ($item->demarche_piece_name) { //si on a une piece
@@ -100,6 +96,8 @@ class EwbsActionController extends TrashableModelController {
 				$entry[] = '<a href="' . route('eformsGetView', $item->eform_id) . '" target="_blank" title="' . Lang::get('admin/demarches/messages.item') . '"><span title="' . Lang::get('admin/demarches/messages.eform.eform') . '"><i class="fa fa-wpforms"></i>' . $item->eform_name . '</span></a>';
 			}
 			else $entry[]='';
+			
+			$entry[]=$item->responsible;
 			
 			$entry[]=DateHelper::sortabledatetime ( $item->created_at ) . '<br/>' . $item->username;
 			if($onlyTrashed) {

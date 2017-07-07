@@ -162,7 +162,41 @@ class EwbsAction extends RevisableModel {
 	}
 	
 	/**
-	 * Query scope ciblant les actions liées à la démarche
+	 * Restreindre aux actions liées à une ou plusieurs administrations via un projet de simplif' ou une démarche
+	 *
+	 * @param Builder $query
+	 * @param array $values Identifiants d'administration
+	 * @return unknown|\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeForAdministrations(Builder $query, array $values) {
+		if($values) {
+			return $query->where(
+				function(Builder $query) use($values) {
+					$query
+					->whereExists(
+						function($query) use($values) {
+							$query->select(DB::raw(1))
+							->from('administration_idea')
+							->whereRaw('administration_idea.idea_id = "ewbsActions".idea_id')
+							->whereIn('administration_idea.administration_id', $values);
+						}
+					)
+					->OrWhereExists(
+						function($query) use($values) {
+							$query->select(DB::raw(1))
+							->from('administration_demarche')
+							->whereRaw('administration_demarche.demarche_id = "ewbsActions".demarche_id')
+							->whereIn('administration_demarche.administration_id', $values);
+						}
+					);
+				}
+			);
+		}
+		else return $query;
+	}
+	
+	/**
+	 * Restreindre aux actions liées à une démarche
 	 *
 	 * @param Builder $query
 	 * @param Demarche $demarche
@@ -173,45 +207,44 @@ class EwbsAction extends RevisableModel {
 	}
 	
 	/**
+	 * Restreindre aux actions correspondant à un ou plusieurs noms
 	 * 
 	 * @param Builder $query
-	 * @param array $values
-	 * @param string $trashed
+	 * @param array $values Noms d'actions
 	 * @return unknown|\Illuminate\Database\Eloquent\Builder
 	 */
-	public function scopeForResponsibles(Builder $query, array $values, $trashed=false) {
+	public function scopeForNames(Builder $query, array $values) {
+		if($values) return $query->whereIn('ewbsActions.name', $values);
+		else return $query;
+	}
+	
+	/**
+	 * Restreindre aux actions liées à un ou plusieurs responsables
+	 *
+	 * @param Builder $query
+	 * @param array $values Identifiants de responsables
+	 * @return unknown|\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeForResponsibles(Builder $query, array $values) {
 		if($values) return $query->whereIn('v_lastrevisionewbsaction.responsible_id', $values);
 		else return $query;
 	}
 	
 	/**
-	 * 
-	 * @param Builder $query
-	 * @param array $values
-	 * @param string $trashed
-	 * @return unknown|\Illuminate\Database\Eloquent\Builder
-	 */
-	public function scopeForNames(Builder $query, array $values, $trashed=false) {
-		if($values) return $query->whereIn('ewbsActions.name', $values);
-		else return $query;
-	}
-	
-
-	/**
-	 * Ne retourner que les actions liées à des démarches (sans prendre celles liées à des pièces et des taches)
+	 * Restreindre aux actions actions liées à des démarches (sans prendre celles liées à des pièces et des taches)
 	 * @param Builder $query
 	 * @param Demarche $demarche
 	 * @return $this
 	 */
 	public function scopeOnlyLinkedToDemarches(Builder $query) {
 		return $query
-				->where('ewbsActions.demarche_id', '>', 0)
-				->whereNull('ewbsActions.demarche_piece_id')
-				->whereNull('ewbsActions.demarche_task_id');
+			->where('ewbsActions.demarche_id', '>', 0)
+			->whereNull('ewbsActions.demarche_piece_id')
+			->whereNull('ewbsActions.demarche_task_id');
 	}
 
 	/**
-	 * Query scope ciblant les actions liées à l'eform
+	 * Restreindre aux actions liées à un eform
 	 *
 	 * @param Builder $query
 	 * @param Eform $eform
@@ -222,7 +255,8 @@ class EwbsAction extends RevisableModel {
 	}
 
 	/**
-	 * Scope ciblant les actions liées à un formulaire (formulaire suel, ou lié à une démarche, sans distinction)
+	 * Restreindre aux actions liées à un formulaire (formulaire seul ou via une démarche, sans distinction)
+	 * 
 	 * @param Builder $query
 	 * @return $this
 	 */
@@ -231,7 +265,7 @@ class EwbsAction extends RevisableModel {
 	}
 
 	/**
-	 * Query scope ciblant les actions liées à l'idée
+	 * Restreindre aux actions liées à une idée
 	 *
 	 * @param Builder $query
 	 * @param Idea $idea
@@ -240,8 +274,13 @@ class EwbsAction extends RevisableModel {
 	public function scopeForIdea(Builder $query, Idea $idea) {
 		return $query->where ('ewbsActions.idea_id', '=', $idea->id);
 	}
-
-
+	
+	/**
+	 * Restreindre aux actions liées à une pièce ou tâche
+	 * 
+	 * @param Builder $query
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
 	public function scopeForComponents(Builder $query) {
 		return $query->where( function ($query) {
 			$query->whereNotNull('ewbsActions.demarche_piece_id')->orWhereNotNull('ewbsActions.demarche_task_id');
@@ -312,6 +351,7 @@ class EwbsAction extends RevisableModel {
 		$query
 		->join('v_lastrevisionewbsaction', 'ewbsActions.id', '=', 'v_lastrevisionewbsaction.ewbs_action_id')
 		->leftjoin('users', 'users.id', '=', 'v_lastrevisionewbsaction.user_id')
+		->leftjoin('users as responsibles', 'responsibles.id', '=', 'v_lastrevisionewbsaction.responsible_id')
 		->whereRaw('v_lastrevisionewbsaction.deleted_at '.($trashed?'is not null':'is null'));
 		
 		if($addColumn) {
@@ -320,6 +360,7 @@ class EwbsAction extends RevisableModel {
 				'v_lastrevisionewbsaction.description',
 				'v_lastrevisionewbsaction.state',
 				'v_lastrevisionewbsaction.priority',
+				'responsibles.username as responsible',
 				'v_lastrevisionewbsaction.created_at',
 				'v_lastrevisionewbsaction.deleted_at',
 				'users.username'
