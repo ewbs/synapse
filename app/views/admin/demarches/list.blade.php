@@ -17,81 +17,64 @@
 				@if($trash)
 				@warning("Ces démarches sont supprimées car elles ont été présentes dans le flux fourni par Nostra, mais désactivées par après pour l'usage Synapse.<br/>La réactivation d'une démarche côté Nostra aura donc pour effet de la restaurer dans Synapse.")
 				@else
-				<h4>Recherche avancée :</h4>
-				<form id="catalogDemarches_form" class="form-inline" data-dontobserve="1">
-					<div class="row no-padding no-margin">
-						<div class="col-md-6">
-							<div class="row no-padding no-margin">
-								<div class="col-md-12">
-									<div class="form-group">
-										<div class="checkbox">
-											<label>
-												<input type="checkbox" class="icheck" id="catalogDemarches_onlyDocumented" {{Auth::user()->sessionGet('catalogDemarches_onlyDocumented') ? 'checked="checked"':''}} /> Uniquement les démarches documentées
-											</label>
-										</div>
-									</div>
+				<h4>Filtrer :</h4>
+				<form id="catalogDemarches_form" data-dontobserve="1">
+					<div class="row">
+						<div class="col-md-4">
+							<div class="form-group">
+								<div class="checkbox no-padding">
+									<label>
+										<input type="checkbox" class="icheck" id="catalogDemarches_onlyDocumented" {{Auth::user()->sessionGet('catalogDemarches_onlyDocumented') ? 'checked="checked"':''}} /> Uniquement les démarches documentées
+									</label>
 								</div>
 							</div>
-							<div class="row no-padding no-margin">
-								<div class="col-md-12">
-									<div class="form-group">
-										<div class="checkbox">
-											<label>
-												<input type="checkbox" class="icheck" id="catalogDemarches_onlyWithActions" {{Auth::user()->sessionGet('catalogDemarches_onlyWithActions') ? 'checked="checked"':''}} /> Uniquement les démarches avec actions en cours
-											</label>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="row no-padding no-margin">
-								<div class="col-md-12">
-									<div class="form-group">
-										<label>Par publics cibles</label>
-										<select class="select2 nostra" multiple name="nostra_publics[]" id="nostra_publics">
-											<?php
-												$selectedPublics = Auth::user()->sessionGet('catalogDemarches_publics') ? explode(',', Auth::user()->sessionGet('catalogDemarches_publics')) : [];
-											?>
-											@foreach($aPublics as $public)
-												<option value="{{$public->id}}" {{in_array($public->id, $selectedPublics) ? 'selected="selected"':''}}>{{$public->title}}</option>
-											@endforeach
-										</select>
-									</div>
+							<div class="form-group">
+								<div class="checkbox no-padding">
+									<label>
+										<input type="checkbox" class="icheck" id="catalogDemarches_onlyWithActions" {{Auth::user()->sessionGet('catalogDemarches_onlyWithActions') ? 'checked="checked"':''}} /> Uniquement les démarches avec actions en cours
+									</label>
 								</div>
 							</div>
 						</div>
-						<div class="col-md-6">
-							<div class="row no-padding no-margin">
-								<div class="col-md-12">
-									<div class="form-group">
-										Avec au moins
-										<input class="form-control" style="width:4em;" type="text" id="catalogDemarches_minPieces" value="{{Auth::user()->sessionGet('catalogDemarches_minPieces') ? Auth::user()->sessionGet('dashboardDemarches_minPieces'):'0'}}" />
-										pièces et
-										<input class="form-control" style="width:4em;" type="text" id="catalogDemarches_minTasks" value="{{Auth::user()->sessionGet('catalogDemarches_minTasks') ? Auth::user()->sessionGet('dashboardDemarches_minTasks'):'0'}}" />
-										tâches et
-										<input class="form-control" style="width:4em;" type="text" id="dashboardDemarches_minForms" value="{{Auth::user()->sessionGet('dashboardDemarches_minForms') ? Auth::user()->sessionGet('dashboardDemarches_minForms'):'0'}}" />
-										formulaires
-									</div>
-								</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label>Par publics cibles</label>
+								<select class="select2 nostra" multiple name="nostra_publics[]" id="nostra_publics">
+									<?php
+										$selectedPublics = Auth::user()->sessionGet('catalogDemarches_publics') ? explode(',', Auth::user()->sessionGet('catalogDemarches_publics')) : [];
+									?>
+									@foreach($aPublics as $public)
+										<option value="{{$public->id}}" {{in_array($public->id, $selectedPublics) ? 'selected="selected"':''}}>{{$public->title}}</option>
+									@endforeach
+								</select>
 							</div>
-							<div class="row no-padding no-margin"><div class="col-md-12"><div class="form-group"></div></div></div>
-							<div class="row no-padding no-margin">
-								<div class="col-md-12">
-									<div class="form-group">
-										<label>Par administrations</label>
-										<select class="select2 nostra" multiple name="administrations[]" id="administrations">
-											<?php
-											$selectedAdministrations = Auth::user()->sessionGet('catalogDemarches_administrations') ? explode(',', Auth::user()->sessionGet('catalogDemarches_administrations')) : [];
-											?>
-											@foreach($aRegions as $region)
-												<optgroup label="{{$region->name}}">
-													@foreach($region->administrations as $administration)
-														<option value="{{$administration->id}}" {{in_array($administration->id, $selectedAdministrations) ? 'selected="selected"':''}}>{{$administration->name}}</option>
-													@endforeach
-												</optgroup>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label>Par administrations</label>
+								<select class="select2 nostra" multiple name="administrations[]" id="administrations">
+									<?php
+									$selectedAdministrations = Auth::user()->sessionGet('catalogDemarches_administrations') ? explode(',', Auth::user()->sessionGet('catalogDemarches_administrations')) : [];
+									?>
+									@foreach($aRegions as $region)
+										<optgroup label="{{$region->name}}">
+											@foreach($region->administrations as $administration)
+												<option value="{{$administration->id}}" {{in_array($administration->id, $selectedAdministrations) ? 'selected="selected"':''}}>{{$administration->name}}</option>
 											@endforeach
-										</select>
-									</div>
-								</div>
+										</optgroup>
+									@endforeach
+								</select>
+							</div>
+						</div>
+						<div class="col-md-12 form-inline">
+							<div class="form-group">
+								Avec au moins
+								<input class="form-control input-sm text-right" style="width:4em;" type="text" id="catalogDemarches_minPieces" value="{{Auth::user()->sessionGet('catalogDemarches_minPieces') ? Auth::user()->sessionGet('dashboardDemarches_minPieces'):'0'}}" />
+								pièces<span class="hidden-xs"> &#160; / &#160; </span><div class="visible-xs"><br/></div>
+								<input class="form-control input-sm text-right" style="width:4em;" type="text" id="catalogDemarches_minTasks" value="{{Auth::user()->sessionGet('catalogDemarches_minTasks') ? Auth::user()->sessionGet('dashboardDemarches_minTasks'):'0'}}" />
+								tâches<span class="hidden-xs"> &#160; / &#160; </span><div class="visible-xs"><br/></div>
+								<input class="form-control input-sm text-right" style="width:4em;" type="text" id="dashboardDemarches_minForms" value="{{Auth::user()->sessionGet('dashboardDemarches_minForms') ? Auth::user()->sessionGet('dashboardDemarches_minForms'):'0'}}" />
+								formulaires
 							</div>
 						</div>
 					</div>
