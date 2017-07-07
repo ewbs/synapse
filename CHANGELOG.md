@@ -14,6 +14,14 @@
 
 ### Actions
 - Added : Nouvel état "En standby"
+- Added : Ajout d'un notion d'assignation d'une action à un user (édition, détail, liste)
+- Added : Filtres par assignations, noms/types, administrations sur la liste des actions
+- Changed : Etat "Initialisé" renommé en "A faire"
+- Changed : Choix du nom d'une action limité à la liste des expertises
+- Changed : Retrait de la colonne "Sous-actions" sur la liste des actions
+
+### Expertises & pôles
+- Added : Création des nouveaux modèles de données et remplissage avec les valeurs actuelles
 
 ### Users
 - Bugfix : Adaptation des la construction des routes, suppression de code non utilisé, ajout d'un message manquant
