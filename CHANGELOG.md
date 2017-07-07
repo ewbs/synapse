@@ -9,6 +9,9 @@
 ### Monitoring
 - Added : Database - Ajout d'un check sur la présence de l'extension btree_gist
 
+### Dashboard
+- Bugfix : Les filtres ne s'appliquaient pas sur les pièces et tâches dont le total est présenté dans le pavé "Catalogue des démarches"
+
 ### Actions
 - Added : Nouvel état "En standby"
 

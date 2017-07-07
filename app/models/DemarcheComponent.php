@@ -153,38 +153,37 @@ abstract class DemarcheComponent extends RevisableModel {
 
 	public function scopeNostraPublicsIds($query, $publicsIds) {
 		if (is_array ( $publicsIds ) && count ( $publicsIds )) {
-			return $query->with(['demarche' => function($query) {
-				$query->where(function ($query) use ($publicsIds) {
-					$query->whereHas('nostraDemarche', function ($query) use ($publicsIds) {
-						$query->whereHas('nostraPublics', function ($query) use ($publicsIds) {
-							$query->whereIn('nostra_publics.id', $publicsIds);
-						});
+			return
+			$query->whereHas('demarche', function ($query) use ($publicsIds) {
+				$query->whereHas('nostraDemarche', function ($query) use ($publicsIds) {
+					$query->whereHas('nostraPublics', function ($query) use ($publicsIds) {
+						$query->whereIn('nostra_publics.id', $publicsIds);
 					});
 				});
-			}]);
+			});
 		}
 		return $query;
 	}
 	public function scopeAdministrationsIds($query, $administrationsIds) {
 		if (is_array ( $administrationsIds ) && count ( $administrationsIds )) {
 			return
-					$query->with(['demarche' => function ($query) {
-						$query->wherehas('administrations', function ($query) use ($administrationsIds) {
-							$query->whereIn('administrations.id', $administrationsIds);
-						});
-					} ]);
+			$query->whereHas('demarche', function ($query) use ($administrationsIds) {
+				$query->wherehas('administrations', function ($query) use ($administrationsIds) {
+					$query->whereIn('administrations.id', $administrationsIds);
+				});
+			});
 		}
 		return $query;
 	}
 	public function scopeTaxonomyTagsIds($query, $tagsIds) {
 		if (is_array ( $tagsIds ) && count ( $tagsIds )) {
-			return $query->with(['demarche' => function ($query) {
+			return
+			$query->whereHas('demarche', function ($query) use ($tagsIds) {
 				$query->wherehas('tags', function ($query) use ($tagsIds) {
 					$query->whereIn('taxonomytags.id', $tagsIds);
 				});
-			}]);
+			});
 		}
 		return $query;
 	}
-
 }
