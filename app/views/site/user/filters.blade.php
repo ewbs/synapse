@@ -17,12 +17,13 @@
                         <p>
                             Les filtres vous permettent de personnaliser les données affichées dans Synapse.<br/>
                             Les filtres fontionnent par union puis par intersection.
-                            Par exemple, si vous sélectionnez les administrations "DGO6" et "DGO7", le public cible "citoyen" et les tags "cabinet" et "formulaires",
+                            {{-- #desactivatedtags--}}{{--Par exemple, si vous sélectionnez les administrations "DGO6" et "DGO7", le public cible "citoyen" et les tags "cabinet" et "formulaires",--}}
+                            Par exemple, si vous sélectionnez les administrations "DGO6" et "DGO7" et le public cible "citoyen",
                             le filtre vous retournera les élements
                             <ul>
                                 <li>relatifs à la DGO6 <strong>ou</strong> à la DGO7</li>
-                                <li>qui sont associés au public citoyen"</li>
-                                <li><strong>et</strong> qui possèdent le tag "cabinet" <strong>ou</strong> le tag "formulaires"
+                                <li>et qui sont associés au public citoyen"</li>
+                                {{-- #desactivatedtags--}}{{--<li><strong>et</strong> qui possèdent le tag "cabinet" <strong>ou</strong> le tag "formulaires"--}}
                             </ul>
                         </p>
                         <form method="post" autocomplete="off" action="{{ route('userPostFilters') }}">
@@ -56,7 +57,8 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-4">
+                                {{-- #desactivatedtags--}}
+                                <div class="col-md-4 hidden">
                                     <h4>Par tags</h4>
                                     <p>N'afficher que les éléments relatifs à ces tags:</p>
                                     <select class="select2" multiple name="tags[]" id="tags">

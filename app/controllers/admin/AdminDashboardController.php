@@ -265,11 +265,14 @@ class AdminDashboardController extends BaseController {
 		$string = implode(', ',  Administration::whereHas('filters', function($query) {
 			$query->where('user_id', '=', Auth::user()->id);
 		})->lists('name'));
+		
+		// #desactivatedtags
 		// tags
-		$string .= ' | '; //TODO: faire qqe chose de plus propre, comme aller taper une icone devant les termes, tirée du fichier de langue
+		/*$string .= ' | '; //TODO: faire qqe chose de plus propre, comme aller taper une icone devant les termes, tirée du fichier de langue
 		$string .= implode(', ',  TaxonomyTag::whereHas('filters', function($query) {
 			$query->where('user_id', '=', Auth::user()->id);
-		})->lists('name'));
+		})->lists('name'));*/
+		
 		// publics
 		$string .= ' | '; //TODO: faire qqe chose de plus propre, comme aller taper une icone devant les termes, tirée du fichier de langue
 		$string .= implode(', ',  NostraPublic::whereHas('filters', function($query) {

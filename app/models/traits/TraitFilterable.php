@@ -24,9 +24,10 @@
 				$filteredAdministrationIds = Auth::user()->sessionGet('filteredAdministrationIds');
 			}
 
+			// #desactivatedtags
 			// filtrage par tags
 			// la méthode getSynonyms retournera les synonymes, mais il faut aussi include dans le scope les tags de base ...
-			if ( ! Auth::user()->sessionGet('filteredTagsIds') ) {
+			/*if ( ! Auth::user()->sessionGet('filteredTagsIds') ) {
 				$userTags = TaxonomyTag::findMany(Auth::user()->filtersTag->lists('taxonomy_tag_id')); // on recherche les tags de l'utilisateur
 				$filteredTagsIds =
 					array_merge( // ... et on merge
@@ -36,7 +37,7 @@
 				Auth::user()->sessionSet('filteredTagsIds', $filteredTagsIds);
 			} else {
 				$filteredTagsIds = Auth::user()->sessionGet('filteredTagsIds');
-			}
+			}*/
 
 
 			// filtrage par publics cibles
@@ -48,7 +49,11 @@
 			}
 
 
-			$queryBuilderObject = static::administrationsIds($filteredAdministrationIds)->taxonomyTagsIds($filteredTagsIds)->nostraPublicsIds($filteredPublicsIds); //appel aux scopes
+			$queryBuilderObject = static
+			::administrationsIds($filteredAdministrationIds)
+			// #desactivatedtags
+			// ->taxonomyTagsIds($filteredTagsIds)
+			->nostraPublicsIds($filteredPublicsIds); //appel aux scopes
 
 			return $queryBuilderObject;
 
