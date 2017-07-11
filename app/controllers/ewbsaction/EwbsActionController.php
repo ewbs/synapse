@@ -172,19 +172,15 @@ class EwbsActionController extends TrashableModelController {
 		
 		$aTaxonomy = TaxonomyCategory::orderBy('name')->get();
 		$aSelectedTags = $modelInstance->tags->lists('id');
-		$aExpertises=DB::table('expertises')->orderBy('order')->lists('name');
-		
-		//FIXME : Il faudrait aussi ajouter les conditions nécessaires pour inclure le user supprimé qui serait en fait celui lié à l'action courante (afin que le lien ne se perde pas)
-		$aUsers=User::query()->leftjoin('ewbs_members', 'ewbs_members.user_id', '=', 'users.id')->whereNotNull('ewbs_members.id')->orWhere('users.id', '=', $this->getLoggedUser()->id)->orderBy('username')->get(['users.id', 'users.username']);
-		
+		$aExpertises=Expertise::names($modelInstance?$modelInstance->name:null);
+		$aUsers= [];
 		$params=compact('modelInstance', 'aTaxonomy', 'aSelectedTags', 'aUsers');
 		
 		if($modelInstance){
 			$params['revision']=$modelInstance->getLastRevision();
 			
-			// Insérer en début de tableau l'éventuel nom de l'action si elle ne correspond pas à une des expertises
-			if(!in_array($modelInstance->name(), $aExpertises))
-				array_unshift($aExpertises, $modelInstance->name());
+			//FIXME : Il faudrait aussi ajouter les conditions nécessaires pour inclure le user supprimé qui serait en fait celui lié à l'action courante (afin que le lien ne se perde pas)
+			$aUsers=User::query()->ewbsOrSelf()->get(['users.id', 'users.username']);
 		}
 		$params['aExpertises']=$aExpertises;
 		return $this->makeDetailView($modelInstance, 'admin/ewbsactions/manage', $params);

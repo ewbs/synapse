@@ -2,6 +2,7 @@
 use Zizaco\Confide\ConfideUserInterface;
 use Zizaco\Entrust\HasRole;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Utilisateurs
@@ -244,6 +245,28 @@ class User extends TrashableModel implements ConfideUserInterface {
 	 */
 	public function sessionDestroy($key) {
 		Session::forget('user_'.$key);
+	}
+	
+	/**
+	 * 
+	 * @param Builder $query
+	 * @return unknown
+	 */
+	public function scopeEwbsOrSelf(Builder $query) {
+		return $query
+		->leftjoin('ewbs_members', 'ewbs_members.user_id', '=', 'users.id')
+		->whereNotNull('ewbs_members.id')
+		->orWhere('users.id', '=', Auth::user()->id)
+		->order();
+	}
+	
+	/**
+	 * 
+	 * @param Builder $query
+	 * @return unknown
+	 */
+	public function scopeOrder(Builder $query) {
+		return $query->orderBy('username');
 	}
 	
 	/**

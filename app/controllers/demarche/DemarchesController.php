@@ -2325,11 +2325,6 @@ class DemarcheController extends TrashableModelController {
 				];
 			}
 			else {
-				$subactions=explode(',', $item->subactions);
-				$tooltip='<ul>';
-				foreach($subactions as $subaction) $tooltip.="<li>".$subaction."</li>";
-				$tooltip.='</ul>';
-				
 				$rows[] = [
 					'<strong>' . $item->name . '</strong><br/><em>' . $item->description . '</em>',
 					EwbsActionRevision::graphicState($item->state),
@@ -2344,7 +2339,7 @@ class DemarcheController extends TrashableModelController {
 							)
 						)
 					),
-					(!$item->subactions)?'':'<a class="btn btn-xs btn-default" " href="' . route ( 'ewbsactionsGetView', $item->action_id ) . '#subactions" data-toggle="popover" data-content="'.$tooltip.'" data-html="true">'.count($subactions).'</a>',
+					$item->responsible,
 					DateHelper::sortabledatetime($item->created_at) . '<br/>' . $item->username,
 					(
 						'<a title="' . Lang::get('button.historical') . '" class="history btn btn-xs btn-default servermodal" href="' . route('demarchesActionsGetHistory', [$item->demarche_id, $item->action_id]) . '"><span class="fa fa-clock-o"></span></a>' .
@@ -2389,13 +2384,20 @@ class DemarcheController extends TrashableModelController {
 	 * @return \Illuminate\View\View
 	 */
 	protected function actionsGetManage(Demarche $demarche, EwbsAction $action = null, array $extra=[]) {
+		$edit=($action && $action->id);
 		$aTaxonomy = TaxonomyCategory::orderBy('name')->get();
 		$selectedTags = [];
+		$aExpertises=Expertise::names($edit?$action->name():null);
+		$aUsers= [];
 		if ($action) {
 			$selectedTags = $action->tags->lists('id');
+			
+			//FIXME : Il faudrait aussi ajouter les conditions nécessaires pour inclure le user supprimé qui serait en fait celui lié à l'action courante (afin que le lien ne se perde pas)
+			$aUsers=User::query()->ewbsOrSelf()->get(['users.id', 'users.username']);
+			
 		}
 		$returnTo = $this->getReturnTo();
-		return View::make ( 'admin/demarches/actions/modal-manage', array_merge(compact('demarche', 'action', 'aTaxonomy', 'selectedTags', 'returnTo'), $extra));
+		return View::make ( 'admin/demarches/actions/modal-manage', array_merge(compact('demarche', 'action', 'edit', 'aTaxonomy', 'selectedTags', 'aUsers', 'aExpertises', 'returnTo'), $extra));
 	}
 	
 	/**
@@ -2463,7 +2465,8 @@ class DemarcheController extends TrashableModelController {
 					$action->addRevisionAttributes ( [ 
 						'description' => Input::get ( 'description' ),
 						'state' => Input::get('state', ($lastRevision?$lastRevision->state:EwbsActionRevision::$STATE_TODO)),
-						'priority'=>$priority
+						'priority'=>$priority,
+						'responsible_id' => Input::get('responsible_id')
 					] );
 
 					if (! $action->save ()) {
