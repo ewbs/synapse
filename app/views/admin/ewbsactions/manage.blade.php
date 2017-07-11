@@ -31,11 +31,12 @@ $responsible_id=Input::old('responsible_id', $revision ? $revision->responsible_
 				<div class="form-group">
 					<label class="col-md-2 control-label" for="state">Nom</label>
 					<div class="col-md-10">
-						<select class="form-control" name="name">
+						<select class="form-control select2 {{ $errors->has('name') ? 'has-error' : '' }}" name="name">
 						@foreach($aExpertises as $expertise)
 							<option {{ $expertise==$name ? ' selected': '' }}>{{$expertise}}</option>
 						@endforeach
 						</select>
+						{{ $errors->first('name', '<span class="help-inline">:message</span>') }}
 					</div>
 				</div>
 				{{-- ./ Name --}}
