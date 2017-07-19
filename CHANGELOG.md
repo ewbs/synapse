@@ -5,6 +5,7 @@
 
 ### Migrations
 - Bugfix : Renommer le script de migration des users, car il interfère avec celui qui se trouve dans Confide
+- Bugfix : Ajout clé primaire aux tables correspondant aux filtres utilisateur existants (administration, public, tag)
 
 ### Monitoring
 - Added : Database - Ajout d'un check sur la présence de l'extension btree_gist
@@ -30,6 +31,7 @@
 - Added : Création des nouveaux modèles de données et remplissage avec les valeurs actuelles
 
 ### Users
+- Added : Nouveau modèle de données "Filtre utilisateur par expertise"
 - Bugfix : Adaptation des la construction des routes, suppression de code non utilisé, ajout d'un message manquant
 
 ## 4.2.0 - Ministry of Silly Walks

@@ -312,6 +312,14 @@ class User extends TrashableModel implements ConfideUserInterface {
 	}
 	
 	/**
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function filtersExpertise() {
+		return $this->hasMany('UserFilterExpertise');
+	}
+	
+	/**
 	 * 
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
 	 */
