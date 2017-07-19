@@ -31,6 +31,9 @@
 ### Expertises & pôles
 - Added : Création des nouveaux modèles de données et remplissage avec les valeurs actuelles
 
+### Projets
+- Fixed bug : Les actions directement liées à un projet n'étaient pas affichées dans le détail
+
 ### Users
 - Added : Nouveau modèle de données "Filtre utilisateur par expertise"
 - Bugfix : Adaptation des la construction des routes, suppression de code non utilisé, ajout d'un message manquant

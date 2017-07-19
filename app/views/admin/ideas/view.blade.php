@@ -162,8 +162,32 @@ $ideaState = $modelInstance->getLastStateModification ()->ideaState;
 				<h4><span class="fa fa-magic"></span> Actions</h4>
 			</div>
 			<div class="content">
+			
+			<?php $actions=EwbsAction::each()->forIdea($modelInstance)->get(); ?>
+			@if($actions)
+				<h4>Liées au projet de simplif'</h4>
+				<div class="table-responsive actions">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>Actions</th>
+								<th class="col-md-1">Etat</th>
+							</tr>
+						</thead>
+						<tbody>
+						@foreach($actions as $item)
+								<tr>
+									<td><strong>{{{ $item->name }}}</strong><br/><em>{{{ $item->description }}}</em></td>
+									<td>{{ EwbsActionRevision::graphicState($item->state) }}</td>
+								</tr>
+							@endforeach
+						</tbody>
+					</table>
+				</div>
+			@endif
+			
 			@foreach($modelInstance->nostraDemarches as $nd)
-				<h4><span class="fa fa-briefcase"></span> {{{ $nd->title }}}</h4>
+				<h4><span class="fa fa-briefcase"></span> Via la démarche "{{{ $nd->title }}}"</h4>
 				<?php $demarche=$nd->demarche; ?>
 				@if($demarche)
 					<?php $actions=EwbsAction::each()->forDemarche($demarche)->get(); ?>
