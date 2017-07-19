@@ -370,6 +370,9 @@ class Demarche extends TrashableModel {
 		}
 		return $query;
 	}
+	public function scopeExpertisesIds($query, $ids) {
+		return $query;
+	}
 
 	/**
 	 * Attention, il faut retourner les démarches directement taggées, mais également les démarches liées à un ou plusieurs projets (Idea) taggés :-)

@@ -182,5 +182,8 @@ class NostraDemarche extends Eloquent {
 		}
 		return $query;
 	}
-
+	
+	public function scopeExpertisesIds($query, $ids) {
+		return $query;
+	}
 }

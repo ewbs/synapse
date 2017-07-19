@@ -1,4 +1,6 @@
 <?php
+use Illuminate\Database\Eloquent\Builder;
+
 /**
  * Projets de simplif'
  *
@@ -314,6 +316,39 @@ class Idea extends TrashableModel {
 		}
 		return $query;
 	}
+	
+	/**
+	 * Applique le filtre utilisateur expertises
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return Builder
+	 */
+	public function scopeExpertisesIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			return
+			$query->whereHas('actions', function ($query) use ($ids) {
+				$query->whereIn('ewbsActions.name', function($query) use ($ids) {
+					$query->select('name')
+					->from(with(new Expertise())->getTable())
+					->whereIn('id', $ids);
+				});
+			})
+			->orWhereHas('nostraDemarches', function ($query) use ($ids) {
+				$query->whereHas('demarche', function ($query) use ($ids) {
+					$query->whereHas('actions', function ($query) use ($ids) {
+						$query->whereIn('ewbsActions.name', function($query) use ($ids) {
+							$query->select('name')
+							->from(with(new Expertise())->getTable())
+							->whereIn('id', $ids);
+						});
+					});
+				});
+			});
+		}
+		return $query;
+	}
+		
 	public function scopeMinistersIds($query, $ministersIds) {
 		if (is_array ( $ministersIds ) && count ( $ministersIds )) {
 			return $query->wherehas ( 'ministers', function ($query) use($ministersIds) {

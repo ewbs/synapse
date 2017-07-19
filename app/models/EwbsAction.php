@@ -468,7 +468,9 @@ class EwbsAction extends RevisableModel {
 		return $query;
 	}
 
-
+	public function scopeExpertisesIds($query, $ids) {
+		return $query;
+	}
 
 
 	/**

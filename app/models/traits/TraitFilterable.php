@@ -47,13 +47,21 @@
 			} else {
 				$filteredPublicsIds = Auth::user()->sessionGet('filteredPublicsIds');
 			}
-
-
+			
+			// filtrage par expertises
+			if ( ! Auth::user()->sessionGet('filteredExpertisesIds') ) {
+				$filteredExpertisesIds = Auth::user()->filtersExpertise->lists('expertise_id');
+				Auth::user()->sessionSet('filteredExpertisesIds', $filteredExpertisesIds);
+			} else {
+				$filteredExpertisesIds = Auth::user()->sessionGet('filteredExpertisesIds');
+			}
+			
 			$queryBuilderObject = static
 			::administrationsIds($filteredAdministrationIds)
 			// #desactivatedtags
 			// ->taxonomyTagsIds($filteredTagsIds)
-			->nostraPublicsIds($filteredPublicsIds); //appel aux scopes
+			->nostraPublicsIds($filteredPublicsIds)
+			->expertisesIds($filteredExpertisesIds); //appel aux scopes
 
 			return $queryBuilderObject;
 
@@ -62,5 +70,5 @@
 		abstract public function scopeAdministrationsIds($query, $administrationsIds);
 		abstract public function scopetaxonomyTagsIds($query, $tagsIds);
 		abstract public function scopenostraPublicsIds($query, $publicsIds);
-
+		abstract public function scopeExpertisesIds($query, $expertisesIds);
 	}
