@@ -205,55 +205,71 @@ class UserController extends BaseController {
 		$regions = Region::all();
 		$publics = NostraPublic::orderBy('title')->get();
 		$taxonomyCategories = TaxonomyCategory::orderBy('name')->get();
-		
+		$expertises = Expertise::ordered()->get(['id', 'name']);
 		$selectedAdministrationsIds = Auth::user()->filtersAdministration->lists('administration_id'); //lists() permet de ne sélectionner que certains attributs
 		$selectedTagsIds = Auth::user()->filtersTag->lists('taxonomy_tag_id');
 		$selectedPublicsIds = Auth::user()->filtersPublic->lists('nostra_public_id');
+		$selectedExpertisesIds = Auth::user()->filtersExpertise->lists('expertise_id');
 		
-		return View::make('site.user.filters', compact('regions', 'publics', 'taxonomyCategories', 'selectedAdministrationsIds', 'selectedTagsIds', 'selectedPublicsIds'));
+		return View::make('site.user.filters', compact('regions', 'publics', 'taxonomyCategories', 'selectedAdministrationsIds', 'selectedTagsIds', 'selectedPublicsIds', 'expertises', 'selectedExpertisesIds'));
 	}
 
 	/**
 	 * Sauvegarde des filtres
 	 */
 	public function postFilters() {
+		
+		$userId=Auth::user()->id;
+		$datetime=new DateTime ();
+		
 		// on  ne travaille pas avec une relation n-m entre user et administration mais avec un modèle à part entière
 		// donc il ne faut pas se contenter de créer des relations, mais il faut bien instancier des nouveaux modèles
-		UserFilterAdministration::where('user_id', '=', Auth::user()->id)->delete(); // on supprime toute relation existante
+		UserFilterAdministration::where('user_id', '=', $userId)->delete(); // on supprime toute relation existante
 		
 		// on crée les nouvelles
 		if (Input::has('administrations')) {
 			$data = [];
 			foreach (Input::get('administrations') as $administrationId) {
-				array_push($data, ['user_id' => Auth::user()->id, 'administration_id' => $administrationId, 'created_at' => new DateTime (), 'updated_at' => new DateTime ()]);
+				array_push($data, ['user_id' => $userId, 'administration_id' => $administrationId, 'created_at' => $datetime, 'updated_at' => $datetime]);
 			}
 			UserFilterAdministration::insert($data);
 		}
 		
 		// on travaille de la meme manière avec les tags
-		UserFilterTag::where('user_id', '=', Auth::user()->id)->delete();
+		UserFilterTag::where('user_id', '=', $userId)->delete();
 		if (Input::has('tags')) {
 			$data = [];
 			foreach (Input::get('tags') as $tagId) {
-				array_push($data, ['user_id' => Auth::user()->id, 'taxonomy_tag_id' => $tagId, 'created_at' => new DateTime (), 'updated_at' => new DateTime ()]);
+				array_push($data, ['user_id' => $userId, 'taxonomy_tag_id' => $tagId, 'created_at' => $datetime, 'updated_at' => $datetime]);
 			}
 			UserFilterTag::insert($data);
 		}
 		
 		// on travaille de la meme manière avec les publics
-		UserFilterPublic::where('user_id', '=', Auth::user()->id)->delete();
+		UserFilterPublic::where('user_id', '=', $userId)->delete();
 		if (Input::has('publics')) {
 			$data = [];
 			foreach (Input::get('publics') as $publicId) {
-				array_push($data, ['user_id' => Auth::user()->id, 'nostra_public_id' => $publicId, 'created_at' => new DateTime (), 'updated_at' => new DateTime ()]);
+				array_push($data, ['user_id' => $userId, 'nostra_public_id' => $publicId, 'created_at' => $datetime, 'updated_at' => $datetime]);
 			}
 			UserFilterPublic::insert($data);
+		}
+		
+		// on travaille de la meme manière avec les expertises
+		UserFilterExpertise::where('user_id', '=', $userId)->delete();
+		if (Input::has('expertises')) {
+			$data = [];
+			foreach (Input::get('expertises') as $expertiseId) {
+				array_push($data, ['user_id' => $userId, 'expertise_id' => $expertiseId, 'created_at' => $datetime, 'updated_at' => $datetime]);
+			}
+			UserFilterExpertise::insert($data);
 		}
 		
 		// et on détruit les anciens filtres qu'on avait mis en session pour économiser les requetes (voir TraitFilterable pour le détail)
 		Auth::user()->sessionDestroy('filteredAdministrationIds');
 		Auth::user()->sessionDestroy('filteredTagsIds');
 		Auth::user()->sessionDestroy('filteredPublicsIds');
+		Auth::user()->sessionDestroy('filteredExpertisesIds');
 		
 		return Redirect::route('adminDashboardGetIndex')->with ( 'success', Lang::get ( 'user/user.filters.success' ) );
 	}

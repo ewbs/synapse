@@ -11,7 +11,8 @@
 - Added : Database - Ajout d'un check sur la présence de l'extension btree_gist
 
 ### Dashboard
-- Changed : Désactivation du filtre « par tag »
+- Added :  Ajout du filtre "par action" dans la fonction "Mes filtres"
+- Changed : Désactivation du filtre "par tag"
 - Bugfix : Les filtres ne s'appliquaient pas sur les pièces et tâches dont le total est présenté dans le pavé "Catalogue des démarches"
 
 ### Actions

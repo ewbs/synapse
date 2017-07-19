@@ -1,8 +1,19 @@
+<?php 
+/**
+ * @var Illuminate\Database\Eloquent\Collection $regions
+ * @var Illuminate\Database\Eloquent\Collection $publics
+ * @var Illuminate\Database\Eloquent\Collection $taxonomyCategories
+ * @var Illuminate\Database\Eloquent\Collection $expertises
+ * @var array $selectedAdministrationsIds
+ * @var array $selectedTagsIds
+ * @var array $selectedPublicsIds
+ * @var array $selectedExpertisesIds
+ */
+?>
 @extends('site.layouts.container-fluid')
 @section('title')Mes filtres @stop
 @section('content')
     <div class="cl-mcont">
-
         @include('site.layouts.userdashboard-menu')
 
 
@@ -48,7 +59,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <h4>Par public cible</h4>
-                                    <p>N'afficher que les éléments relatifs à ces publics:</p>
+                                    <p>N'afficher que les éléments relatifs à ces publics :</p>
                                     <select class="select2" multiple name="publics[]" id="publics">
                                         @foreach($publics as $public)
                                             <option
@@ -60,7 +71,7 @@
                                 {{-- #desactivatedtags--}}
                                 <div class="col-md-4 hidden">
                                     <h4>Par tags</h4>
-                                    <p>N'afficher que les éléments relatifs à ces tags:</p>
+                                    <p>N'afficher que les éléments relatifs à ces tags :</p>
                                     <select class="select2" multiple name="tags[]" id="tags">
                                         @foreach ($taxonomyCategories as $category)
                                             <optgroup label="{{$category->name}}">
@@ -70,6 +81,17 @@
                                                             value="{{$tag->id}}">{{$tag->name}}</option>
                                                 @endforeach
                                             </optgroup>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <h4>Par action (identification)</h4>
+                                    <p>N'afficher que les éléments relatifs à ces actions :</p>
+                                    <select class="select2" multiple name="expertises[]" id="expertises">
+                                        @foreach($expertises as $expertise)
+                                            <option
+                                                    {{ in_array($expertise->id, $selectedExpertisesIds) ? 'selected' : '' }}
+                                                    value="{{$expertise->id}}">{{$expertise->name}}</option>
                                         @endforeach
                                     </select>
                                 </div>

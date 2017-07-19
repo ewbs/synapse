@@ -278,6 +278,12 @@ class AdminDashboardController extends BaseController {
 		$string .= implode(', ',  NostraPublic::whereHas('filters', function($query) {
 			$query->where('user_id', '=', Auth::user()->id);
 		})->lists('title'));
+		
+		$string .= ' | ';
+		$string .= implode(', ',  Expertise::whereHas('filters', function($query) {
+			$query->where('user_id', '=', Auth::user()->id);
+		})->lists('name'));
+		
 		return $string;
 	}
 

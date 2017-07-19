@@ -11,22 +11,11 @@ use Illuminate\Database\Eloquent\Builder;
 class Expertise extends TrashableModel {
 	
 	/**
-	 * Relation vers le pôle
-	 * @see Pole
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
 	 */
-	public function pole() {
-		return $this->belongsTo('Pole');
-	}
-	
-	/**
-	 * Query scope triant les expertises par la colonne order
-	 *
-	 * @param Builder $query
-	 * @return Builder
-	 */
-	public function scopeOrdered(Builder $query) {
-		return $query->orderBy('order', 'asc');
+	public function filters() {
+		return $this->hasMany('UserFilterExpertise');
 	}
 	
 	/**
@@ -40,5 +29,24 @@ class Expertise extends TrashableModel {
 			array_unshift($aExpertises, $including);
 		}
 		return $aExpertises;
+	}
+	
+	/**
+	 * Query scope triant les expertises par la colonne order
+	 *
+	 * @param Builder $query
+	 * @return Builder
+	 */
+	public function scopeOrdered(Builder $query) {
+		return $query->orderBy('order', 'asc');
+	}
+	
+	/**
+	 * Relation vers le pôle
+	 * @see Pole
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function pole() {
+		return $this->belongsTo('Pole');
 	}
 }
