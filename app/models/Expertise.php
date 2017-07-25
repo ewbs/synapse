@@ -32,7 +32,18 @@ class Expertise extends TrashableModel {
 	}
 	
 	/**
-	 * Query scope triant les expertises par la colonne order
+	 * Ajoute les données des expertises à la sélection 
+	 * 
+	 * @param Builder $query
+	 * @return unknown
+	 */
+	public function scopeEach(Builder $query) {
+		return $query
+		->addSelect(['expertises.*']);
+	}
+	
+	/**
+	 * Trie les expertises par la colonne order
 	 *
 	 * @param Builder $query
 	 * @return Builder
@@ -42,7 +53,37 @@ class Expertise extends TrashableModel {
 	}
 	
 	/**
+	 * Restreindre aux expertises liées à un pôle
+	 * 
+	 * @param Builder $query
+	 * @param Pole $pole
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeForPole(Builder $query, Pole $pole) {
+		return $query->where('pole_id', '=', $pole->id);
+	}
+	
+	/**
+	 * Ajouter le nombre d'actions en cours à chaque expertise
+	 * La propriété "actions" est alors disponible
+	 * 
+	 * @param Builder $query
+	 * @return unknown
+	 */
+	public function scopeCountActions(Builder $query) {
+		return $query->addSelect(DB::raw('(
+			SELECT count(*)
+			FROM "ewbsActions" AS a
+			JOIN v_lastrevisionewbsaction AS ra ON a.id=ra.ewbs_action_id
+			WHERE a.deleted_at IS NULL
+			AND ra.state IN(\''.EwbsActionRevision::$STATE_TODO.'\', \''.EwbsActionRevision::$STATE_PROGRESS.'\', \''.EwbsActionRevision::$STATE_STANDBY.'\')
+			AND a.name=expertises.name
+		) AS actions'));
+	}
+	
+	/**
 	 * Relation vers le pôle
+	 * 
 	 * @see Pole
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */

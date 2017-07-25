@@ -1,4 +1,6 @@
 <?php
+use Illuminate\Database\Eloquent\Builder;
+
 /**
  * Pôles
  *
@@ -15,5 +17,15 @@ class Pole extends TrashableModel {
 	 */
 	public function expertises() {
 		return $this->hasMany('Expertise');
+	}
+	
+	/**
+	 * Query scope triant les pôles par la colonne order
+	 *
+	 * @param Builder $query
+	 * @return Builder
+	 */
+	public function scopeOrdered(Builder $query) {
+		return $query->orderBy('order', 'asc');
 	}
 }
