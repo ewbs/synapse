@@ -42,14 +42,25 @@ class AdminDashboardController extends BaseController {
 		// -----------------------------------------
 		// ACTIONS
 		// -----------------------------------------
-
-		// Les actions affectées à l'équipe Nostra ne peuvent pas être filtrée. En effet, en cas de demande d'ajout de démarche ... l'action n'est liée à rien.
-		$countNostraActions = EwbsAction::filtered()->each()->forNostraTeam()->whereIn('v_lastrevisionewbsaction.state', ['todo', 'progress'])->count();
-		$countDemarcheComponentsActions = EwbsAction::filtered()->each()->forComponents()->whereIn('v_lastrevisionewbsaction.state', ['todo', 'progress'])->count();
-		$countFormsActions = EwbsAction::filtered()->each()->forEforms()->whereIn('v_lastrevisionewbsaction.state', ['todo', 'progress'])->count();
-		$countDemarchesActions = EwbsAction::filtered()->each()->onlylinkedToDemarches()->whereIn('v_lastrevisionewbsaction.state', ['todo', 'progress'])->count();
-
-
+		// Préparer un tableau par pôle ayant au moins une expertise liée à une action en cours
+		$poles=Pole::ordered()->get();
+		$aPoles=array();
+		$totalActions=0;
+		foreach($poles as $pole) {
+			$aPoles[$pole->id]=[
+				'expertises'=>array()
+			];
+			foreach(Expertise::filtered()->ordered()->forPole($pole)->each()->countActions()->get() as $expertise) {
+				if($expertise->actions>0) {
+					array_push($aPoles[$pole->id]['expertises'], $expertise);
+					$totalActions+=$expertise->actions;
+				}
+			}
+			if(empty($aPoles[$pole->id]['expertises'])) {
+				unset($aPoles[$pole->id]);
+			}
+		}
+		
 		// -----------------------------------------
 		// DEMARCHES
 		// -----------------------------------------
@@ -105,7 +116,7 @@ class AdminDashboardController extends BaseController {
 
 		return View::make ( 'admin/dashboard', compact( 'txtUserFiltersAdministration',
 														'countFilteredProjects', 'countPrioritaryProjects', 'countGenericProjects', 'countInProgressProjects', 'countDoneProjects', 'countCanceledProjects', 'countValidatedProjects',
-														'countNostraActions', 'countDemarchesActions', 'countDemarcheComponentsActions', 'countFormsActions',
+														'aPoles','totalActions',
 														'countFilteredDemarches', 'countDocumentedDemarches', 'countWithGainsDemarches', 'countPiecesDemarches', 'countTasksDemarches',
 														'potentialAmountAdministration', 'potentialAmountCitizen',
 														'countFilteredForms', 'countFilteredSimplifiedForms', 'countFilteredElectronicForms', 'countFilteredEIDForms'

@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class Expertise extends TrashableModel {
 	
+	use TraitFilterable;
+	
 	/**
 	 * 
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -79,6 +81,55 @@ class Expertise extends TrashableModel {
 			AND ra.state IN(\''.EwbsActionRevision::$STATE_TODO.'\', \''.EwbsActionRevision::$STATE_PROGRESS.'\', \''.EwbsActionRevision::$STATE_STANDBY.'\')
 			AND a.name=expertises.name
 		) AS actions'));
+	}
+	
+	/**
+	 * Filtre non exploité, en effet les actions ne sont pas filtrées par publics cibles
+	 *
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeNostraPublicsIds(Builder $query, array $ids) {
+		return $query;
+	}
+	
+	/**
+	 * Filtre non exploité, en effet les actions ne sont pas filtrées par administrations
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeAdministrationsIds(Builder $query, array $ids) {
+		return $query;
+	}
+	
+	/**
+	 * Filtre des expertises sur base du filtre utilisateur correspondant
+	 *
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return Builder
+	 */
+	public function scopeExpertisesIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			return $query->whereIn('id', $ids);
+		}
+		return $query;
+	}
+	
+	
+	/**
+	 * Filtre non exploité, en effet les actions ne sont pas filtrées par taxonomie
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeTaxonomyTagsIds(Builder $query, array $ids) {
+		// #desactivatedtags
+		return $query;
 	}
 	
 	/**
