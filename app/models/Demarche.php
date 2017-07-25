@@ -1,4 +1,6 @@
 <?php
+use Illuminate\Database\Eloquent\Builder;
+
 /**
  * Démarches Ewbs
  * 
@@ -343,64 +345,93 @@ class Demarche extends TrashableModel {
 		}
 		return null;
 	}
-
-
-
+	
 	/**
 	 * SCOPES
 	 */
-
-	public function scopeNostraPublicsIds($query, $publicsIds) {
-		if (is_array ( $publicsIds ) && count ( $publicsIds )) {
-			return $query->where( function ($query) use ($publicsIds) {
-				$query->whereHas( 'nostraDemarche', function ($query) use ($publicsIds) {
-					$query->whereHas( 'nostraPublics', function ($query) use ($publicsIds) {
-						$query->whereIn ( 'nostra_publics.id', $publicsIds );
+	
+	/**
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeNostraPublicsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			return $query->where( function ($query) use ($ids) {
+				$query->whereHas( 'nostraDemarche', function ($query) use ($ids) {
+					$query->whereHas( 'nostraPublics', function ($query) use ($ids) {
+						$query->whereIn ( 'nostra_publics.id', $ids );
 					});
 				});
 			});
 		}
 		return $query;
 	}
-	public function scopeAdministrationsIds($query, $administrationsIds) {
-		if (is_array ( $administrationsIds ) && count ( $administrationsIds )) {
-			return $query->wherehas ( 'administrations', function ($query) use($administrationsIds) {
-				$query->whereIn ( 'administrations.id', $administrationsIds );
+	
+	/**
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeAdministrationsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			return $query->wherehas ( 'administrations', function ($query) use($ids) {
+				$query->whereIn ( 'administrations.id', $ids );
 			} );
 		}
 		return $query;
 	}
-	public function scopeExpertisesIds($query, $ids) {
+	
+	/**
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeExpertisesIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			return
+			$query->whereHas('actions', function ($query) use ($ids) {
+				$query->whereIn('ewbsActions.name', function($query) use ($ids) {
+					$query->select('name')
+					->from(with(new Expertise())->getTable())
+					->whereIn('id', $ids);
+				});
+			});
+		}
 		return $query;
 	}
-
+	
 	/**
 	 * Attention, il faut retourner les démarches directement taggées, mais également les démarches liées à un ou plusieurs projets (Idea) taggés :-)
-	 * @param $query
-	 * @param $tagsIds
-	 * @return mixed
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
-	// je le dis tout de suite ... ca génère une dizaine de requetes ... sans doute les whereHas qui sont en lazy loading dans l'orm, mais on peut pas jouer avec with() car on est au niveau qerybuilder, pas eloquent
-	public function scopeTaxonomyTagsIds($query, $tagsIds) {
-		if (is_array ( $tagsIds ) && count ( $tagsIds )) {
+	public function scopeTaxonomyTagsIds(Builder $query, array $ids) {
+		// Je le dis tout de suite ... ca génère une dizaine de requetes ... sans doute les whereHas qui sont en lazy loading dans l'orm, mais on peut pas jouer avec with() car on est au niveau querybuilder, pas eloquent
+		if (!empty($ids)) {
 			return $query
 				/*
 				 * Sélection des démarches taggées directement
 				 */
-				->where( function ($query) use ($tagsIds) {
-					$query->wherehas ( 'tags', function ($query) use($tagsIds) {
-						$query->whereIn('taxonomytags.id', $tagsIds);
+				->where( function ($query) use ($ids) {
+					$query->wherehas ( 'tags', function ($query) use($ids) {
+						$query->whereIn('taxonomytags.id', $ids);
 					});
 				} )
 				/*
 				 * et celle liée a des ideas taggées (mais le lien demarche_idea n'existe pas ... il se fait au travers de nostra_demarche ... raaaaaah !
 				 */
-				->orWhere( function ($query) use ($tagsIds) {
+				->orWhere( function ($query) use ($ids) {
 					$query
-						->whereHas('nostraDemarche', function ($query) use ($tagsIds) {
-							$query->whereHas('ideas', function ($query) use ($tagsIds) {
-								$query->whereHas('tags', function ($query) use ($tagsIds) {
-									$query->whereIn('taxonomy_tag_id', $tagsIds);
+						->whereHas('nostraDemarche', function ($query) use ($ids) {
+							$query->whereHas('ideas', function ($query) use ($ids) {
+								$query->whereHas('tags', function ($query) use ($ids) {
+									$query->whereIn('taxonomy_tag_id', $ids);
 								});
 							});
 						});
@@ -408,8 +439,13 @@ class Demarche extends TrashableModel {
 		}
 		return $query;
 	}
-
-	public function scopeWithGains($query) {
+	
+	/**
+	 * 
+	 * @param Builder $query
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeWithGains(Builder $query) {
 		return $query->where(function ($query) {
 			$query->whereHas('pieces', function($q){})
 				  ->orWhereHas('tasks',function($q){});

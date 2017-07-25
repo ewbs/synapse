@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Démarches NOSTRA
@@ -143,47 +144,81 @@ class NostraDemarche extends Eloquent {
 	 * * ********************************************************************************* *
 	 */
 
-
-	public function scopeNostraPublicsIds($query, $publicsIds) {
-		if (is_array ( $publicsIds ) && count ( $publicsIds )) {
-			return $query->where( function ($query) use ($publicsIds) {
-				$query->whereHas( 'nostraPublics', function ($query) use ($publicsIds) {
-					$query->whereIn ( 'nostra_publics.id', $publicsIds );
+	/**
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeNostraPublicsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			return $query->where( function ($query) use ($ids) {
+				$query->whereHas( 'nostraPublics', function ($query) use ($ids) {
+					$query->whereIn ( 'nostra_publics.id', $ids );
 				});
 			});
 		}
 		return $query;
 	}
-
-	public function scopeAdministrationsIds($query, $administrationsIds) {
-		if (is_array ( $administrationsIds ) && count ( $administrationsIds )) {
-			return $query->whereHas('demarche', function ($query) use ($administrationsIds) {
-					$query->wherehas('administrations', function ($query) use ($administrationsIds) {
-						$query->whereIn('administrations.id', $administrationsIds);
+	
+	/**
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeAdministrationsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			return $query->whereHas('demarche', function ($query) use ($ids) {
+					$query->wherehas('administrations', function ($query) use ($ids) {
+						$query->whereIn('administrations.id', $ids);
 					});
 			});
 		}
 		return $query;
 	}
-
-	public function scopeTaxonomyTagsIds($query, $tagsIds) {
-
-		if (is_array ( $tagsIds ) && count ( $tagsIds )) {
-			return $query->whereHas('demarche', function ($query) use ($tagsIds) {
-				$query->whereHas('tags', function ($query) use ($tagsIds) {
-					$query->whereIn('taxonomytags.id', $tagsIds);
+	
+	/**
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeTaxonomyTagsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			return $query->whereHas('demarche', function ($query) use ($ids) {
+				$query->whereHas('tags', function ($query) use ($ids) {
+					$query->whereIn('taxonomytags.id', $ids);
 				});
 			});
 			/*return $query->with(['demarche' => function ($query) {
-				$query->wherehas('tags', function ($query) use ($tagsIds) {
-					$query->whereIn('taxonomytags.id', $tagsIds);
+				$query->wherehas('tags', function ($query) use ($ids) {
+					$query->whereIn('taxonomytags.id', $ids);
 				});
 			}]);*/
 		}
 		return $query;
 	}
 	
-	public function scopeExpertisesIds($query, $ids) {
+	/**
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeExpertisesIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			return
+			$query->whereHas('demarche', function ($query) use ($ids) {
+				$query->whereHas('actions', function ($query) use ($ids) {
+					$query->whereIn('ewbsActions.name', function($query) use ($ids) {
+						$query->select('name')
+						->from(with(new Expertise())->getTable())
+						->whereIn('id', $ids);
+					});
+				});
+			});
+		}
 		return $query;
 	}
 }
