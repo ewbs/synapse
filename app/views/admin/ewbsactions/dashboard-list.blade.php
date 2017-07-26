@@ -10,15 +10,15 @@
 			</div>
 			<div class="content">
 				<div class="table-responsive">
-					<table id="datatable" class="table table-hover">
+					<table class="table table-hover datatable" data-ajaxurl="{{ $model->routeGetFilteredData() }}" data-bFilter="true" data-bSort="true" data-bPaginate="true">
 						<thead>
-						<tr>
-							<th>#</th>
-							<th>Nom</th>
-							<th>Etat</th>
-							<th>Sous actions</th>
-							<th>Elements liés</th>
-						</tr>
+							<tr>
+								<th>#</th>
+								<th>Nom</th>
+								<th>Etat</th>
+								<th>Sous actions</th>
+								<th>Elements liés</th>
+							</tr>
 						</thead>
 						<tbody>
 						</tbody>
@@ -34,19 +34,4 @@
 		<span class="fa fa-info-circle"></span> Votre liste d'actions est filtrée sur : {{$txtUserFiltersAdministration}}
 	</div>
 </div>
-@stop
-
-
-@section('scripts')
-<script type="text/javascript">
-	$(document).ready(function() {
-
-		var $tableDemarches = $('#datatable').dataTable( {
-			"aoColumnDefs": [],
-			"aaSorting" : [[0, "desc"]],
-			"sAjaxSource": "{{ $model->routeGetFilteredData() }}",
-		});
-
-	});
-</script>
 @stop
