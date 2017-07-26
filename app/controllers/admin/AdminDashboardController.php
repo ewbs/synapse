@@ -18,7 +18,7 @@ class AdminDashboardController extends BaseController {
 	 */
 	public function getIndex() {
 
-		//TODO: O na un couplage fort avec les modèles appelés ici ... il faudrait transformer tous les appels en scope pour éviter les soucis à la maintenante évolutive --jda décembre 2016
+		//TODO: On a un couplage fort avec les modèles appelés ici ... il faudrait transformer tous les appels en scope pour éviter les soucis à la maintenante évolutive --jda décembre 2016
 
 		// on récupère les noms de filtres
 		$txtUserFiltersAdministration = $this->getFilterString();
@@ -81,40 +81,29 @@ class AdminDashboardController extends BaseController {
 		// -----------------------------------------
 		// FORMULAIRES
 		// -----------------------------------------
-		// Remarque : on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
-		// Attention tout de même ... il faut prendre les valeurs de la table eForms , MAIS si on a un lien avec un NostraForm, ce sont ces valeurs qui comptent !
+		// Remarques :
+		// - On ne compte pas les nostraforms, mais bien les eforms liés aux démarches
+		// - Anciennement on n'utilisait pas le filtre afin de bénéficier des ids de démarches déjà déterminés. Mais avec le filtre sur les actions qui doit s'appliquer directement sur des eforms, il faut mnt passer par le filtre complet...
+		// - Attention tout de même ... il faut prendre les valeurs de la table eForms , MAIS si on a un lien avec un NostraForm, ce sont ces valeurs qui comptent !
 
 		$countFilteredForms = Eform
 		::filtered()
-		/*->whereHas('demarcheEforms', function ($q) use ($filteredDemarchesIds) { // on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
-			$q->whereIn('demarche_eform.demarche_id', $filteredDemarchesIds);
-		})*/
-		
 		->count();
 
 		$countFilteredSimplifiedForms = Eform
 		::filtered()
-		/*->whereHas('demarcheEforms', function ($q) use ($filteredDemarchesIds) { // on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
-			$q->whereIn('demarche_eform.demarche_id', $filteredDemarchesIds);
-		})*/
 		->leftJoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
 		->where(DB::raw('CASE WHEN eforms.nostra_form_id > 0 THEN nostra_forms.simplified ELSE eforms.simplified END'), '>', 0)
 		->count();
 
 		$countFilteredElectronicForms = Eform
 		::filtered()
-		/*->whereHas('demarcheEforms', function ($q) use ($filteredDemarchesIds) { // on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
-			$q->whereIn('demarche_eform.demarche_id', $filteredDemarchesIds);
-		})*/
 		->leftJoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
 		->where(DB::raw('CASE WHEN eforms.nostra_form_id > 0 THEN nostra_forms.format ELSE eforms.format END'), '=', 'PEL')
 		->count();
 
 		$countFilteredEIDForms = Eform
 		::filtered()
-		/*->whereHas('demarcheEforms', function ($q) use ($filteredDemarchesIds) { // on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
-			$q->whereIn('demarche_eform.demarche_id', $filteredDemarchesIds);
-		})*/
 		->leftJoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
 		->where(DB::raw('CASE WHEN eforms.nostra_form_id > 0 THEN nostra_forms.esign ELSE eforms.esign END'), '>', 0)
 		->count();
@@ -128,8 +117,7 @@ class AdminDashboardController extends BaseController {
 			'countFilteredForms', 'countFilteredSimplifiedForms', 'countFilteredElectronicForms', 'countFilteredEIDForms'
 		));
 	}
-
-
+	
 	/**
 	 * Obtenir l'écran de liste des projets filtrés
 	 * @return \Illuminate\View\View
