@@ -66,10 +66,13 @@ var App = function() {
 		if(datatablesAjax.indexOf(datatable.context.id)==-1) {
 			var useform=$(datatable.data('useform'));
 			if(useform.length) {
-				useform.change(function(e){ // Détecter changement sur contenu du form (attention icheck passe au travers!)
+				useform.change(function(e){ // Détecter changement sur contenu du form
 					// TODO : Repasser à l'occasion dans cette partie, car je n'ai pas compris pourquoi le passage par la méthode d'init ne fonctionnait pas dans ce cas, alors que le reload oui
 					datatable.fnReloadAjax(datatableAjaxGetUrl(datatable));
 					//initDatatableAjax(datatable);
+				});
+				useform.on('ifChanged', function(event){ // Specifique pour icheck, qui passe au travers du simple change
+					datatable.fnReloadAjax(datatableAjaxGetUrl(datatable));
 				});
 			}
 			datatablesAjax.push(datatable.context.id);
