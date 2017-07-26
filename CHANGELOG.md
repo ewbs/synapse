@@ -14,6 +14,7 @@
 - Added :  Ajout du filtre "par action" dans la fonction "Mes filtres"
 - Added :  Application du filtre "par action" sur mes projets de simplif'
 - Added :  Application du filtre "par action" sur mes démarches
+- Added :  Application du filtre "par action" sur mes formulaires
 - Changed : Désactivation du filtre "par tag"
 - Changed : Présenter les actions en cours par pôle et expertises dans "Mon dashboard"
 - Bugfix : Les filtres ne s'appliquaient pas sur les pièces et tâches dont le total est présenté dans le pavé "Catalogue des démarches"

@@ -81,47 +81,52 @@ class AdminDashboardController extends BaseController {
 		// -----------------------------------------
 		// FORMULAIRES
 		// -----------------------------------------
-		// Remarque : on utilise pas le trait Filterable sur les formulaires ici.
-		// comme les formulaires sont liés à des démarches, et qu'on connait les démarches ...
+		// Remarque : on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
 		// Attention tout de même ... il faut prendre les valeurs de la table eForms , MAIS si on a un lien avec un NostraForm, ce sont ces valeurs qui comptent !
 
-		$countFilteredForms = Eform::whereHas('demarcheEforms', function ($q) use ($filteredDemarchesIds) { // on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
-									$q->whereIn('demarche_eform.demarche_id', $filteredDemarchesIds);
-								})->count();
+		$countFilteredForms = Eform
+		::filtered()
+		/*->whereHas('demarcheEforms', function ($q) use ($filteredDemarchesIds) { // on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
+			$q->whereIn('demarche_eform.demarche_id', $filteredDemarchesIds);
+		})*/
+		
+		->count();
 
 		$countFilteredSimplifiedForms = Eform
-										::whereHas('demarcheEforms', function ($q) use ($filteredDemarchesIds) { // on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
-											$q->whereIn('demarche_eform.demarche_id', $filteredDemarchesIds);
-										})
-										->leftJoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
-										->where(DB::raw('CASE WHEN eforms.nostra_form_id > 0 THEN nostra_forms.simplified ELSE eforms.simplified END'), '>', 0)
-										->count();
+		::filtered()
+		/*->whereHas('demarcheEforms', function ($q) use ($filteredDemarchesIds) { // on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
+			$q->whereIn('demarche_eform.demarche_id', $filteredDemarchesIds);
+		})*/
+		->leftJoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
+		->where(DB::raw('CASE WHEN eforms.nostra_form_id > 0 THEN nostra_forms.simplified ELSE eforms.simplified END'), '>', 0)
+		->count();
 
 		$countFilteredElectronicForms = Eform
-										::whereHas('demarcheEforms', function ($q) use ($filteredDemarchesIds) { // on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
-											$q->whereIn('demarche_eform.demarche_id', $filteredDemarchesIds);
-										})
-										->leftJoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
-										->where(DB::raw('CASE WHEN eforms.nostra_form_id > 0 THEN nostra_forms.format ELSE eforms.format END'), '=', 'PEL')
-										->count();
+		::filtered()
+		/*->whereHas('demarcheEforms', function ($q) use ($filteredDemarchesIds) { // on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
+			$q->whereIn('demarche_eform.demarche_id', $filteredDemarchesIds);
+		})*/
+		->leftJoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
+		->where(DB::raw('CASE WHEN eforms.nostra_form_id > 0 THEN nostra_forms.format ELSE eforms.format END'), '=', 'PEL')
+		->count();
 
 		$countFilteredEIDForms = Eform
-			::whereHas('demarcheEforms', function ($q) use ($filteredDemarchesIds) { // on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
-				$q->whereIn('demarche_eform.demarche_id', $filteredDemarchesIds);
-			})
-			->leftJoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
-			->where(DB::raw('CASE WHEN eforms.nostra_form_id > 0 THEN nostra_forms.esign ELSE eforms.esign END'), '>', 0)
-			->count();
-
-
-		return View::make ( 'admin/dashboard', compact( 'txtUserFiltersAdministration',
-														'countFilteredProjects', 'countPrioritaryProjects', 'countGenericProjects', 'countInProgressProjects', 'countDoneProjects', 'countCanceledProjects', 'countValidatedProjects',
-														'aPoles','totalActions',
-														'countFilteredDemarches', 'countDocumentedDemarches', 'countWithGainsDemarches', 'countPiecesDemarches', 'countTasksDemarches',
-														'potentialAmountAdministration', 'potentialAmountCitizen',
-														'countFilteredForms', 'countFilteredSimplifiedForms', 'countFilteredElectronicForms', 'countFilteredEIDForms'
-												) );
-
+		::filtered()
+		/*->whereHas('demarcheEforms', function ($q) use ($filteredDemarchesIds) { // on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
+			$q->whereIn('demarche_eform.demarche_id', $filteredDemarchesIds);
+		})*/
+		->leftJoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
+		->where(DB::raw('CASE WHEN eforms.nostra_form_id > 0 THEN nostra_forms.esign ELSE eforms.esign END'), '>', 0)
+		->count();
+		
+		return View::make ( 'admin/dashboard', compact(
+			'txtUserFiltersAdministration',
+			'countFilteredProjects', 'countPrioritaryProjects', 'countGenericProjects', 'countInProgressProjects', 'countDoneProjects', 'countCanceledProjects', 'countValidatedProjects',
+			'aPoles','totalActions',
+			'countFilteredDemarches', 'countDocumentedDemarches', 'countWithGainsDemarches', 'countPiecesDemarches', 'countTasksDemarches',
+			'potentialAmountAdministration', 'potentialAmountCitizen',
+			'countFilteredForms', 'countFilteredSimplifiedForms', 'countFilteredElectronicForms', 'countFilteredEIDForms'
+		));
 	}
 
 
