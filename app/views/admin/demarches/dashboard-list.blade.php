@@ -12,52 +12,50 @@
 				<h3>Mes démarches</h3>
 			</div>
 			<div class="content">
-				<div class="">
-					<h4>Recherche avancée :</h4>
-					<form id="dashboardDemarches_form" class="form-inline" data-dontobserve="1">
-						<div class="row no-padding no-margin">
-							<div class="col-md-6">
-								<div class="row no-padding no-margin">
-									<div class="col-md-12">
-										<div class="form-group">
-											<div class="checkbox">
-												<label>
-													<input type="checkbox" class="icheck" id="dashboardDemarches_onlyDocumented" {{Auth::user()->sessionGet('dashboardDemarches_onlyDocumented') ? 'checked="checked"':''}} /> Uniquement les démarches documentées
-												</label>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="row no-padding no-margin">
-									<div class="col-md-12">
-										<div class="form-group">
-											<div class="checkbox">
-												<label>
-													<input type="checkbox" class="icheck" id="dashboardDemarches_onlyWithActions" {{Auth::user()->sessionGet('dashboardDemarches_onlyWithActions') ? 'checked="checked"':''}} /> Uniquement les démarches avec actions en cours
-												</label>
-											</div>
+				<h4>Filtrer :</h4>
+				<form id="dashboardDemarches_form" class="form-inline" data-dontobserve="1">
+					<div class="row no-padding no-margin">
+						<div class="col-md-6">
+							<div class="row no-padding no-margin">
+								<div class="col-md-12">
+									<div class="form-group">
+										<div class="checkbox">
+											<label>
+												<input type="checkbox" class="icheck" id="dashboardDemarches_onlyDocumented" {{Auth::user()->sessionGet('dashboardDemarches_onlyDocumented') ? 'checked="checked"':''}} /> Uniquement les démarches documentées
+											</label>
 										</div>
 									</div>
 								</div>
 							</div>
-							<div class="col-md-6">
-								<div class="row no-padding no-margin">
-									<div class="col-md-12">
-										<div class="form-group">
-											Avec au moins
-											<input class="form-control" style="width:4em;" type="text" id="dashboardDemarches_minPieces" value="{{Auth::user()->sessionGet('dashboardDemarches_minPieces') ? Auth::user()->sessionGet('dashboardDemarches_minPieces'):'0'}}" />
-											pièces et
-											<input class="form-control" style="width:4em;" type="text" id="dashboardDemarches_minTasks" value="{{Auth::user()->sessionGet('dashboardDemarches_minTasks') ? Auth::user()->sessionGet('dashboardDemarches_minTasks'):'0'}}" />
-											tâches et
-											<input class="form-control" style="width:4em;" type="text" id="dashboardDemarches_minForms" value="{{Auth::user()->sessionGet('dashboardDemarches_minForms') ? Auth::user()->sessionGet('dashboardDemarches_minForms'):'0'}}" />
-											formulaires
+							<div class="row no-padding no-margin">
+								<div class="col-md-12">
+									<div class="form-group">
+										<div class="checkbox">
+											<label>
+												<input type="checkbox" class="icheck" id="dashboardDemarches_onlyWithActions" {{Auth::user()->sessionGet('dashboardDemarches_onlyWithActions') ? 'checked="checked"':''}} /> Uniquement les démarches avec actions en cours
+											</label>
 										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-					</form>
-				</div>
+						<div class="col-md-6">
+							<div class="row no-padding no-margin">
+								<div class="col-md-12">
+									<div class="form-group">
+										Avec au moins
+										<input class="form-control" style="width:4em;" type="text" id="dashboardDemarches_minPieces" value="{{Auth::user()->sessionGet('dashboardDemarches_minPieces') ? Auth::user()->sessionGet('dashboardDemarches_minPieces'):'0'}}" />
+										pièces et
+										<input class="form-control" style="width:4em;" type="text" id="dashboardDemarches_minTasks" value="{{Auth::user()->sessionGet('dashboardDemarches_minTasks') ? Auth::user()->sessionGet('dashboardDemarches_minTasks'):'0'}}" />
+										tâches et
+										<input class="form-control" style="width:4em;" type="text" id="dashboardDemarches_minForms" value="{{Auth::user()->sessionGet('dashboardDemarches_minForms') ? Auth::user()->sessionGet('dashboardDemarches_minForms'):'0'}}" />
+										formulaires
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
 				<hr/>
 				<div class="table-responsive">
 					<table id="datatable" class="table table-hover">
