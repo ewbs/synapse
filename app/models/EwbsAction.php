@@ -383,96 +383,114 @@ class EwbsAction extends RevisableModel {
 
 
 	/**
-	 * Scope par administration pour le trait Filterable
-	 * une action peut être reliée à une administration :
+	 * Filtre les actions sur base du filtre utilisateurs par administrations
+	 * 
+	 * Une action peut être reliée à une administration :
 	 *  - par une Idea
 	 * 	- par une Demarche
-	 *  - par une piece, une tache ou un eform dans une Demarche (et on a cette info lorsqu'on a une pice ou une tache)
-	 * @param $query
-	 * @param $administrationsIds
+	 *  - par une piece, une tache ou un eform dans une Demarche (et on a cette info lorsqu'on a une pièce ou une tâche)
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
-	public function scopeAdministrationsIds($query, $administrationsIds) {
-		if (is_array ( $administrationsIds ) && count ( $administrationsIds )) {
-			return $query->where(function ($query) use ($administrationsIds) {
-				$query
-					->whereHas('idea', function ($query) use ($administrationsIds) {
-						$query->whereHas('administrations', function ($query) use ($administrationsIds) {
-							$query->whereIn('administration_id', $administrationsIds);
-						});
-					})
-					->orWhereHas('demarche', function ($query) use ($administrationsIds) {
-						$query->whereHas('administrations', function ($query) use ($administrationsIds) {
-							$query->whereIn('administration_id', $administrationsIds);
-						});
+	public function scopeAdministrationsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->where(function ($query) use ($ids) {
+				$query->whereHas('idea', function ($query) use ($ids) {
+					$query->whereHas('administrations', function ($query) use ($ids) {
+						$query->whereIn('administration_id', $ids);
 					});
+				})
+				->orWhereHas('demarche', function ($query) use ($ids) {
+					$query->whereHas('administrations', function ($query) use ($ids) {
+						$query->whereIn('administration_id', $ids);
+					});
+				});
 			});
 		}
 		return $query;
 	}
-
+	
 	/**
+	 * Filtre les actions sur base du filtre utilisateurs par expertises
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeExpertisesIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->whereIn('ewbsActions.name', function($query) use ($ids) {
+				$query->select('name')
+				->from(with(new Expertise())->getTable())
+				->whereIn('id', $ids);
+			});
+		}
+		return $query;
+	}
+	
+	/**
+	 * Filtre les actions sur base du filtre utilisateurs par publics-cibles
+	 * 
+	 * On prend les actions
+	 * 	- liées à des idées liées aux publics
+	 * 	- liées à des démarche sliées aux publics
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopenostraPublicsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->where(function ($query) use ($ids) {
+				$query->whereHas('demarche', function($query) use($ids) {
+					$query->whereHas('nostraDemarche', function ($query) use ($ids) {
+						$query->whereHas('nostraPublics', function ($query) use ($ids) {
+							$query->whereIn('nostra_public_id', $ids);
+						});
+					});
+				})
+				->orWhereHas('idea', function ($query) use($ids) {
+					$query->whereHas('nostraPublics', function ($query) use ($ids) {
+						$query->whereIn('nostra_public_id', $ids);
+					});
+				});
+			});
+		}
+		return $query;
+	}
+	
+	/**
+	 * Filtre les actions sur base du filtre utilisateurs par tags
+	 * 
 	 * On prend les actions liées directement aux tags
 	 * Mais on doit aussi prendre :
 	 *  - les actions liées à des demarches qui ont ces tags
 	 *  - les actions liées à des ideas qui ont ces tags
-	 * @param $query
-	 * @param $tagsIds
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
-	public function scopetaxonomyTagsIds($query, $tagsIds) {
-		if (is_array ( $tagsIds ) && count ( $tagsIds )) {
-			return $query->where(function ($query) use ($tagsIds){
-				$query
-				->whereHas('tags', function ($query) use ($tagsIds) {
-					$query->whereIn('taxonomy_tag_id', $tagsIds);
+	public function scopetaxonomyTagsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->where(function ($query) use ($ids){
+				$query->whereHas('tags', function ($query) use ($ids) {
+					$query->whereIn('taxonomy_tag_id', $ids);
 				})
-				->orWhereHas('demarche', function ($query) use ($tagsIds) {
-					$query->whereHas('tags', function ($query) use ($tagsIds) {
-						$query->whereIn('taxonomy_tag_id', $tagsIds);
+				->orWhereHas('demarche', function ($query) use ($ids) {
+					$query->whereHas('tags', function ($query) use ($ids) {
+						$query->whereIn('taxonomy_tag_id', $ids);
 					});
 				})
-				->orWhereHas('demarche', function ($query) use ($tagsIds) {
-					$query->whereHas('tags', function ($query) use ($tagsIds) {
-						$query->whereIn('taxonomy_tag_id', $tagsIds);
+				->orWhereHas('demarche', function ($query) use ($ids) {
+					$query->whereHas('tags', function ($query) use ($ids) {
+						$query->whereIn('taxonomy_tag_id', $ids);
 					});
 				});
 			});
 		}
 		return $query;
 	}
-
-	/**
-	 * On prend les actions
-	 * 	- liées à des idées liées aux publics
-	 * 	- liées à des démarche sliées aux publics
-	 * @param $query
-	 * @param $publicsIds
-	 */
-	public function scopenostraPublicsIds($query, $publicsIds) {
-		if (is_array($publicsIds) && count($publicsIds)) {
-			return $query->where(function ($query) use ($publicsIds) {
-				$query
-				->whereHas('demarche', function($query) use($publicsIds) {
-					$query->whereHas('nostraDemarche', function ($query) use ($publicsIds) {
-						$query->whereHas('nostraPublics', function ($query) use ($publicsIds) {
-							$query->whereIn('nostra_public_id', $publicsIds);
-						});
-					});
-				})
-				->orWhereHas('idea', function ($query) use($publicsIds) {
-					$query->whereHas('nostraPublics', function ($query) use ($publicsIds) {
-						$query->whereIn('nostra_public_id', $publicsIds);
-					});
-				});
-			});
-		}
-		return $query;
-	}
-
-	public function scopeExpertisesIds($query, $ids) {
-		return $query;
-	}
-
-
+	
 	/**
 	 * Query scope joignant les noms des éventuelles sous-actions
 	 *
