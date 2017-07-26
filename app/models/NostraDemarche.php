@@ -28,36 +28,6 @@ class NostraDemarche extends Eloquent {
 			'nostra_id',
 			'title' 
 	);
-	public function nostraPublics() {
-		return $this->belongsToMany ( 'NostraPublic' );
-	}
-	public function nostraEvenements() {
-		return $this->belongsToMany ( 'NostraEvenement' );
-	}
-	public function nostraThematiquesabc() {
-		return $this->belongsToMany ( 'NostraThematiqueabc' );
-	}
-	public function nostraThematiquesadm() {
-		return $this->belongsToMany ( 'NostraThematiqueadm' );
-	}
-	public function nostraForms() {
-		return $this->belongsToMany ( 'NostraForm' );
-	}
-	public function nostraDocuments() {
-		return $this->belongsToMany ( 'NostraDocument' );
-	}
-	public function administrations() {
-		return $this->demarche->administrations ();
-	}
-	public function ideas() {
-		return $this->belongsToMany ( 'Idea' );
-	}
-	public function demarche() {
-		return $this->hasOne ( 'Demarche' );
-	}
-
-
-	
 	
 	public function getNostraPublicsIds() {
 		$array = array ();
@@ -137,31 +107,8 @@ class NostraDemarche extends Eloquent {
 		return $this->nostraThematiquesadm()->select('title');
 	}
 	
-
 	/**
-	 * ********************************************************************************* **
-	 * QUERY SCOPES
-	 * * ********************************************************************************* *
-	 */
-
-	/**
-	 * 
-	 * @param Builder $query
-	 * @param array $ids
-	 * @return \Illuminate\Database\Eloquent\Builder
-	 */
-	public function scopeNostraPublicsIds(Builder $query, array $ids) {
-		if (!empty($ids)) {
-			return $query->where( function ($query) use ($ids) {
-				$query->whereHas( 'nostraPublics', function ($query) use ($ids) {
-					$query->whereIn ( 'nostra_publics.id', $ids );
-				});
-			});
-		}
-		return $query;
-	}
-	
-	/**
+	 * Filtre les données sur base du filtre utilisateurs par administrations
 	 * 
 	 * @param Builder $query
 	 * @param array $ids
@@ -169,38 +116,17 @@ class NostraDemarche extends Eloquent {
 	 */
 	public function scopeAdministrationsIds(Builder $query, array $ids) {
 		if (!empty($ids)) {
-			return $query->whereHas('demarche', function ($query) use ($ids) {
-					$query->wherehas('administrations', function ($query) use ($ids) {
-						$query->whereIn('administrations.id', $ids);
-					});
+			$query->whereHas('demarche', function ($query) use ($ids) {
+				$query->wherehas('administrations', function ($query) use ($ids) {
+					$query->whereIn('administrations.id', $ids);
+				});
 			});
 		}
 		return $query;
 	}
 	
 	/**
-	 * 
-	 * @param Builder $query
-	 * @param array $ids
-	 * @return \Illuminate\Database\Eloquent\Builder
-	 */
-	public function scopeTaxonomyTagsIds(Builder $query, array $ids) {
-		if (!empty($ids)) {
-			return $query->whereHas('demarche', function ($query) use ($ids) {
-				$query->whereHas('tags', function ($query) use ($ids) {
-					$query->whereIn('taxonomytags.id', $ids);
-				});
-			});
-			/*return $query->with(['demarche' => function ($query) {
-				$query->wherehas('tags', function ($query) use ($ids) {
-					$query->whereIn('taxonomytags.id', $ids);
-				});
-			}]);*/
-		}
-		return $query;
-	}
-	
-	/**
+	 * Filtre les données sur base du filtre utilisateur par expertises
 	 * 
 	 * @param Builder $query
 	 * @param array $ids
@@ -208,7 +134,6 @@ class NostraDemarche extends Eloquent {
 	 */
 	public function scopeExpertisesIds(Builder $query, array $ids) {
 		if (!empty($ids)) {
-			return
 			$query->whereHas('demarche', function ($query) use ($ids) {
 				$query->whereHas('actions', function ($query) use ($ids) {
 					$query->whereIn('ewbsActions.name', function($query) use ($ids) {
@@ -220,5 +145,113 @@ class NostraDemarche extends Eloquent {
 			});
 		}
 		return $query;
+	}
+	
+	/**
+	 * Filtre les données sur base du filtre utilisateur par publics-cibles
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeNostraPublicsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->where( function ($query) use ($ids) {
+				$query->whereHas( 'nostraPublics', function ($query) use ($ids) {
+					$query->whereIn ( 'nostra_publics.id', $ids );
+				});
+			});
+		}
+		return $query;
+	}
+	
+	/**
+	 * Filtre les données sur base du filtre utilisateur par tags
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeTaxonomyTagsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->whereHas('demarche', function ($query) use ($ids) {
+				$query->whereHas('tags', function ($query) use ($ids) {
+					$query->whereIn('taxonomytags.id', $ids);
+				});
+			});
+		}
+		return $query;
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function nostraPublics() {
+		return $this->belongsToMany ( 'NostraPublic' );
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function nostraEvenements() {
+		return $this->belongsToMany ( 'NostraEvenement' );
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function nostraThematiquesabc() {
+		return $this->belongsToMany ( 'NostraThematiqueabc' );
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function nostraThematiquesadm() {
+		return $this->belongsToMany ( 'NostraThematiqueadm' );
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function nostraForms() {
+		return $this->belongsToMany ( 'NostraForm' );
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function nostraDocuments() {
+		return $this->belongsToMany ( 'NostraDocument' );
+	}
+	
+	/**
+	 * 
+	 * @return unknown
+	 */
+	public function administrations() {
+		return $this->demarche->administrations ();
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function ideas() {
+		return $this->belongsToMany ( 'Idea' );
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
+	 */
+	public function demarche() {
+		return $this->hasOne ( 'Demarche' );
 	}
 }

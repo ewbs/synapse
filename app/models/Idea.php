@@ -63,40 +63,6 @@ class Idea extends TrashableModel {
 			return true;
 	}
 	
-	public function user() {
-		return $this->belongsTo ( 'User' )->withTrashed();
-	}
-	public function ewbsMember() {
-		return $this->belongsTo ( 'EWBSMember' )->withTrashed();
-	}
-	public function administrations() {
-		return $this->belongsToMany ( 'Administration' );
-	}
-	public function ministers() {
-		return $this->belongsToMany ( 'Minister' )->orderBy('lastname');
-	}
-
-
-	/**
-	 * Attention! La relation ne doit pas être utilisée telle qu'elle.
-	 * En effet, on obtient la liste des publics cibles soit par la relation, soit par le lien avec
-	 * des démarches. Donc, pour obtenir la liste des publics, utilisez plutôt la méthode getNostraPublics();
-	 * Le seul endroit où il est tolér de l'utiliser et pour faire un sync() entrée idées et publics
-	 * (et donc quand on attache l'idée à des publics, sans lier à des démarches).
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function nostraPublics() {
-		return $this->belongsToMany ( 'NostraPublic' );
-	}
-
-	/**
-	 * Cette relation par contre est en public car on peut l'appeler directement depuis un controlleur (ou une vue)
-	 * au contraire de nostraPublics() qui ne PEUT PAS être appelée endirect.
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function nostraDemarches() {
-		return $this->belongsToMany ( 'NostraDemarche' );
-	}
 
 	public function getNostraPublics()	{
 		// Si on a un lien avec une ou plusieurs démarches, on prend les publics liés aux démarches
@@ -138,24 +104,6 @@ class Idea extends TrashableModel {
 	public function getNostraDemarches() {
 		return $this->nostraDemarches;
 	}
-
-
-
-	public function comments() {
-		return $this->hasMany ( 'IdeaComment' )->orderBy ( 'created_at', 'DESC' );
-	}
-	public function stateModifications() {
-		return $this->hasMany ( 'IdeaStateModification' )->orderBy ( 'created_at', 'DESC' );
-		// return $this->hasMany('IdeaStateModification');
-	}
-	public function actions() {
-		return $this->hasMany ( 'EwbsAction' );
-	}
-
-	public function tags() {
-		return $this->belongsToMany('TaxonomyTag');
-	}
-	
 	
 	public function getDemarches() {
 		return Demarche::getFromIdea($this);
@@ -239,94 +187,105 @@ class Idea extends TrashableModel {
 	public static function countTransversal() {
 		return Idea::where ( 'transversal', '>', 0 )->count ();
 	}
-
-
-
+	
 	/**
-	 * Query scopes
+	 * Retourne les idées liées à une démarche
+	 * @param Demarche $demarche
+	 * @param  array  $columns
+	 * @return \Illuminate\Database\Eloquent\Collection|static[]
 	 */
-
-
+	public static function getFromDemarche(Demarche $demarche, $columns = array('*')) {
+		$nostraDemarcheId = $demarche->nostraDemarche->id;
+		return Idea::whereHas('nostraDemarches', function(Illuminate\Database\Eloquent\Builder $q) use ($nostraDemarcheId) {
+			$q->where('nostra_demarche_id', '=', $nostraDemarcheId);
+		})->get($columns);
+	}
+	
+	/**
+	 * Récupère les états disponibles de l'idée en fonction des droits de l'utilisateur courant
+	 *
+	 * @param string $fromstate Nom de l'état de départ
+	 * @return \Illuminate\Database\Eloquent\Collection[]|static[][]
+	 */
+	public function getAvailableStates($fromstate) {
+		$user=Auth::user();
+		if ($user->hasRole ( 'admins' ))
+			return IdeaStateModification::getAvailableStates ( $fromstate, 'admin' );
+		if ($user->can ( 'ideas_manage' ))
+			return IdeaStateModification::getAvailableStates ( $fromstate, 'ideas_manage' );
+		if ($user->id == $this->user_id)
+			return IdeaStateModification::getAvailableStates ( $fromstate, 'owner' );
+		if ($user->id == $this->ewbs_member_id)
+			return IdeaStateModification::getAvailableStates ( $fromstate, 'ewbs' );
+	}
+	
 	/**
 	 * Query Scope : uniquement les Ideas prioritaires
-	 * @param $query
-	 * @param $state
-	 * @return mixed
+	 * @param Builder $query
+	 * @param string $state
+	 * @return Builder
 	 */
-	public function scopeOnlyPrioritary($query, $state) {
+	public function scopeOnlyPrioritary(Builder $query, $state) {
 		if ($state) {
-			return $query->where ( 'prioritary', '>', 0 );
+			$query->where ( 'prioritary', '>', 0 );
 		}
 		return $query;
 	}
 
 	/**
 	 * Query scope : uniquement les Ideas avec flag transversal
-	 * @param $query
-	 * @param $state
-	 * @return mixed
+	 * @param Builder $query
+	 * @param string $state
+	 * @return Builder
 	 */
-	public function scopeWithTransversal($query, $state) {
-		if ($state) {
-			return $query;
-		}
-		return $query->where ( 'transversal', '<', 1 );
-	}
-
-
-	public function scopeState($query, $state) {
-		return $query->whereHas('stateModifications', function($query) use ($state) {
-			$query
-				->whereRaw('"ideaStateModifications".created_at = (SELECT MAX(created_at) FROM "ideaStateModifications" WHERE idea_id = "ideas".id)')
-				->whereHas('ideaState', function($query) use ($state) {
-				$query->where('name', '=', $state);
-			});
-		});
-	}
-
-	/**
-	 * Particularité de ce scope :
-	 * on doit prendre les idées selon un publics cible.
-	 * Mais si une idée est reliée à une ou plusieurs démarches, l'information de public ne se trouve pas dans la jointure entre publics et idées, mais
-	 * entre ideas <-> nostra_demarches <-> nostra_publics.
-	 *
-	 * @param $query
-	 * @param $publicsIds
-	 * @return mixed
-	 */
-	public function scopeNostraPublicsIds($query, $publicsIds) {
-		if (is_array ( $publicsIds ) && count ( $publicsIds )) {
-			return $query->where( function ($query) use ($publicsIds) {
-				$query->whereHas( 'nostraDemarches', function ($query) use ($publicsIds) {
-					$query->whereHas( 'nostraPublics', function ($query) use ($publicsIds) {
-						$query->whereIn ( 'nostra_publics.id', $publicsIds );
-					});
-				})->orWhereHas ( 'nostraPublics', function ($query) use($publicsIds) {
-					$query->whereIn ( 'nostra_publics.id', $publicsIds );
-				} );
-			});
-		}
-		return $query;
-	}
-	public function scopeAdministrationsIds($query, $administrationsIds) {
-		if (is_array ( $administrationsIds ) && count ( $administrationsIds )) {
-			return $query->wherehas ( 'administrations', function ($query) use($administrationsIds) {
-				$query->whereIn ( 'administrations.id', $administrationsIds );
-			} );
+	public function scopeWithTransversal(Builder $query, $state) {
+		if (!$state) {
+			$query->where ( 'transversal', '<', 1 );
 		}
 		return $query;
 	}
 	
 	/**
-	 * Applique le filtre utilisateur expertises
+	 * 
+	 * @param Builder $query
+	 * @param string $state
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeState(Builder $query, $state) {
+		return $query->whereHas('stateModifications', function($query) use ($state) {
+			$query
+			->whereRaw('"ideaStateModifications".created_at = (SELECT MAX(created_at) FROM "ideaStateModifications" WHERE idea_id = "ideas".id)')
+			->whereHas('ideaState', function($query) use ($state) {
+				$query->where('name', '=', $state);
+			});
+		});
+	}
+	
+	/**
+	 * Filtre les données sur base du filtre utilisateurs par administrations
 	 * 
 	 * @param Builder $query
 	 * @param array $ids
-	 * @return Builder
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeAdministrationsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->wherehas ( 'administrations', function ($query) use($ids) {
+				$query->whereIn ( 'administrations.id', $ids );
+			});
+		}
+		return $query;
+	}
+	
+	/**
+	 * Filtre les données sur base du filtre utilisateur par expertises
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
 	public function scopeExpertisesIds(Builder $query, array $ids) {
 		if (!empty($ids)) {
-			return
 			$query->whereHas('actions', function ($query) use ($ids) {
 				$query->whereIn('ewbsActions.name', function($query) use ($ids) {
 					$query->select('name')
@@ -348,57 +307,147 @@ class Idea extends TrashableModel {
 		}
 		return $query;
 	}
-		
-	public function scopeMinistersIds($query, $ministersIds) {
-		if (is_array ( $ministersIds ) && count ( $ministersIds )) {
-			return $query->wherehas ( 'ministers', function ($query) use($ministersIds) {
-				$query->whereIn ( 'ministers.id', $ministersIds );
-			} );
-		}
-		return $query;
-	}
-	public function scopeTaxonomyTagsIds($query, $tagsIds) {
-		if (is_array ( $tagsIds ) && count ( $tagsIds )) {
-			return $query->wherehas ( 'tags', function ($query) use($tagsIds) {
-				$query->whereIn ( 'taxonomytags.id', $tagsIds );
-			} );
-		}
-		return $query;
-	}
-
-
-
+	
 	/**
-	 * Retourne les idées liées à une démarche
-	 * @param Demarche $demarche
-	 * @param  array  $columns
-	 * @return \Illuminate\Database\Eloquent\Collection|static[]
+	 * Filtre les données sur base du filtre utilisateur par publics-cibles
+	 * 
+	 * Particularité de ce scope :
+	 * on doit prendre les idées selon un publics cible.
+	 * Mais si une idée est reliée à une ou plusieurs démarches, l'information de public ne se trouve pas dans la jointure entre publics et idées, mais
+	 * entre ideas <-> nostra_demarches <-> nostra_publics.
+	 *
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
-	public static function getFromDemarche(Demarche $demarche, $columns = array('*')) {
-		
-		$nostraDemarcheId = $demarche->nostraDemarche->id;
-		return Idea::whereHas('nostraDemarches', function(Illuminate\Database\Eloquent\Builder $q) use ($nostraDemarcheId) { 
-			$q->where('nostra_demarche_id', '=', $nostraDemarcheId); 
-		})->get($columns);
-		
+	public function scopeNostraPublicsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->where( function ($query) use ($ids) {
+				$query->whereHas( 'nostraDemarches', function ($query) use ($ids) {
+					$query->whereHas( 'nostraPublics', function ($query) use ($ids) {
+						$query->whereIn ( 'nostra_publics.id', $ids );
+					});
+				})->orWhereHas ( 'nostraPublics', function ($query) use($ids) {
+					$query->whereIn ( 'nostra_publics.id', $ids );
+				});
+			});
+		}
+		return $query;
 	}
 	
 	/**
-	 * Récupère les états disponibles de l'idée en fonction des droits de l'utilisateur courant
+	 * Filtre les données sur base du filtre utilisateur par tags
 	 * 
-	 * @param string $fromstate Nom de l'état de départ
-	 * @return \Illuminate\Database\Eloquent\Collection[]|static[][]
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
-	public function getAvailableStates($fromstate) {
-		$user=Auth::user();
-		
-		if ($user->hasRole ( 'admins' ))
-			return IdeaStateModification::getAvailableStates ( $fromstate, 'admin' );
-		if ($user->can ( 'ideas_manage' ))
-			return IdeaStateModification::getAvailableStates ( $fromstate, 'ideas_manage' );
-		if ($user->id == $this->user_id)
-			return IdeaStateModification::getAvailableStates ( $fromstate, 'owner' );
-		if ($user->id == $this->ewbs_member_id)
-			return IdeaStateModification::getAvailableStates ( $fromstate, 'ewbs' );
+	public function scopeTaxonomyTagsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->wherehas ( 'tags', function ($query) use($ids) {
+				$query->whereIn ( 'taxonomytags.id', $ids );
+			});
+		}
+		return $query;
+	}
+	
+	/**
+	 * Filtre les données sur base de ministres
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeMinistersIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			return $query->wherehas ( 'ministers', function ($query) use($ids) {
+				$query->whereIn ( 'ministers.id', $ids );
+			});
+		}
+		return $query;
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function user() {
+		return $this->belongsTo ( 'User' )->withTrashed();
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function ewbsMember() {
+		return $this->belongsTo ( 'EWBSMember' )->withTrashed();
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function administrations() {
+		return $this->belongsToMany ( 'Administration' );
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function ministers() {
+		return $this->belongsToMany ( 'Minister' )->orderBy('lastname');
+	}
+	/**
+	 * Attention! La relation ne doit pas être utilisée telle qu'elle.
+	 * En effet, on obtient la liste des publics cibles soit par la relation, soit par le lien avec
+	 * des démarches. Donc, pour obtenir la liste des publics, utilisez plutôt la méthode getNostraPublics();
+	 * Le seul endroit où il est tolér de l'utiliser et pour faire un sync() entrée idées et publics
+	 * (et donc quand on attache l'idée à des publics, sans lier à des démarches).
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function nostraPublics() {
+		return $this->belongsToMany ( 'NostraPublic' );
+	}
+	
+	/**
+	 * Cette relation par contre est en public car on peut l'appeler directement depuis un controlleur (ou une vue)
+	 * au contraire de nostraPublics() qui ne PEUT PAS être appelée endirect.
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function nostraDemarches() {
+		return $this->belongsToMany ( 'NostraDemarche' );
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function comments() {
+		return $this->hasMany ( 'IdeaComment' )->orderBy ( 'created_at', 'DESC' );
+	}
+	
+	/**
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function stateModifications() {
+		return $this->hasMany ( 'IdeaStateModification' )->orderBy ( 'created_at', 'DESC' );
+	}
+	
+	/**
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function actions() {
+		return $this->hasMany ( 'EwbsAction' );
+	}
+	
+	/**
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function tags() {
+		return $this->belongsToMany('TaxonomyTag');
 	}
 }

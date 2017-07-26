@@ -84,19 +84,9 @@ class Expertise extends TrashableModel {
 	}
 	
 	/**
-	 * Filtre non exploité, en effet les actions ne sont pas filtrées par publics cibles
-	 *
-	 * @param Builder $query
-	 * @param array $ids
-	 * @return \Illuminate\Database\Eloquent\Builder
-	 */
-	public function scopeNostraPublicsIds(Builder $query, array $ids) {
-		return $query;
-	}
-	
-	/**
-	 * Filtre non exploité, en effet les actions ne sont pas filtrées par administrations
+	 * Filtre les données sur base du filtre utilisateurs par administrations
 	 * 
+	 * Remarque : Filtre non exploité, en effet les actions ne sont pas filtrées par administrations
 	 * @param Builder $query
 	 * @param array $ids
 	 * @return \Illuminate\Database\Eloquent\Builder
@@ -106,23 +96,36 @@ class Expertise extends TrashableModel {
 	}
 	
 	/**
-	 * Filtre des expertises sur base du filtre utilisateur correspondant
-	 *
+	 * Filtre les données sur base du filtre utilisateur par expertises
+	 * 
 	 * @param Builder $query
 	 * @param array $ids
 	 * @return Builder
 	 */
 	public function scopeExpertisesIds(Builder $query, array $ids) {
 		if (!empty($ids)) {
-			return $query->whereIn('id', $ids);
+			$query->whereIn('id', $ids);
 		}
 		return $query;
 	}
 	
+
+	/**
+	 * Filtre les données sur base du filtre utilisateur par publics-cibles
+	 * 
+	 * Remarque : Filtre non exploité, en effet les actions ne sont pas filtrées par publics cibles
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeNostraPublicsIds(Builder $query, array $ids) {
+		return $query;
+	}
 	
 	/**
-	 * Filtre non exploité, en effet les actions ne sont pas filtrées par taxonomie
+	 * Filtre les données sur base du filtre utilisateur par tags
 	 * 
+	 * Remarque : Filtre non exploité, en effet les actions ne sont pas filtrées par taxonomie
 	 * @param Builder $query
 	 * @param array $ids
 	 * @return \Illuminate\Database\Eloquent\Builder

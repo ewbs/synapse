@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Database\Eloquent\Builder;
+
 /**
  * Class TraitFilterable
  * Trait pour implémenter le filtrage des éléments selons les filtres définis par l'utilisateur
@@ -62,13 +64,43 @@
 			// ->taxonomyTagsIds($filteredTagsIds)
 			->nostraPublicsIds($filteredPublicsIds)
 			->expertisesIds($filteredExpertisesIds); //appel aux scopes
-
+			
 			return $queryBuilderObject;
-
 		}
-
-		abstract public function scopeAdministrationsIds($query, $administrationsIds);
-		abstract public function scopetaxonomyTagsIds($query, $tagsIds);
-		abstract public function scopenostraPublicsIds($query, $publicsIds);
-		abstract public function scopeExpertisesIds($query, $expertisesIds);
+		
+		/**
+		 * Filtre les données sur base du filtre utilisateur par administrations
+		 * 
+		 * @param Builder $query
+		 * @param array $ids
+		 * @return Builder
+		 */
+		abstract public function scopeAdministrationsIds(Builder $query, array $ids);
+		
+		/**
+		 * Filtre les données sur base du filtre utilisateur par expertises
+		 * 
+		 * @param Builder $query
+		 * @param array $ids
+		 * @return Builder
+		 */
+		abstract public function scopeExpertisesIds(Builder $query, array $ids);
+		
+		/**
+		 * Filtre les données sur base du filtre utilisateur par publics-cibles
+		 * 
+		 * @param Builder $query
+		 * @param array $ids
+		 * @return Builder
+		 */
+		abstract public function scopeNostraPublicsIds(Builder $query, array $ids);
+		
+		/**
+		 * Filtre les données sur base du filtre utilisateur par tags
+		 * 
+		 * @param Builder $query
+		 * @param array $ids
+		 * @return Builder
+		 */
+		abstract public function scopeTaxonomyTagsIds(Builder $query, array $ids);
 	}

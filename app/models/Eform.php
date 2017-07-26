@@ -212,10 +212,9 @@ class Eform extends RevisableModel {
 	}
 	
 	/**
-	 * Filtre les eforms sur base du filtre utilisateurs par administrations
+	 * Filtre les données sur base du filtre utilisateurs par administrations
 	 *
 	 * Remarque : la liaison vers demarcheEforms est inconditionnelle, car même sans filtre ce scope doit considérer uniquement les eforms liés à des démarches
-	 *
 	 * @param Builder $query
 	 * @param array $ids
 	 * @return \Illuminate\Database\Eloquent\Builder
@@ -234,15 +233,14 @@ class Eform extends RevisableModel {
 	}
 	
 	/**
-	 * Filtre les eforms sur base du filtre utilisateurs par expertises
-	 *
+	 * Filtre les données sur base du filtre utilisateur par expertises
+	 * 
 	 * @param Builder $query
 	 * @param array $ids
 	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
 	public function scopeExpertisesIds(Builder $query, array $ids) {
 		if (!empty($ids)) {
-			return
 			$query->whereHas('actions', function ($query) use ($ids) {
 				$query->whereIn('ewbsActions.name', function($query) use ($ids) {
 					$query->select('name')
@@ -255,7 +253,7 @@ class Eform extends RevisableModel {
 	}
 	
 	/**
-	 * Filtre les eforms sur base du filtre utilisateurs par publics cibles
+	 * Filtre les données sur base du filtre utilisateur par publics-cibles
 	 * 
 	 * Remarque : la liaison vers demarcheEforms est inconditionnelle, car même sans filtre ce scope doit considérer uniquement les eforms liés à des démarches
 	 * 
@@ -264,8 +262,7 @@ class Eform extends RevisableModel {
 	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
 	public function scopeNostraPublicsIds(Builder $query, array $ids) {
-		return
-		$query->whereHas( 'demarcheEforms', function ($query) use ($ids) {
+		return $query->whereHas( 'demarcheEforms', function ($query) use ($ids) {
 			if (!empty($ids)) {
 				$query->whereHas( 'demarche', function ($query) use ($ids) {
 					$query->whereHas( 'nostraDemarche', function ($query) use ($ids) {
@@ -279,7 +276,7 @@ class Eform extends RevisableModel {
 	}
 	
 	/**
-	 * Filtre les eforms sur base du filtre utilisateurs par tags
+	 * Filtre les données sur base du filtre utilisateur par tags
 	 * 
 	 * Attention, il faut retourner les démarches directement taggées, mais également les démarches liées à un ou plusieurs projets (Idea) taggés :-)
 	 * Remarque : la liaison vers demarcheEforms est inconditionnelle, car même sans filtre ce scope doit considérer uniquement les eforms liés à des démarches
