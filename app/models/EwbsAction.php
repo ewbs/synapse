@@ -181,6 +181,25 @@ class EwbsAction extends RevisableModel {
 	}
 	
 	/**
+	 * 
+	 * @param Builder $query
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeCreatedByMe(Builder $query) {
+		//TODO Il faut effectuer une liaison avec les révisions, mais considérer la 1e révision pour effectuer cette vérif
+		return $query;
+	}
+	
+	/**
+	 *
+	 * @param Builder $query
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeAssignedToMe(Builder $query) {
+		return $query->where('v_lastrevisionewbsaction.responsible_id', '=', Auth::user()->id);
+	}
+	
+	/**
 	 * Cibler les différents noms des actions
 	 *
 	 * @param Builder $query
@@ -460,8 +479,7 @@ class EwbsAction extends RevisableModel {
 		}
 		return $query;
 	}
-
-
+	
 	/**
 	 * Restreindre aux actions à traiter par l'équipe nostra
 	 * 

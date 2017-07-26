@@ -112,9 +112,19 @@ class EwbsActionController extends TrashableModelController {
 	protected function getFilteredDataJson() {
 		//TODO : voir si la corbeille est appelée en filtrage ... normalement non donc pour le moment je ne prend pas de parametre $onlyTrashed comme dans getDataJson
 		//TODO : cette fonction sera peut être au final quasi identique à getData ... quand elle sera terminée on pourrait mutualiser ces deux fonctions (si pertinent)
-
+		
+		$createdbyme = Input::get('createdbyme');
+		Auth::user()->sessionSet('ewbsactions_createdbyme', $createdbyme);
+		
+		$assignedtome = Input::get('assignedtome');
+		Auth::user()->sessionSet('ewbsactions_assignedtome', $assignedtome);
+		
+		$query=EwbsAction::filtered()->each()->joinSubActions()->joinTaxonomy();
+		if($createdbyme) $query->createdByMe();
+		if($assignedtome) $query->assignedToMe();
+		
 		$array = [];
-		foreach ( EwbsAction::filtered()->each()->joinSubActions()->joinTaxonomy()->get() as $item ) {
+		foreach ( $query->get() as $item ) {
 			$entry=[];
 			$entry[]=str_pad ( $item->action_id, 5, "0", STR_PAD_LEFT );
 			$string='<a title="' . Lang::get ( 'button.view' ) . '" href="' . route ( 'ewbsactionsGetView', $item->action_id ) . '"><strong>' . $item->name . '</strong><br/><em>' . $item->description . '</em></a>';
