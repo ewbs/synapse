@@ -55,7 +55,7 @@
 			<div class="content no-padding">
 				<div class="row">
 					<div class="col-md-12">
-						<i class="fa fa-magic fa-3x pull-left color-warning"></i>
+						<i class="fa fa-magic fa-4x pull-left color-warning"></i>
 						<h3 class="no-margin">{{$totalActions}} ACTIONS</h3>
 						<p><span class="color-warning">A faire, en cours ou en standby sur des projets de simplif', démarches ou formulaires</span></p>
 					</div>
