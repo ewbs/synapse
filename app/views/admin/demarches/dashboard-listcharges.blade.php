@@ -1,5 +1,5 @@
 @extends('site.layouts.container-fluid')
-@section('title')Mes démarches @stop
+@section('title')Mes charges administratives @stop
 @section('content')
 @include('site.layouts.userdashboard-menu')
 <div class="row">
