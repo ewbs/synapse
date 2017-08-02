@@ -31,6 +31,7 @@
 
 ### Démarches
 - Added : Ajout d'un notion d'assignation d'une action à un user (édition & liste d'actions, création d'action suite à édition de pièces/tâches/formulaires)
+- Added : Ajout de l'ID Nostra dans le détail d'une démarche
 - Changed : Choix du nom d'une action limité à la liste des expertises
 - Changed : Retrait de la colonne "Sous-actions" sur la liste des actions
 
