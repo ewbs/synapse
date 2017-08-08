@@ -6,6 +6,8 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Illuminate\Filesystem\FileNotFoundException;
 class DemarcheController extends TrashableModelController {
 	
+	use Synapse\Controllers\Traits\TraitFilterableController;
+	
 	/**
 	 * Inject the models.
 	 *
@@ -260,13 +262,10 @@ class DemarcheController extends TrashableModelController {
 		return $dt->make ();
 
 	}
-
-
-	/** Cette fonction retourne les démarches filtrées (sur base des filtres utilisateurs) pour le dashboard
-	 * L'url est appelée par DataTables en ajax et peut prendre en paramètres :
-		 * - onlyDocumented=... --> n'afficher que les démarches documentées
-	 * @param string $multipleSeparator
-	 * @return mixed
+	
+	/**
+	 * {@inheritDoc}
+	 * @see Synapse\Controllers\Traits\TraitFilterableController::getDataFilteredJson()
 	 */
 	protected function getDataFilteredJson() {
 

@@ -1,6 +1,8 @@
 <?php
 class IdeaController extends TrashableModelController {
 	
+	use Synapse\Controllers\Traits\TraitFilterableController;
+	
 	/**
 	 * Initialisation
 	 *
@@ -19,18 +21,10 @@ class IdeaController extends TrashableModelController {
 	}
 	
 	/**
-	 * 
-	 * @return Datatables
-	 */
-	protected function getDataFilteredJson() {
-		return $this->getDataJson(false, true);
-	}
-	
-	/**
 	 * {@inheritDoc}
 	 * @see ModelController::getDataJson()
 	 */
-	protected function getDataJson($onlyTrashed=false, $withFilter=false) {
+	protected function getDataJson($onlyTrashed=false, $filtered=false) {
 		
 		$selectCols= [
 			'ideas.id',
@@ -56,7 +50,7 @@ class IdeaController extends TrashableModelController {
 			DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_GIVENUP."'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_givenup" )
 		];
 
-		if ($withFilter) {
+		if ($filtered) {
 			$builder = Idea::filtered();
 		} else {
 			$builder = Idea::query();
@@ -159,6 +153,14 @@ class IdeaController extends TrashableModelController {
 			return $return;
 		}); */
 		return $dt->make ();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * @see Synapse\Controllers\Traits\TraitFilterableController::getDataFilteredJson()
+	 */
+	protected function getDataFilteredJson() {
+		return $this->getDataJson(false, true);
 	}
 	
 	/**

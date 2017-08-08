@@ -2,7 +2,7 @@
 Route::group(['prefix' => 'ewbsactions'], function() {
 	Route::get(''                                       ,['as'=>'ewbsactionsGetIndex'         ,'uses'=>'EwbsActionController@getIndex']);
 	Route::get('data'                                   ,['as'=>'ewbsactionsGetData'          ,'uses'=>'EwbsActionController@getData']);
-	Route::get('filtered-data'                          ,['as'=>'ewbsactionsGetFilteredData'  ,'uses'=>'EwbsActionController@getFilteredData']);
+	Route::get('filtered-data'                          ,['as'=>'ewbsactionsGetFilteredData'  ,'uses'=>'EwbsActionController@getDataFiltered']);
 	Route::get('trash'                                  ,['as'=>'ewbsactionsGetTrash'         ,'uses'=>'EwbsActionController@getTrash']);
 	Route::get('datatrash'                              ,['as'=>'ewbsactionsGetDataTrash'     ,'uses'=>'EwbsActionController@getDataTrash']);
 	Route::get('{ewbs_action_wt}/restore'               ,['as'=>'ewbsactionsGetRestore'       ,'uses'=>'EwbsActionController@getRestore']);

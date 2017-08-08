@@ -10,6 +10,10 @@ use Illuminate\Database\Eloquent\Builder;
 
 	trait TraitFilterable {
 
+		/**
+		 * 
+		 * @return Builder
+		 */
 		public static function filtered() {
 
 			/*

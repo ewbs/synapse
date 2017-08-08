@@ -33,9 +33,11 @@
 							<tr>
 								<th>#</th>
 								<th>Nom</th>
-								<th>Etat</th>
-								<th>Sous actions</th>
-								<th>Elements liés</th>
+								<th class="col-md-1">Etat</th>
+								<th class="col-md-1">Priorité</th>
+								<th class="col-md-3">Elément lié</th>
+								<th class="col-md-2">Assignation</th>
+								<th class="col-md-1">Révision</th>
 							</tr>
 						</thead>
 						<tbody>

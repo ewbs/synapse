@@ -2,6 +2,8 @@
 
 class EwbsActionController extends TrashableModelController {
 	
+	use Synapse\Controllers\Traits\TraitFilterableController;
+	
 	/**
 	 * Initialisation
 	 * 
@@ -29,33 +31,49 @@ class EwbsActionController extends TrashableModelController {
 		}
 		return View::make ('admin/ewbsactions/list', $params);
 	}
-
-
-	/**
-	 * Pour garder la logique de getData qui appelle getDataJson, cette fonction ne fait qu'appeler getFilteredDataJson()
-	 * @return mixed
-	 */
-	protected function getFilteredData() {
-		return $this->getFilteredDataJson();
-	}
 	
 	/**
+	 * 
 	 * {@inheritDoc}
 	 * @see ModelController::getDataJson()
 	 */
-	protected function getDataJson($onlyTrashed=false) {
+	protected function getDataJson($onlyTrashed=false, $filtered=false) {
+		if($filtered) $query=EwbsAction::filtered();
+		else $query=EwbsAction::query();
+		$query->each()->joinTaxonomy();
 		
 		$selectedResponsibles = Input::get('responsibles', []);
 		Auth::user()->sessionSet('ewbsactions_selectedResponsibles', $selectedResponsibles);
+		if($selectedResponsibles) {
+			$query->forResponsibles($selectedResponsibles);
+		}
 		
 		$selectedNames = Input::get('names', []);
 		Auth::user()->sessionSet('ewbsactions_selectedNames', $selectedNames);
+		if($selectedNames) {
+			$query->forNames($selectedNames);
+		}
 		
 		$selectedAdministrations = Input::get('administrations', []);
 		Auth::user()->sessionSet('ewbsactions_selectedAdministrations', $selectedAdministrations);
+		if($selectedAdministrations) {
+			$query->forAdministrations($selectedAdministrations);
+		}
+		
+		$createdbyme = Input::get('createdbyme');
+		Auth::user()->sessionSet('ewbsactions_createdbyme', $createdbyme);
+		if($createdbyme) {
+			$query->createdByMe();
+		}
+		
+		$assignedtome = Input::get('assignedtome');
+		Auth::user()->sessionSet('ewbsactions_assignedtome', $assignedtome);
+		if($assignedtome) {
+			$query->assignedToMe();
+		}
 		
 		$array=[];
-		foreach ( EwbsAction::each()->forResponsibles($selectedResponsibles)->forNames($selectedNames)->forAdministrations($selectedAdministrations)->joinTaxonomy()->get() as $item ) {
+		foreach ( $query->get() as $item ) {
 			$entry=[];
 			$entry[]=str_pad ( $item->action_id, 5, "0", STR_PAD_LEFT );
 			if($onlyTrashed) {
@@ -107,71 +125,13 @@ class EwbsActionController extends TrashableModelController {
 		}
 		return Response::json (['aaData' => $array], 200 );
 	}
-
-
-	protected function getFilteredDataJson() {
-		//TODO : voir si la corbeille est appelée en filtrage ... normalement non donc pour le moment je ne prend pas de parametre $onlyTrashed comme dans getDataJson
-		//TODO : cette fonction sera peut être au final quasi identique à getData ... quand elle sera terminée on pourrait mutualiser ces deux fonctions (si pertinent)
-		
-		$createdbyme = Input::get('createdbyme');
-		Auth::user()->sessionSet('ewbsactions_createdbyme', $createdbyme);
-		
-		$assignedtome = Input::get('assignedtome');
-		Auth::user()->sessionSet('ewbsactions_assignedtome', $assignedtome);
-		
-		$query=EwbsAction::filtered()->each()->joinSubActions()->joinTaxonomy();
-		if($createdbyme) $query->createdByMe();
-		if($assignedtome) $query->assignedToMe();
-		
-		$array = [];
-		foreach ( $query->get() as $item ) {
-			$entry=[];
-			$entry[]=str_pad ( $item->action_id, 5, "0", STR_PAD_LEFT );
-			$string='<a title="' . Lang::get ( 'button.view' ) . '" href="' . route ( 'ewbsactionsGetView', $item->action_id ) . '"><strong>' . $item->name . '</strong><br/><em>' . $item->description . '</em></a>';
-			//on ajoute la taxo
-			if (strlen($item->tags)) {
-				$string .= '<br/><span class="fa fa-tags"></span> <small>' . $item->tags . '</small>';
-			}
-			$entry[] = $string;
-			$entry[]=EwbsActionRevision::graphicState ( $item->state );
-
-			if(!$item->subactions)$entry[]='';
-			else {
-				$subactions=explode(',', $item->subactions);
-				$tooltip='<ul>';
-				foreach($subactions as $subaction) $tooltip.="<li>".$subaction."</li>";
-				$tooltip.='</ul>';
-				$entry[]='<a class="btn btn-xs btn-default" " href="' . route ( 'ewbsactionsGetView', $item->action_id ) . '#subactions" data-toggle="popover" data-content="'.$tooltip.'" data-html="true">'.count($subactions).'</a>';
-			}
-
-
-			if($item->demarche_id) {
-				$string = '<a href="' . route('demarchesGetView', $item->demarche_id) . '" target="_blank" title="' . Lang::get('admin/demarches/messages.item') . '"><i class="fa fa-briefcase"></i>' . $item->demarche_name . '</a><br/>';
-				if ($item->demarche_piece_name) { //si on a une piece
-					$string .= '<i class="fa"></i><span title="' . Lang::get('admin/demarches/messages.piece.piece') . '"><i class="fa fa-clipboard"></i>' . $item->demarche_piece_name . '</span>';
-				}
-				elseif ($item->demarche_task_name) { // si on  a une tâche
-					$string .= '<i class="fa"></i><span title="' . Lang::get('admin/demarches/messages.task.task') . '"><i class="fa fa-tasks"></i>' . $item->demarche_task_name . '</span>';
-				}
-				elseif ($item->eform_id) { // si on a un formulaire
-					$string .= '<i class="fa"></i><span title="' . Lang::get('admin/demarches/messages.eform.eform') . '"><i class="fa fa-wpforms"></i>' . $item->eform_name . '</span>';
-				}
-				$entry[] = $string;
-			}
-			elseif($item->idea_id) {
-				$entry[] = '<a href="' . route('ideasGetView', $item->idea_id) . '" target="_blank" title="' . Lang::get('admin/ideas/messages.item') . '"><i class="fa fa-lightbulb-o"></i>' . $item->idea_name . '</a>';
-			}
-			elseif ($item->eform_id) {
-				// ce cas sert à lister les actions liées à des formulaires non liés à des demarches
-				$entry[] = '<a href="' . route('eformsGetView', $item->eform_id) . '" target="_blank" title="' . Lang::get('admin/demarches/messages.item') . '"><span title="' . Lang::get('admin/demarches/messages.eform.eform') . '"><i class="fa fa-wpforms"></i>' . $item->eform_name . '</span></a>';
-			}
-			else $entry[]='';
-
-
-			$array[]=$entry;
-		}
-		return Response::json (['aaData' => $array], 200 );
-
+	
+	/**
+	 * {@inheritDoc}
+	 * @see Synapse\Controllers\Traits\TraitFilterableController::getDataFilteredJson()
+	 */
+	protected function getDataFilteredJson() {
+		return $this->getDataJson(false, true);
 	}
 	
 	/**

@@ -4,6 +4,7 @@
 *Ce release de Synapse intègre principalement diverses améliorations sur le module actions, ainsi que quelques améliorations et corrections mineures.*
 
 ### Migrations
+- Added : Vue permettant d'obtenir la première révision d'une action
 - Bugfix : Renommer le script de migration des users, car il interfère avec celui qui se trouve dans Confide
 - Bugfix : Ajout clé primaire aux tables correspondant aux filtres utilisateur existants (administration, public, tag)
 
@@ -11,27 +12,29 @@
 - Added : Database - Ajout d'un check sur la présence de l'extension btree_gist
 
 ### Dashboard
-- Added : Ajout du filtre "par action" dans la fonction "Mes filtres"
+- Added : Filtre "par action" dans la fonction "Mes filtres"
 - Added : Application du filtre "par action" sur mes projets de simplif'
 - Added : Application du filtre "par action" sur mes démarches
 - Added : Application du filtre "par action" sur mes formulaires
 - Added : Application du filtre "par action" sur mes actions
 - Added : Filtres sur mes actions "Celles que j’ai créées" et "Celles qui me sont assignées"
+- Added : Colonnes "Priorité", "Assignation" et "Révision" sur la liste de mes actions
 - Changed : Désactivation du filtre "par tag"
 - Changed : Présenter les actions en cours par pôle et expertises dans "Mon dashboard"
+- Changed : Retrait de la colonne "Sous-actions" sur la liste de mes actions
 - Bugfix : Les filtres ne s'appliquaient pas sur les pièces et tâches dont le total est présenté dans le pavé "Catalogue des démarches"
 
 ### Actions
 - Added : Nouvel état "En standby"
-- Added : Ajout d'un notion d'assignation d'une action à un user (édition, détail, liste)
+- Added : Notion d'assignation d'une action à un user (édition, détail, liste)
 - Added : Filtres par assignations, noms/types, administrations sur la liste des actions
 - Changed : Etat "Initialisé" renommé en "A faire"
 - Changed : Choix du nom d'une action limité à la liste des expertises
 - Changed : Retrait de la colonne "Sous-actions" sur la liste des actions
 
 ### Démarches
-- Added : Ajout d'un notion d'assignation d'une action à un user (édition & liste d'actions, création d'action suite à édition de pièces/tâches/formulaires)
-- Added : Ajout de l'ID Nostra dans le détail d'une démarche
+- Added : Notion d'assignation d'une action à un user (édition & liste d'actions, création d'action suite à édition de pièces/tâches/formulaires)
+- Added : ID Nostra dans le détail d'une démarche
 - Changed : Choix du nom d'une action limité à la liste des expertises
 - Changed : Retrait de la colonne "Sous-actions" sur la liste des actions
 
