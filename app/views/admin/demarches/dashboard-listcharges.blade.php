@@ -17,26 +17,23 @@
 							<thead></thead>
 							<tbody class="no-border-y">
 								<tr>
-									<td class="text-center primary-emphasis col-md-3" @if(count($aTopExecutedPieces)) rowspan="{{count($aTopExecutedPieces)}}" @endif>
+									<td class="text-center primary-emphasis col-md-3">
 										<span class="fa fa-trophy fa-2x"></span><br/>Pièces les plus demandées
 									</td>
 									<td>
-										@if (count($aTopExecutedPieces))
-											{{$aTopExecutedPieces[0]['displayname']}}
-										@endif
-									</td>
-									<td class="text-right">
-										@if (count($aTopExecutedPieces))
-											{{$aTopExecutedPieces[0]['count_items']}} pièces
-										@endif
+										<ul class="banded">
+											@if (count($aTopExecutedPieces))
+											@for($i=0; $i < count($aTopExecutedPieces); $i++)
+											<li>
+												{{$aTopExecutedPieces[$i]['displayname']}}
+												<span class="badge pull-right">{{$aTopExecutedPieces[$i]['count_items']}} pièces</span>
+											</li>
+											@endfor
+											@else <li>Aucune</li>
+											@endif
+										</ul>
 									</td>
 								</tr>
-								@for($i=1; $i < count($aTopExecutedPieces); $i++)
-									<tr>
-										<td>{{$aTopExecutedPieces[$i]['displayname']}}</td>
-										<td class="text-right">{{$aTopExecutedPieces[$i]['count_items']}} pièces</td>
-									</tr>
-								@endfor
 							</tbody>
 						</table>
 					</div>
@@ -46,26 +43,24 @@
 							<thead></thead>
 							<tbody class="no-border-y">
 							<tr>
-								<td class="text-center primary-emphasis col-md-3" @if(count($aTopExecutedTasks)) rowspan="{{count($aTopExecutedTasks)}}" @endif>
+								<td class="text-center primary-emphasis col-md-3">
 									<span class="fa fa-trophy fa-2x"></span><br/>Tâches les plus exécutées
 								</td>
 								<td>
-									@if (count($aTopExecutedTasks))
-										{{$aTopExecutedTasks[0]['displayname']}}
-									@endif
-								</td>
-								<td class="text-right">
-									@if (count($aTopExecutedTasks))
-										{{$aTopExecutedTasks[0]['count_items']}} fois
-									@endif
+									<ul class="banded">
+										@if (count($aTopExecutedTasks))
+										@for($i=0; $i < count($aTopExecutedTasks); $i++)
+										<li>
+											{{$aTopExecutedTasks[$i]['displayname']}}
+											<span class="badge pull-right">{{$aTopExecutedTasks[$i]['count_items']}} fois</span>
+											</div>
+										</li>
+										@endfor
+										@else <li>Aucune</li>
+										@endif
+									</ul>
 								</td>
 							</tr>
-							@for($i=1; $i < count($aTopExecutedTasks); $i++)
-								<tr>
-									<td>{{$aTopExecutedTasks[$i]['displayname']}}</td>
-									<td class="text-right">{{$aTopExecutedTasks[$i]['count_items']}} fois</td>
-								</tr>
-							@endfor
 							</tbody>
 						</table>
 					</div>
@@ -77,26 +72,23 @@
 							<thead></thead>
 							<tbody class="no-border-y">
 							<tr>
-								<td class="text-center primary-emphasis col-md-3" @if(count($aTopValuablePieces)) rowspan="{{count($aTopValuablePieces)}}" @endif>
+								<td class="text-center primary-emphasis col-md-3">
 									<span class="fa fa-euro fa-2x"></span><br/>Pièces les plus coûteuses
 								</td>
 								<td>
-									@if (count($aTopValuablePieces))
-										{{$aTopValuablePieces[0]['displayname']}}
-									@endif
-								</td>
-								<td class="text-right">
-									@if (count($aTopValuablePieces))
-										{{NumberHelper::moneyFormatNoDecimal($aTopValuablePieces[0]['gpagpc'])}}
-									@endif
+									<ul class="banded">
+										@if (count($aTopValuablePieces))
+										@for($i=0; $i < count($aTopValuablePieces); $i++)
+										<li>
+											{{$aTopValuablePieces[$i]['displayname']}}
+											<span class="badge pull-right">{{NumberHelper::moneyFormat($aTopValuablePieces[$i]['gpagpc'])}}</span>
+										</li>
+										@endfor
+										@else <li>Aucune</li>
+										@endif
+									</ul>
 								</td>
 							</tr>
-							@for($i=1; $i < count($aTopValuablePieces); $i++)
-								<tr>
-									<td>{{$aTopValuablePieces[$i]['displayname']}}</td>
-									<td class="text-right">{{NumberHelper::moneyFormatNoDecimal($aTopValuablePieces[$i]['gpagpc'])}}</td>
-								</tr>
-							@endfor
 							</tbody>
 						</table>
 					</div>
@@ -106,26 +98,23 @@
 							<thead></thead>
 							<tbody class="no-border-y">
 							<tr>
-								<td class="text-center primary-emphasis col-md-3" @if(count($aTopValuableTasks)) rowspan="{{count($aTopValuableTasks)}}" @endif>
+								<td class="text-center primary-emphasis col-md-3">
 									<span class="fa fa-euro fa-2x"></span><br/>Tâches les plus coûteuses
 								</td>
 								<td>
-									@if (count($aTopValuableTasks))
-										{{$aTopValuableTasks[0]['displayname']}}
-									@endif
-								</td>
-								<td class="text-right">
-									@if (count($aTopValuableTasks))
-										{{NumberHelper::moneyFormatNoDecimal($aTopValuableTasks[0]['gpagpc'])}}
-									@endif
+									<ul class="banded">
+										@if (count($aTopValuableTasks))
+										@for($i=0; $i < count($aTopValuableTasks); $i++)
+										<li>
+											{{$aTopValuableTasks[$i]['displayname']}}
+											<span class="badge pull-right">{{NumberHelper::moneyFormat($aTopValuableTasks[$i]['gpagpc'])}}</span>
+										</li>
+										@endfor
+										@else <li>Aucune</li>
+										@endif
+									</ul>
 								</td>
 							</tr>
-							@for($i=1; $i < count($aTopValuableTasks); $i++)
-								<tr>
-									<td>{{$aTopValuableTasks[$i]['displayname']}}</td>
-									<td class="text-right">{{NumberHelper::moneyFormatNoDecimal($aTopValuableTasks[$i]['gpagpc'])}}</td>
-								</tr>
-							@endfor
 							</tbody>
 						</table>
 					</div>

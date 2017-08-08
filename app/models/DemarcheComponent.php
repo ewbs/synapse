@@ -199,6 +199,30 @@ abstract class DemarcheComponent extends RevisableModel {
 	}
 	
 	/**
+	 * Lier aux composants leur dernière révision
+	 *
+	 * @param Builder $query
+	 * @return Builder
+	 */
+	public abstract function scopeJoinLastRevision(Builder $query, $trashed=false);
+	
+	/**
+	 * Obtenir les composants les plus utilisées
+	 * 
+	 * @param Builder $query
+	 * @param int $limit
+	 */
+	public abstract function scopeMostUsed(Builder $query, $limit=0);
+	
+	/**
+	 * Obtenir les composants dont le gain potentiel est le plus important
+	 *
+	 * @param Builder $query
+	 * @param int $limit
+	 */
+	public abstract function scopePotentiallyMostGainful(Builder $query, $limit=0);
+	
+	/**
 	 * Relation vers les actions liées
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany

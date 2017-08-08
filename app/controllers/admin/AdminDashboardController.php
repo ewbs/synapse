@@ -188,75 +188,14 @@ class AdminDashboardController extends BaseController {
 
 		// on sauve la route en cours pour gérer les retour à la liste
 		$this->setReturnTo();
-
-		// pour récupérer les TOP, on procédera en deux temps.
-		// 1. récupérer la liste des démarches filtrées de l'utilisateur.
-		// 2. récupérer les top
-		// TODO: cette portion de code est elle à sa place ici ?
-
-		// 1. la liste des ids de démarche
-		$aFilteredDemarcheIds = Demarche::filtered()->lists('id');
-
-		// 2.
-		// Top des pièces les plus demandées
-		$aTopExecutedPieces = Piece
-								::join('v_lastrevisionpiecesfromdemarche', 'v_lastrevisionpiecesfromdemarche.piece_id', '=', 'demarchesPieces.id')
-								->whereNull('demarchesPieces.deleted_at')
-								->whereNull('v_lastrevisionpiecesfromdemarche.deleted_at')
-								->whereIn('v_lastrevisionpiecesfromdemarche.demarche_id', $aFilteredDemarcheIds)
-								->having(DB::raw('SUM(v_lastrevisionpiecesfromdemarche.volume * v_lastrevisionpiecesfromdemarche.frequency)'), '>', 0)
-								->groupBy('demarchesPieces.id')
-								->orderBy('count_items', "DESC")
-								->limit(3)
-								->get([
-									'demarchesPieces.name AS displayname',
-									DB::raw('SUM(v_lastrevisionpiecesfromdemarche.volume * v_lastrevisionpiecesfromdemarche.frequency) AS count_items')
-								])->toArray();
-		// Top des tâches les plus exéctuée
-		$aTopExecutedTasks = Task
-								::join('v_lastrevisiontasksfromdemarche', 'v_lastrevisiontasksfromdemarche.task_id', '=', 'demarchesTasks.id')
-								->whereNull('demarchesTasks.deleted_at')
-								->whereNull('v_lastrevisiontasksfromdemarche.deleted_at')
-								->whereIn('v_lastrevisiontasksfromdemarche.demarche_id', $aFilteredDemarcheIds)
-								->having(DB::raw('SUM(v_lastrevisiontasksfromdemarche.volume * v_lastrevisiontasksfromdemarche.frequency)'), '>', 0)
-								->groupBy('demarchesTasks.id')
-								->orderBy('count_items', "DESC")
-								->limit(3)
-								->get([
-									'demarchesTasks.name AS displayname',
-									DB::raw('SUM(v_lastrevisiontasksfromdemarche.volume * v_lastrevisiontasksfromdemarche.frequency) AS count_items')
-								])->toArray();
-		// Top des pièces qui dégageraient le plus de pognon
-		$aTopValuablePieces = Piece
-								::join('v_lastrevisionpiecesfromdemarche', 'v_lastrevisionpiecesfromdemarche.piece_id', '=', 'demarchesPieces.id')
-								->whereNull('demarchesPieces.deleted_at')
-								->whereNull('v_lastrevisionpiecesfromdemarche.deleted_at')
-								->whereIn('v_lastrevisionpiecesfromdemarche.demarche_id', $aFilteredDemarcheIds)
-								->groupBy('demarchesPieces.id')
-								->orderBy('gpagpc', "DESC")
-								->limit(3)
-								->get([
-									'demarchesPieces.name AS displayname',
-									DB::raw('SUM(v_lastrevisionpiecesfromdemarche.gain_potential_administration + v_lastrevisionpiecesfromdemarche.gain_potential_citizen) AS gpagpc')
-								])->toArray();
-		// Top des taches qui dégageraient le plus de pognon
-		$aTopValuableTasks = Task
-								::join('v_lastrevisiontasksfromdemarche', 'v_lastrevisiontasksfromdemarche.task_id', '=', 'demarchesTasks.id')
-								->whereNull('demarchesTasks.deleted_at')
-								->whereNull('v_lastrevisiontasksfromdemarche.deleted_at')
-								->whereIn('v_lastrevisiontasksfromdemarche.demarche_id', $aFilteredDemarcheIds)
-								->groupBy('demarchesTasks.id')
-								->orderBy('gpagpc', "DESC")
-								->limit(3)
-								->get([
-									'demarchesTasks.name AS displayname',
-									DB::raw('SUM(v_lastrevisiontasksfromdemarche.gain_potential_administration + v_lastrevisiontasksfromdemarche.gain_potential_citizen) AS gpagpc')
-								])->toArray();
-
-
-
+		
+		// On récupère les top utilisation et gain des pièces et tâches 
+		$aTopExecutedPieces = DemarchePiece::filtered()->mostUsed(3)->get()->toArray();
+		$aTopExecutedTasks = DemarcheTask::filtered()->mostUsed(3)->get()->toArray();
+		$aTopValuablePieces = DemarchePiece::filtered()->potentiallyMostGainful(3)->get()->toArray();
+		$aTopValuableTasks = DemarcheTask::filtered()->potentiallyMostGainful(3)->get()->toArray();
+		
 		return View::make( 'admin/demarches/dashboard-listcharges', compact('model', 'loggedUser', 'txtUserFiltersAdministration', 'aTopExecutedPieces', 'aTopExecutedTasks', 'aTopValuablePieces', 'aTopValuableTasks') );
-
 	}
 
 

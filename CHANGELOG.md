@@ -19,9 +19,11 @@
 - Added : Application du filtre "par action" sur mes actions
 - Added : Filtres sur mes actions "Celles que j’ai créées" et "Celles qui me sont assignées"
 - Added : Colonnes "Priorité", "Assignation" et "Révision" sur la liste de mes actions
+- Added : Application du filtre "par action" sur mes charges administratives
 - Changed : Désactivation du filtre "par tag"
 - Changed : Présenter les actions en cours par pôle et expertises dans "Mon dashboard"
 - Changed : Retrait de la colonne "Sous-actions" sur la liste de mes actions
+- Changed : Améliorations de l'affichage de mes charges administratives (valeurs en badges)
 - Bugfix : Les filtres ne s'appliquaient pas sur les pièces et tâches dont le total est présenté dans le pavé "Catalogue des démarches"
 
 ### Actions
