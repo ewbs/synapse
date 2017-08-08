@@ -14,14 +14,14 @@
 					<div class="form-group">
 						<div class="checkbox">
 							<label>
-								<input type="checkbox" class="icheck" name="createdbyme"/> Celles que j'ai créées
+								<input type="checkbox" class="icheck" name="createdbyme" {{Auth::user()->sessionGet('ewbsactions_createdbyme') ? 'checked="checked"':''}}/> Celles que j'ai créées
 							</label>
 						</div>
 					</div>
 					<div class="form-group">
 						<div class="checkbox">
 							<label>
-								<input type="checkbox" class="icheck" name="assignedtome"/> Celles qui me sont assignées
+								<input type="checkbox" class="icheck" name="assignedtome" {{Auth::user()->sessionGet('ewbsactions_assignedtome') ? 'checked="checked"':''}}/> Celles qui me sont assignées
 							</label>
 						</div>
 					</div>

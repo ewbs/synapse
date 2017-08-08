@@ -181,22 +181,29 @@ class EwbsAction extends RevisableModel {
 	}
 	
 	/**
+	 * Restreindre aux actions créées par l'utilisateur courant
 	 * 
 	 * @param Builder $query
 	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
 	public function scopeCreatedByMe(Builder $query) {
-		//TODO Il faut effectuer une liaison avec les révisions, mais considérer la 1e révision pour effectuer cette vérif
+		$query->whereExists(function($query) {
+			$query->select('id')
+			->from('v_firstrevisionewbsaction')
+			->whereRaw('ewbs_action_id="ewbsActions".id')
+			->where('user_id', '=', Auth::id());
+		});
 		return $query;
 	}
 	
 	/**
-	 *
+	 * Restreindre aux actions assignées à l'utilisateur courant
+	 * 
 	 * @param Builder $query
 	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
 	public function scopeAssignedToMe(Builder $query) {
-		return $query->where('v_lastrevisionewbsaction.responsible_id', '=', Auth::user()->id);
+		return $query->where('v_lastrevisionewbsaction.responsible_id', '=', Auth::id());
 	}
 	
 	/**

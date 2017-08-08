@@ -87,7 +87,7 @@ class ModifyEwbsActions43 extends Migration {
 	 * 
 	 */
 	private function createViewLastRevisionEwbsAction() {
-		$this->output->writeln("Cretation ou maj de la vue v_lastRevisionEwbsAction");
+		$this->output->writeln("Creation ou maj de la vue v_lastRevisionEwbsAction");
 		DB::statement ('
 			CREATE OR REPLACE VIEW v_lastRevisionEwbsAction AS
 			SELECT

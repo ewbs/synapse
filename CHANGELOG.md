@@ -16,7 +16,7 @@
 - Added : Application du filtre "par action" sur mes démarches
 - Added : Application du filtre "par action" sur mes formulaires
 - Added : Application du filtre "par action" sur mes actions
-- Added : Filtres sur mes actions "Celles que j’ai créées" et "Celles qui me sont assignées" (en cours)
+- Added : Filtres sur mes actions "Celles que j’ai créées" et "Celles qui me sont assignées"
 - Changed : Désactivation du filtre "par tag"
 - Changed : Présenter les actions en cours par pôle et expertises dans "Mon dashboard"
 - Bugfix : Les filtres ne s'appliquaient pas sur les pièces et tâches dont le total est présenté dans le pavé "Catalogue des démarches"
