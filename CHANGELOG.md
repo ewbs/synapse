@@ -47,6 +47,9 @@
 ### Expertises & pôles
 - Added : Création des nouveaux modèles de données et remplissage avec les valeurs actuelles
 
+### Formulaires
+- Added : Colonne "Assignation" sur la liste d'actions
+
 ### Projets
 - Fixed bug : Les actions directement liées à un projet n'étaient pas affichées dans le détail
 

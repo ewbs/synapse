@@ -619,6 +619,7 @@ class EformController extends TrashableModelController {
 					'<strong>' . $item->name . '</strong><br/><em>' . $item->description . '</em>',
 					EwbsActionRevision::graphicState ( $item->state ),
 					EwbsActionRevision::graphicPriority($item->priority),
+					$item->responsible,
 					DateHelper::sortabledatetime ( $item->created_at ) . '<br/>' . $item->username,
 					(
 						'<a title="' . Lang::get ( 'button.historical' ) . '" class="history btn btn-xs btn-default servermodal" href="' . route ( 'eformsActionsGetHistory', [$item->eform_id,$item->action_id]).'"><span class="fa fa-clock-o"></span></a>'.
