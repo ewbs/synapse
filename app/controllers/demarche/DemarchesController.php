@@ -2323,7 +2323,7 @@ class DemarcheController extends TrashableModelController {
 		 * Note : Si une tâche était soft-deletée cela donnerait une erreur car $item est un non object lorsqu'elle a une date de suppression .
 		 * Mais actuellement on interdit le soft-delete d'une tâche si elle est liée à une demarche-tâche => ce cas ne se produira pas tant que ce check sera souhaité.
 		 */
-		foreach ( EwbsAction::each()->forDemarche($demarche)->joinSubActions()->get() as $item ) {
+		foreach ( EwbsAction::each()->forDemarche($demarche)->get() as $item ) {
 			if ($minimal) {
 				$rows[] = [
 					'<strong>' . $item->name . '</strong><br/><em>' . $item->description . '</em>',
