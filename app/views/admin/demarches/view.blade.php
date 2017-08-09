@@ -11,7 +11,7 @@
 		{{-- 	--------------------------------------------------------------------------------------------
 				ACTIONS DE LA DEMARCHE
 				--------------------------------------------------------------------------------------------	--}}
-		@include('admin.demarches.blocs.actions',['minimal'=>true])
+		@include('admin.ewbsactions.blocs.expertises')
 	</div>
 
 	<div class="col-md-4">

@@ -491,8 +491,26 @@ class DemarcheController extends TrashableModelController {
 	 * @return type
 	 */
 	public function getView(Demarche $demarche) {
+		// Préparer un tableau par pôle ayant au moins une expertise liée à une action en cours
+		$poles=Pole::ordered()->get();
+		$aPoles=array();
+		foreach($poles as $pole) {
+			$aPoles[$pole->id]=[
+				'expertises'=>array()
+			];
+			foreach(Expertise::ordered()->forPole($pole)->each()->countActionsForDemarche($demarche)->get() as $expertise) {
+				if($expertise->actions>0) {
+					array_push($aPoles[$pole->id]['expertises'], $expertise);
+				}
+			}
+			if(empty($aPoles[$pole->id]['expertises'])) {
+				unset($aPoles[$pole->id]);
+			}
+		}
+		
 		return $this->makeDetailView ( $demarche, 'admin/demarches/view', [
-			'gains' => $demarche->getGains ()
+			'gains' => $demarche->getGains (),
+			'aPoles' => $aPoles
 		] );
 	}
 	

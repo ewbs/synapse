@@ -84,6 +84,26 @@ class Expertise extends TrashableModel {
 	}
 	
 	/**
+	 * Ajouter le nombre d'actions en cours à chaque expertise pour une démarche
+	 * La propriété "actions" est alors disponible
+	 * 
+	 * @param Builder $query
+	 * @param Demarche $d
+	 * @return unknown
+	 */
+	public function scopeCountActionsForDemarche(Builder $query, Demarche $d) {
+		return $query->addSelect(DB::raw('(
+			SELECT count(*)
+			FROM "ewbsActions" AS a
+			JOIN v_lastrevisionewbsaction AS ra ON a.id=ra.ewbs_action_id
+			WHERE a.deleted_at IS NULL
+			AND ra.state IN(\''.EwbsActionRevision::$STATE_TODO.'\', \''.EwbsActionRevision::$STATE_PROGRESS.'\', \''.EwbsActionRevision::$STATE_STANDBY.'\')
+			AND a.name=expertises.name
+			AND a.demarche_id='.$d->id.'
+		) AS actions'));
+	}
+	
+	/**
 	 * Filtre les données sur base du filtre utilisateurs par administrations
 	 * 
 	 * Remarque : Filtre non exploité, en effet les actions ne sont pas filtrées par administrations

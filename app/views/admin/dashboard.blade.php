@@ -46,37 +46,8 @@
 			</div>
 		</div>
 	</div>
-
 	<div class="col-md-8">
-		<div class="block-flat">
-			<div class="header">
-				<h3>Actions</h3>
-			</div>
-			<div class="content no-padding">
-				<div class="row">
-					<div class="col-md-12">
-						<i class="fa fa-magic fa-4x pull-left color-warning"></i>
-						<h3 class="no-margin">{{$totalActions}} ACTIONS</h3>
-						<p><span class="color-warning">A faire, en cours ou en standby sur des projets de simplif', démarches ou formulaires</span></p>
-					</div>
-				</div>
-				<div class="row">
-					<?php
-					$countPoles=count($aPoles);
-					$col=($countPoles>=3?'col-md-4':($countPoles==2?'col-md-6':'col-md-12'));
-					?>
-					@foreach($aPoles as $pole)
-					<div class="{{$col}}">
-						<ul class="banded">
-							@foreach($pole['expertises'] as $expertise)
-							<li><span class="badge badge-default pull-right">{{$expertise->actions}}</span>{{{$expertise->name()}}}</li>
-							@endforeach
-						</ul>
-					</div>
-					@endforeach
-				</div>
-			</div>
-		</div>
+	@include('admin.ewbsactions.blocs.expertises',['largedisplay'=>true])
 	</div>
 </div>
 

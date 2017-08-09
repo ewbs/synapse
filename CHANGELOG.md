@@ -42,6 +42,7 @@
 - Added : ID Nostra dans le détail d'une démarche
 - Changed : Choix du nom d'une action limité à la liste des expertises
 - Changed : Retrait de la colonne "Sous-actions" sur la liste des actions
+- Changed : Présenter les actions en cours par pôle et expertises dans le détail d'une démarche
 
 ### Expertises & pôles
 - Added : Création des nouveaux modèles de données et remplissage avec les valeurs actuelles
