@@ -5,11 +5,14 @@
 
 ### Migrations
 - Added : Vue permettant d'obtenir la première révision d'une action
-- Bugfix : Renommer le script de migration des users, car il interfère avec celui qui se trouve dans Confide
-- Bugfix : Ajout clé primaire aux tables correspondant aux filtres utilisateur existants (administration, public, tag)
+- Fixed bug : Renommer le script de migration des users, car il interfère avec celui qui se trouve dans Confide
+- Fixed bug : Ajout clé primaire aux tables correspondant aux filtres utilisateur existants (administration, public, tag)
 
 ### Monitoring
 - Added : Database - Ajout d'un check sur la présence de l'extension btree_gist
+
+### Query Runner
+- Fixed bug : Mieux gérer le cas où une requête rend un résultat vide
 
 ### Dashboard
 - Added : Filtre "par action" dans la fonction "Mes filtres"
@@ -24,7 +27,7 @@
 - Changed : Présenter les actions en cours par pôle et expertises dans "Mon dashboard"
 - Changed : Retrait de la colonne "Sous-actions" sur la liste de mes actions
 - Changed : Améliorations de l'affichage de mes charges administratives (valeurs en badges)
-- Bugfix : Les filtres ne s'appliquaient pas sur les pièces et tâches dont le total est présenté dans le pavé "Catalogue des démarches"
+- Fixed bug : Les filtres ne s'appliquaient pas sur les pièces et tâches dont le total est présenté dans le pavé "Catalogue des démarches"
 
 ### Actions
 - Added : Nouvel état "En standby"
@@ -48,7 +51,7 @@
 
 ### Users
 - Added : Nouveau modèle de données "Filtre utilisateur par expertise"
-- Bugfix : Adaptation des la construction des routes, suppression de code non utilisé, ajout d'un message manquant
+- Fixed bug : Adaptation des la construction des routes, suppression de code non utilisé, ajout d'un message manquant
 
 ## 4.2.0 - Ministry of Silly Walks
 *Ce release de Synapse intègre principalement les interfaces de gestion des ministres, ainsi que quelques améliorations et corrections mineures.*

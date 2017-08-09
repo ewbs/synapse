@@ -35,6 +35,7 @@
 				</div>
 				<div class="content">
 					@if(is_array($result))
+					@if(!empty($result))
 					<div>
 						<table class="table table-hover">
 						<thead>
@@ -55,6 +56,7 @@
 						</tbody>
 						</table>
 					</div>
+					@endif
 					@elseif(is_bool($result))
 					{{$result?'True':'False'}}
 					@else
