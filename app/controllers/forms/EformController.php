@@ -664,14 +664,19 @@ class EformController extends TrashableModelController {
 	 * @return \Illuminate\View\View
 	 */
 	protected function actionsGetManage(Eform $modelInstance, EwbsAction $action = null, array $extra=[]) {
-
+		$edit=($action && $action->id);
 		$aTaxonomy = TaxonomyCategory::orderBy('name')->get();
 		$selectedTags = [];
+		$aExpertises=Expertise::names($edit?$action->name():null);
+		$aUsers= [];
 		if ($action) {
 			$selectedTags = $action->tags->lists('id');
+				
+			//FIXME : Il faudrait aussi ajouter les conditions nécessaires pour inclure le user supprimé qui serait en fait celui lié à l'action courante (afin que le lien ne se perde pas)
+			$aUsers=User::query()->ewbsOrSelf()->get(['users.id', 'users.username']);
 		}
-
-		return View::make ( 'admin/forms/eforms/actions/modal-manage', array_merge(compact ( 'modelInstance', 'action', 'aTaxonomy', 'selectedTags' ), $extra));
+		
+		return View::make ( 'admin/forms/eforms/actions/modal-manage', array_merge(compact ( 'modelInstance', 'action', 'edit', 'aTaxonomy', 'selectedTags', 'aUsers', 'aExpertises' ), $extra));
 	}
 	
 	/**
@@ -716,6 +721,7 @@ class EformController extends TrashableModelController {
 				$action->addRevisionAttributes ( [
 						'description' => Input::get ( 'description' ),
 						'state' => Input::get ( 'state' ),
+						'responsible_id' => Input::get('responsible_id')
 				] );
 				if($this->getLoggedUser()->can('ewbsaction_prioritize') && $p=Input::get('priority')) { // et SSI on a le droit et qu'elle est passée, on prend celle-ci
 					$action->addRevisionAttributes([ 'priority'=>$p ]);

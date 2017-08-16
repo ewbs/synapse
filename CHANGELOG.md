@@ -48,7 +48,8 @@
 - Added : Création des nouveaux modèles de données et remplissage avec les valeurs actuelles
 
 ### Formulaires
-- Added : Colonne "Assignation" sur la liste d'actions
+- Added : Notion d'assignation d'une action à un user (création, édition & liste d'actions)
+- Changed : Choix du nom d'une action limité à la liste des expertises
 
 ### Projets
 - Fixed bug : Les actions directement liées à un projet n'étaient pas affichées dans le détail

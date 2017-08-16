@@ -1,14 +1,17 @@
 <?php
 /**
- * 
- * @var Demarche $modelInstance
+ * @var Eform $modelInstance
  * @var EwbsAction $action
+ * @var array $aTaxonomy
+ * @var array $selectedTags
+ * @var array $aExpertises
+ * @var Illuminate\Database\Eloquent\Collection $aUsers
  */
-$edit=($action && $action->id);
 $revision=$edit ? $action->getLastRevision() : null;
-
+$name=Input::old('name', $edit ? $action->name():null);
 $state=Input::old('state', $revision ? $revision->state : null);
 $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRevision::$PRIORITY_NORMAL);
+$responsible_id=Input::old('responsible_id', $revision ? $revision->responsible_id : $loggedUser->id);
 
 ?>
 <div class="modal fade noAuto colored-header" id="servermodal" tabindex="-1" role="dialog" aria-labelledby="servermodal-title">
@@ -28,7 +31,14 @@ $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRev
 					<div class="form-group {{{ $errors->has('name') ? 'has-error' : '' }}}">
 						<label class="col-md-2 control-label" for="name">Nom</label>
 						<div class="col-md-10">
-							<input class="form-control" type="text" name="name" value="{{{ Input::old('name', $edit ? $action->name : null) }}}" placeholder="Nom" />
+							<select class="form-control select2 {{ $errors->has('name') ? 'has-error' : '' }}" name="name">
+								@if(!$edit)
+								<option></option>
+								@endif
+								@foreach($aExpertises as $expertise)
+								<option {{ $expertise==$name ? ' selected': '' }}>{{$expertise}}</option>
+								@endforeach
+							</select>
 							{{ $errors->first('name', '<span class="help-inline">:message</span>') }}
 						</div>
 					</div>
@@ -75,7 +85,22 @@ $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRev
 						</div>
 					</div>
 					{{-- ./ Priority --}}
-
+					
+					{{-- Responsible --}}
+					@if($edit)
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="state">Responsable</label>
+						<div class="col-md-10">
+							<select class="form-control" name="responsible_id">
+							@foreach($aUsers as $user)
+								<option value="{{$user->id}}"{{ $user->id==$responsible_id ? ' selected': '' }}>{{ $user->username }}</option>
+							@endforeach
+							</select>
+						</div>
+					</div>
+					@endif
+					{{-- ./ Responsible --}}
+					
 					{{-- Taxonomie --}}
 					<div class="form-group">
 						<label class="col-md-2 control-label" form="tags">Tags</label>
