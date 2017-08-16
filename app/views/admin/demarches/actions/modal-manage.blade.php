@@ -14,11 +14,9 @@
 
 // TODO: on a du code ici qui aurait plus sa place dans un controller
 $revision=$edit ? $action->getLastRevision() : null;
-
 $name=Input::old('name', $edit ? $action->name():null);
 $state=Input::old('state', $revision ? $revision->state : null);
 $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRevision::$PRIORITY_NORMAL);
-
 $responsible_id=Input::old('responsible_id', $revision ? $revision->responsible_id : $loggedUser->id);
 
 $piecetask=Input::old('piecetask');
