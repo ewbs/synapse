@@ -36,7 +36,8 @@ class CreateExpertisesPoles43 extends Migration {
 			$table->increments ( 'id' )->unsigned ();
 			$table->text('name');
 			$table->integer('order');
-			$table->integer ( 'pole_id' )->unsigned ()->index ()->nullable()->foreign ( 'pole_id' )->references ( 'id' )->on ( 'poles' )->onDelete ( 'set null' );
+			$table->integer ( 'pole_id' )->unsigned ()->index ()->nullable();
+			$table->foreign ( 'pole_id' )->references ( 'id' )->on ( 'poles' )->onDelete ( 'set null' );
 			$table->timestamps ();
 			$table->softDeletes ();
 		});
