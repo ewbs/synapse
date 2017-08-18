@@ -37,6 +37,7 @@
 					@if(is_array($result))
 					@if(!empty($result))
 					<div>
+						<p><strong>{{count($result)}} résultats</strong></p>
 						<table class="table table-hover">
 						<thead>
 							<tr>
