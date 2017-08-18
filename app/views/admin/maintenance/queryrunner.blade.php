@@ -8,7 +8,7 @@
 				<div>
 					<strong>
 					Permet l'éxécution d'une ou plusieurs requêtes SQL, au sein d'une même transaction.<br/>
-					Les caractères -- et // peuvent être utilisés pour commenter.
+					Les caractères -- peuvent être utilisés pour commenter.
 					</strong>
 				</div>
 				<form method="post" autocomplete="off" action="{{route('queryrunnerPostIndex')}}">
