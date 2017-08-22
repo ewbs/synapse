@@ -26,7 +26,7 @@
 											@for($i=0; $i < count($aTopExecutedPieces); $i++)
 											<li>
 												{{$aTopExecutedPieces[$i]['displayname']}}
-												<span class="badge pull-right">{{$aTopExecutedPieces[$i]['count_items']}} pièces</span>
+												<span class="badge pull-right">{{NumberHelper::numberFormat($aTopExecutedPieces[$i]['count_items'])}} pièces</span>
 											</li>
 											@endfor
 											@else <li>Aucune</li>
@@ -52,7 +52,7 @@
 										@for($i=0; $i < count($aTopExecutedTasks); $i++)
 										<li>
 											{{$aTopExecutedTasks[$i]['displayname']}}
-											<span class="badge pull-right">{{$aTopExecutedTasks[$i]['count_items']}} fois</span>
+											<span class="badge pull-right">{{NumberHelper::numberFormat($aTopExecutedTasks[$i]['count_items'])}} fois</span>
 											</div>
 										</li>
 										@endfor
