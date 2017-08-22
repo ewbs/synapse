@@ -7,7 +7,8 @@
 - Added : Vue permettant d'obtenir la première révision d'une action
 - Fixed bug : Renommer le script de migration des users, car il interfère avec celui qui se trouve dans Confide
 - Fixed bug : Ajout clé primaire aux tables correspondant aux filtres utilisateur existants (administration, public, tag)
-- Fixed bug : Les clés étrangères créées après un "unsigned() n'étaient en fait pas créées : correction des scripts (attention, va de paire avec un script SQL à exécuter via le queryrunner) - (en cours, .cf github #40)
+- Fixed bug : Les clés étrangères créées après un "unsigned() n'étaient en fait pas créées : correction des scripts (attention, va de paire avec un script SQL à exécuter via le queryrunner) - (cf github #40)
+- Fixed bug : Clé étrangère sur les publics et thématiques abc/adm vers leur parent (attention, va de paire avec un script SQL à exécuter via le queryrunner) - (cf github #40)
 
 ### Monitoring
 - Added : Database - Ajout d'un check sur la présence de l'extension btree_gist
