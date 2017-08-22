@@ -5,7 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 /**
- * Ces tables ne sont plus utiles depuis la migration retransférant lee contenu dans des tables séparant les données de base de leurs révisions
+ * Ces tables ne sont plus utiles depuis la migration retransférant le contenu dans des tables séparant les données de base de leurs révisions
  * 
  * @author mgrenson
  * @see ReorganizeDemarchesComponents
@@ -29,10 +29,15 @@ class DropOldPiecesAndTasksTables43 extends Migration {
 	 * @return void
 	 */
 	public function up() {
-		$this->output->writeln("Suppression de la table demarche_pieces");
+		$this->output->writeln("Suppression des tables demarche_pieces et demarche_tasks");
 		Schema::drop('demarche_pieces');
-		$this->output->writeln("Suppression de la table demarche_tasks");
 		Schema::drop('demarche_tasks');
+		
+		$this->output->writeln("Suppression des colonnes todelete_demarche_piece_id et todelete_demarche_task_id de la table ewbsActions");
+		Schema::table('ewbsActions', function (Blueprint $table) {
+			$table->dropColumn('todelete_demarche_piece_id');
+			$table->dropColumn('todelete_demarche_task_id');
+		});
 	}
 
 	/**
@@ -41,6 +46,13 @@ class DropOldPiecesAndTasksTables43 extends Migration {
 	 * @return void
 	 */
 	public function down() {
+		
+		$this->output->writeln("Création des colonnes todelete_demarche_piece_id et todelete_demarche_task_id de la table ewbsActions");
+		Schema::table('ewbsActions', function (Blueprint $table) {
+			$table->integer ( 'todelete_demarche_piece_id' )->unsigned ()->nullable ();
+			$table->integer ( 'todelete_demarche_task_id' )->unsigned ()->nullable ();
+		});
+		
 		/*
 		 * Pieces liées aux démarches
 		 * Table de jointure
