@@ -191,7 +191,7 @@ if(!$edit && !$fromTriggerUpdate) {
 					<div class="form-group">
 						<label class="col-md-2 control-label" for="state">Responsable</label>
 						<div class="col-md-10">
-							<select class="form-control" name="responsible_id">
+							<select class="form-control select2" name="responsible_id">
 							@foreach($aUsers as $user)
 								<option value="{{$user->id}}"{{ $user->id==$responsible_id ? ' selected': '' }}>{{ $user->username }}</option>
 							@endforeach
