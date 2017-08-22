@@ -144,15 +144,14 @@ class EwbsActionController extends TrashableModelController {
 		$aSelectedTags = $modelInstance->tags->lists('id');
 		$aExpertises=Expertise::names($modelInstance?$modelInstance->name:null);
 		$aUsers= [];
-		$params=compact('modelInstance', 'aTaxonomy', 'aSelectedTags', 'aUsers');
+		$params=compact('modelInstance', 'aTaxonomy', 'aSelectedTags', 'aExpertises', 'aUsers');
 		
 		if($modelInstance){
 			$params['revision']=$modelInstance->getLastRevision();
 			
 			//FIXME : Il faudrait aussi ajouter les conditions nécessaires pour inclure le user supprimé qui serait en fait celui lié à l'action courante (afin que le lien ne se perde pas)
-			$aUsers=User::query()->ewbsOrSelf()->get(['users.id', 'users.username']);
+			$params['aUsers']=User::query()->ewbsOrSelf()->get(['users.id', 'users.username']);
 		}
-		$params['aExpertises']=$aExpertises;
 		return $this->makeDetailView($modelInstance, 'admin/ewbsactions/manage', $params);
 	}
 	
