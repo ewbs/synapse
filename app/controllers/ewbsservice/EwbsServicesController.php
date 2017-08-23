@@ -4,7 +4,7 @@ class EwbsServicesController extends TrashableModelController {
 	/**
 	 * Inject the models.
 	 *
-	 * @param Annexe $model
+	 * @param EwbsService $model
 	 */
 	public function __construct(EwbsService $model) {
 		parent::__construct ($model);
@@ -49,13 +49,13 @@ class EwbsServicesController extends TrashableModelController {
 	}
 	
 	/**
-	 * Visualisation d'une annexe
-	 *
-	 * @param Annexe $annexe
-	 * @return type
+	 * Visualisation d'un service
+	 * 
+	 * @param EwbsService $modelInstance
+	 * @return View
 	 */
-	public function getView(EwbsService $tag) {
-		return $this->makeDetailView($tag, 'admin/ewbsservices/view');
+	public function getView(EwbsService $modelInstance) {
+		return $this->makeDetailView($modelInstance, 'admin/ewbsservices/view');
 	}
 	
 	/**
@@ -74,7 +74,7 @@ class EwbsServicesController extends TrashableModelController {
 	 * @see ModelController::save()
 	 */
 	protected function save(ManageableModel $modelInstance) {
-		/* @var Annexe $modelInstance */
+		/* @var EwbsService $modelInstance */
 		$modelInstance->name = Input::get ( 'name' );
 		$modelInstance->description = Input::get ( 'description' );
 
@@ -94,5 +94,4 @@ class EwbsServicesController extends TrashableModelController {
 		
 		return $links;
 	}
-
 }
