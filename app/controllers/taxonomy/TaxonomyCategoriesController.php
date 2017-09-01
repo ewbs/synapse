@@ -4,7 +4,7 @@ class TaxonomyCategoriesController extends TrashableModelController {
 	/**
 	 * Inject the models.
 	 *
-	 * @param Annexe $model
+	 * @param TaxonomyCategory $model
 	 */
 	public function __construct(TaxonomyCategory $model) {
 		parent::__construct ($model);
@@ -50,9 +50,9 @@ class TaxonomyCategoriesController extends TrashableModelController {
 	
 	/**
 	 * Visualisation d'une annexe
-	 *
-	 * @param Annexe $annexe
-	 * @return type
+	 * 
+	 * @param TaxonomyCategory $category
+	 * @return View
 	 */
 	public function getView(TaxonomyCategory $category) {
 		return $this->makeDetailView($category, 'admin/taxonomy/categories/view');
@@ -71,7 +71,7 @@ class TaxonomyCategoriesController extends TrashableModelController {
 	 * @see ModelController::save()
 	 */
 	protected function save(ManageableModel $modelInstance) {
-		/* @var Annexe $modelInstance */
+		/* @var TaxonomyCategory $modelInstance */
 		$modelInstance->name = Input::get ( 'name' );
 		return $modelInstance->save();
 	}
