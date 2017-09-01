@@ -2,7 +2,8 @@
 /**
  * TaxonomyTag
  *
- * @property string         $name        Texte
+ * @property string         $name                    Obligatoire
+ * @property int            $taxonomy_category_id
  * @author jdavreux
  */
 class TaxonomyTag extends TrashableModel  {
