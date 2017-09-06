@@ -10,6 +10,15 @@ return array(
 	 |
 	 */
 	'version' => '4.3.0',
+	
+	/*
+	 |--------------------------------------------------------------------------
+	 | Responsable technique d'application
+	 |--------------------------------------------------------------------------
+	 |
+	 |
+	 */
+	'rta' => 'mgr@defimedia.be', //TODO Il faudrait bénéficier d'une adresse mail générique
 
 
 	/*

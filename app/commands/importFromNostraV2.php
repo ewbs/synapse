@@ -45,6 +45,12 @@ class importFromNostraV2 extends Command {
 	private $client;
 	
 	/**
+	 * Liste d'exceptions qui se sont produites durant l'import
+	 * @var array
+	 */
+	private $exceptions;
+	
+	/**
 	 * Create a new command instance.
 	 *
 	 * @return void
@@ -52,6 +58,7 @@ class importFromNostraV2 extends Command {
 	public function __construct() {
 		parent::__construct ();
 		$this->started = new \DateTime();
+		$this->exceptions=[];
 	}
 	
 	/**
@@ -172,7 +179,13 @@ class importFromNostraV2 extends Command {
 			$arrayNostraDemarches = NostraDemarche::whereIn('nostra_id', $this->demarchesProcessed)->get();
 			Log::info ( $arrayNostraDemarches->count().' démarches concernées' );
 			foreach ( $arrayNostraDemarches as $demarche ) {
-				$this->importDemarcheDetail($demarche);
+				try {
+					$this->importDemarcheDetail($demarche);
+					
+				}
+				catch(Exception $e) {
+					$this->addException($e, "Une erreur s'est produite à l'import de la démarche {$demarche->id}, elle a été ignorée");
+				}
 			}
 			
 			/*
@@ -182,10 +195,38 @@ class importFromNostraV2 extends Command {
 		}
 		catch (Exception $e) {
 			DB::rollBack();
-			Log::error("Une erreur s'est produite, rollback des opérations DB");
-			Log::error($e);
+			$this->addException($e, "Une erreur s'est produite, rollback des opérations DB");
+		}
+		
+		if($this->exceptions){
+			$this->reportExceptions();
 		}
 		Log::info ( "Fin de l'import Nostra");
+	}
+	
+	/**
+	 * Récolte les exceptions se produisant lors de l'import
+	 * 
+	 * @param Exception $e
+	 * @param string $msg
+	 */
+	private function addException(Exception $e, $msg) {
+		Log::error($msg);
+		Log::error($e);
+		$this->exceptions[]=[
+			'msg'=>$msg,
+			'e'=>$e
+		];
+	}
+	
+	/**
+	 * Logge et envoi par email les erreurs s'étant produites lors de l'import
+	 * 
+	 */
+	private function reportExceptions() {
+		Mail::queueOn('nostra', 'emails.nostra.import', ['exceptions'=>$this->exceptions], function(\Illuminate\Mail\Message $message) {
+			$message->to(Config::get('app.rta'))->subject(Lang::get('admin/nostra/messages.import.mail.subject'));
+		});
 	}
 	
 	/**
@@ -522,44 +563,49 @@ class importFromNostraV2 extends Command {
 			if(in_array($fiche['nid'], $this->demarchesProcessed)) {
 				continue;
 			}
-			$this->demarchesProcessed[]=$fiche['nid'];
-			
-			$date = new \DateTime ();
-			$oDemarche = NostraDemarche::withTrashed()->where('nostra_id', '=', $fiche['nid'])->first();
-			if(!$oDemarche) $oDemarche=new NostraDemarche();
-			$oDemarche->nostra_id = $fiche['nid'];
-			$oDemarche->title = HTML::decode ( $fiche['node_title'] );
-			$oDemarche->title_long = isset ( $fiche['title_user_long'] ) ? HTML::decode ( $fiche['title_user_long']) : '';
-			$oDemarche->title_short = isset ( $fiche['title_user_short'] ) ? HTML::decode ( $fiche['title_user_short']) : '';
-			if (isset ( $fiche['right_obligation'])) {
-				switch (strtolower ( $fiche['right_obligation'])) {
-					case 'droit' :
-						$oDemarche->type = 'droit';
-						break;
-					case 'obligation' :
-						$oDemarche->type = 'obligation';
-						break;
-					default :
-						$oDemarche->type = 'aucun';
-						break;
+			try {
+				$this->demarchesProcessed[]=$fiche['nid'];
+				
+				$date = new \DateTime ();
+				$oDemarche = NostraDemarche::withTrashed()->where('nostra_id', '=', $fiche['nid'])->first();
+				if(!$oDemarche) $oDemarche=new NostraDemarche();
+				$oDemarche->nostra_id = $fiche['nid'];
+				$oDemarche->title = HTML::decode ( $fiche['node_title'] );
+				$oDemarche->title_long = isset ( $fiche['title_user_long'] ) ? HTML::decode ( $fiche['title_user_long']) : '';
+				$oDemarche->title_short = isset ( $fiche['title_user_short'] ) ? HTML::decode ( $fiche['title_user_short']) : '';
+				if (isset ( $fiche['right_obligation'])) {
+					switch (strtolower ( $fiche['right_obligation'])) {
+						case 'droit' :
+							$oDemarche->type = 'droit';
+							break;
+						case 'obligation' :
+							$oDemarche->type = 'obligation';
+							break;
+						default :
+							$oDemarche->type = 'aucun';
+							break;
+					}
+				} else {
+					$oDemarche->type = 'aucun';
 				}
-			} else {
-				$oDemarche->type = 'aucun';
-			}
-			$oDemarche->simplified = isset ( $fiche['simplified']) ? ((strtolower ( $fiche['simplified']) == 'oui') ? 1 : 0) : 0;
-			$oDemarche->german_version = isset ( $fiche['german_version']) ? ((strtolower ( $fiche['german_version']) == 'oui') ? 1 : 0) : 0;
-			$oDemarche->nostra_state = $date;
-			
-			// Restaurer la fiche si elle était supprimée (implicitement c'est donc qu'elle existe)
-			if($oDemarche->deleted_at) {
-				// Note : En théorie on pourrait se contenter de onlyTrashed(), mais sécurité au cas où le deleted_at n'aurait pas été positionné sur la démarche
-				if($synapseDemarche=$oDemarche->demarche()->getQuery()->withTrashed()->first()) {
-					$synapseDemarche->restore();
+				$oDemarche->simplified = isset ( $fiche['simplified']) ? ((strtolower ( $fiche['simplified']) == 'oui') ? 1 : 0) : 0;
+				$oDemarche->german_version = isset ( $fiche['german_version']) ? ((strtolower ( $fiche['german_version']) == 'oui') ? 1 : 0) : 0;
+				$oDemarche->nostra_state = $date;
+				
+				// Restaurer la fiche si elle était supprimée (implicitement c'est donc qu'elle existe)
+				if($oDemarche->deleted_at) {
+					// Note : En théorie on pourrait se contenter de onlyTrashed(), mais sécurité au cas où le deleted_at n'aurait pas été positionné sur la démarche
+					if($synapseDemarche=$oDemarche->demarche()->getQuery()->withTrashed()->first()) {
+						$synapseDemarche->restore();
+					}
+					$oDemarche->deleted_at=null;
 				}
-				$oDemarche->deleted_at=null;
+				$oDemarche->save ();
+				$count ++; // on ajoute cet élément au compte
 			}
-			$oDemarche->save ();
-			$count ++; // on ajoute cet élément au compte
+			catch(Exception $e) {
+				$this->addException($e, "Une erreur s'est produite à l'import du détail de la démarche {$demarche->id}, elle a été ignorée");
+			}
 		}
 		return $count; 
 	}
