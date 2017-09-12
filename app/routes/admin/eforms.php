@@ -1,5 +1,5 @@
 <?php
-// Catalogues de formulaires et annexes
+// Catalogues de formulaires
 Route::group(['prefix' => 'eforms'], function() {
 	
 	// Catalogue des Eforms
@@ -17,29 +17,6 @@ Route::group(['prefix' => 'eforms'], function() {
 			Route::get ('delete'      ,['as'=>'eformsGetDelete'          ,'uses'=>'EformController@getDelete']);
 			Route::post('delete'      ,['as'=>'eformsPostDelete'         ,'uses'=>'EformController@postDelete'        ,'before' => 'csrf']);
 			Route::get ('revisions'   ,['as'=>'eformsRevisionsGetData'   ,'uses'=>'EformController@getRevisionsData']);
-			
-			// Annexes liées à un Eform
-			Route::group(['prefix' => 'annexes'], function() {
-				Route::get (''         ,['as'=>'eformsAnnexesGetIndex'     ,'uses'=>'EformController@annexesGetIndex']);
-				Route::get ('data'     ,['as'=>'eformsAnnexesGetData'      ,'uses'=>'EformController@annexesGetData']);
-				Route::get ('create'   ,['as'=>'eformsAnnexesGetCreate'    ,'uses'=>'EformController@annexesGetCreate']);
-				Route::post('create'   ,['as'=>'eformsAnnexesPostCreate'   ,'uses'=>'EformController@annexesPostCreate' ,'before' => 'csrf']);
-				
-				// Détail d'une annexe liée à un Eform
-				Route::group(['prefix' => '{annexe_eform}'], function() {
-					Route::get ('edit'      ,['as'=>'eformsAnnexesGetEdit'      ,'uses'=>'EformController@annexesGetEdit']);
-					Route::post('edit'      ,['as'=>'eformsAnnexesPostEdit'     ,'uses'=>'EformController@annexesPostEdit'   ,'before' => 'csrf']);
-					Route::get ('delete'    ,['as'=>'eformsAnnexesGetDelete'    ,'uses'=>'EformController@annexesGetDelete']);
-					Route::post('delete'    ,['as'=>'eformsAnnexesPostDelete'   ,'uses'=>'EformController@annexesPostDelete' ,'before' => 'csrf']);
-					
-					// Historique d'une annexe liée à un Eform
-					Route::group(['prefix' => 'history'], function() {
-						Route::get (''       ,['as'=>'eformsAnnexesGetHistory'       ,'uses'=>'EformController@annexesGetHistory']);
-						Route::get ('data'   ,['as'=>'eformsAnnexesGetHistoryData'   ,'uses'=>'EformController@annexesGetHistoryData']);
-					});
-					
-				});
-			});
 			
 			// Actions liées à un Eform
 			Route::group(['prefix' => 'actions'], function() {
@@ -93,35 +70,6 @@ Route::group(['prefix' => 'eforms'], function() {
 			Route::get ('create'   ,['as'=>'eformsGetCreateFromDamus'    ,'uses'=>'EformController@undocumentedGetCreate']);
 			Route::post('create'   ,['as'=>'eformsPostCreateFromDamus'   ,'uses'=>'EformController@undocumentedPostCreate']);
 			Route::post('createvalidation'   ,['as'=>'eformsPostCreateFromDamusValidation'   ,'uses'=>'EformController@undocumentedPostCreateValidation']);
-		});
-	});
-	
-	// Catalogue des annexes
-	Route::group(['prefix' => 'annexes'], function() {
-		Route::get (''         ,['as'=>'annexesGetIndex'     ,'uses'=>'AnnexeController@getIndex']);
-		Route::get ('data'     ,['as'=>'annexesGetData'      ,'uses'=>'AnnexeController@getData']);
-		Route::get ('create'   ,['as'=>'annexesGetCreate'    ,'uses'=>'AnnexeController@getCreate']);
-		Route::post('create'   ,['as'=>'annexesPostCreate'   ,'uses'=>'AnnexeController@postcreate'    ,'before' => 'csrf']);
-		
-		// Détail d'une annexe
-		Route::group(['prefix' => '{annexe}'], function() {
-			Route::get ('view'     ,['as'=>'annexesGetView'      ,'uses'=>'AnnexeController@getView']);
-			Route::get ('edit'     ,['as'=>'annexesGetEdit'      ,'uses'=>'AnnexeController@getEdit']);
-			Route::post('edit'     ,['as'=>'annexesPostEdit'     ,'uses'=>'AnnexeController@postEdit'   ,'before' => 'csrf']);
-			Route::get ('delete'   ,['as'=>'annexesGetDelete'    ,'uses'=>'AnnexeController@getDelete']);
-			Route::post('delete'   ,['as'=>'annexesPostDelete'   ,'uses'=>'AnnexeController@postDelete' ,'before' => 'csrf']);
-		});
-		
-		// Corbeille des annexes
-		Route::group(['prefix' => 'trash'], function() {
-			Route::get (''       ,['as'=>'annexesGetTrash'       ,'uses'=>'AnnexeController@getTrash']);
-			Route::get ('data'   ,['as'=>'annexesGetDataTrash'   ,'uses'=>'AnnexeController@getDataTrash']);
-			
-			// Restauration d'une annexe
-			Route::group(['prefix' => '{annexe_wt}'], function() {
-				Route::get ('restore'   ,['as'=>'annexesGetRestore'    ,'uses'=>'AnnexeController@getRestore']);
-				Route::post('restore'   ,['as'=>'annexesPostRestore'   ,'uses'=>'AnnexeController@postRestore' ,'before' => 'csrf']);
-			});
 		});
 	});
 });

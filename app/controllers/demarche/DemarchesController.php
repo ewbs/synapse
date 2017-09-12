@@ -1438,39 +1438,6 @@ class DemarcheController extends TrashableModelController {
 	}
 	
 	/**
-	 * Récupérer la liste des pièces liées à une annexe, elle-même liée à un formulaire, lui-même lié à la démarche courante.
-	 * Si certaines de ces pièces et tâches ne sont pas encore directement liées à la démarche courante, permettre de les ajouter.
-	 * 
-	 * @param Demarche $demarche
-	 * @return \Illuminate\View\View
-	 */
-	public function piecesGetWarning(Demarche $demarche) {
-		$aNotLinkedPieces=
-		DB::table('demarchesPieces')
-		->join('annexes', 'demarchesPieces.id', '=', 'annexes.piece_id')
-		->join('v_lastrevisionannexes', 'v_lastrevisionannexes.annexe_id', '=', 'annexes.id')
-		->join('v_lastrevisiondemarcheeform', 'v_lastrevisionannexes.eform_id', '=', 'v_lastrevisiondemarcheeform.eform_id')
-		->where('v_lastrevisiondemarcheeform.demarche_id', '=', $demarche->id)
-		->whereNull('demarchesPieces.deleted_at')
-		->whereNull('v_lastrevisionannexes.deleted_at')
-		->whereNull('v_lastrevisiondemarcheeform.deleted_at')
-		->whereNotNull('annexes.piece_id')
-		->whereNotIn('annexes.piece_id', function(\Illuminate\Database\Query\Builder $query) use($demarche) {
-			$query
-			->select('piece_id')
-			->from('v_lastrevisionpiecesfromdemarche')
-			->where('demarche_id', '=', $demarche->id)
-			->whereNull('deleted_at');
-		})
-		->distinct()
-		->orderBy('demarchesPieces.name')
-		->get(['demarchesPieces.id', 'demarchesPieces.name']);
-		
-		if(empty($aNotLinkedPieces)) return Response::make();
-		return View::make('admin/demarches/components/partial-warning', compact ('aNotLinkedPieces'));
-	}
-	
-	/**
 	 * *********************************************************************************************************
 	 * Gestion des formulaires
 	 * *********************************************************************************************************
@@ -1495,39 +1462,14 @@ class DemarcheController extends TrashableModelController {
 			/* @var DemarcheEform $demarcheEform */
 			/* @var Eform $eform */
 			$eform=$demarcheEform->eform;
-			$annexes='';
-			foreach($eform->getAnnexes() as $annexe_revision) {
-				// Etats courant et suivant
-				$state = '';
-				if ($annexe_revision->current_state_id || $annexe_revision->next_state_id) {
-					$state .= '<div class="state">';
-					$state .= ($annexe_revision->current_state_id ? $states [$annexe_revision->current_state_id]->graphicState () : '?');
-					$state .= ' <i class="fa fa-long-arrow-right"></i> ';
-					$state .= ($annexe_revision->next_state_id ? $states [$annexe_revision->next_state_id]->graphicState () : '?');
-					$state .= '</div>';
-				}
-				
-				// Pièce ou tâche liée à l'annexe
-				$related='';
-				if($annexe_revision->piece_id) $related="<div><a href=\"#pieces\" title=\"".Lang::get ( 'admin/demarches/messages.piece.piece' )."\"><i class=\"fa fa-clipboard\"></i>{$annexe_revision->piece_name}</a></div>";
-				
-				// Picto éditer si pas de related
-				$edit='';
-				if(!$related && $eform->canManage()) $edit='<a title="'.Lang::get ( 'button.edit' ).'"class="btn btn-default btn-xs servermodal" href="'.route('eformsAnnexesGetEdit',[$eform->id, $annexe_revision->revision_id]).'"><span class="fa fa-pencil"></span></a>';
-				
-				$annexes.="<li><strong>{$annexe_revision->annexe_title}</strong>{$edit}{$related}{$state}</li>";
-			}
-			if($annexes)$annexes="<ul>{$annexes}</ul>";
 			if ($minimal) {
 				$rows[] = [
 					$eform->name(),
-					$annexes,
 				];
 			}
 			else {
 				$rows[] = [
 					$eform->name(),
-					$annexes,
 					$demarcheEform->nostra_id?'#'.$demarcheEform->nostra_id:'',
 					DateHelper::sortabledatetime($demarcheEform->created_at) . '<br/>' . $demarcheEform->user->username,
 					(($manage && $demarcheEform->canManage()) ? '<a href="' . route('demarchesEformsGetDelete', [$demarche->id, $demarcheEform->id]) . '" title="' . Lang::get('button.delete') . '" class="delete btn btn-xs btn-danger servermodal"><span class="fa fa-trash-o"></span></a>' : '')

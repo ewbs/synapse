@@ -49,7 +49,7 @@ class TaxonomyCategoriesController extends TrashableModelController {
 	}
 	
 	/**
-	 * Visualisation d'une annexe
+	 * Visualisation d'une catégorie  de taxonomie
 	 * 
 	 * @param TaxonomyCategory $category
 	 * @return View

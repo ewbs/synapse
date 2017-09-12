@@ -137,7 +137,6 @@ abstract class BaseController extends Controller {
 			case 'ewbsactions'        :return 'magic';
 				
 			case 'formslibrary'       :
-			case 'annexes'            :
 			case 'eforms'             :return 'wpforms';
 				
 			case 'components'         :
@@ -206,19 +205,9 @@ abstract class BaseController extends Controller {
 			],
 			[ // Formulaires
 				'label'     => Lang::get ( 'admin/eforms/messages.supermenu' ),
-				'section'   => 'formslibrary',
+				'section'   => 'eforms',
+				'route'     => 'eformsGetIndex',
 				'permission'=> 'formslibrary_display',
-				'submenu'   => [
-					[
-						'label'     => Lang::get ( 'admin/annexes/messages.menu' ),
-						'section'   => 'annexes',
-						'route'     => 'annexesGetIndex',
-					],[
-						'label'     => Lang::get ( 'admin/eforms/messages.menu' ),
-						'section'   => 'eforms',
-						'route'     => 'eformsGetIndex',
-					]
-				],
 			],
 			[ // Pièces et données
 				'label'      => Lang::get ( 'admin/pieces/messages.supermenu' ),
@@ -328,11 +317,6 @@ abstract class BaseController extends Controller {
 						'section'    => 'ewbsActions-trash',
 						'route'      => 'ewbsActionsGetTrash',
 						'permission' => 'ewbsActions_display',
-					],[
-						'label'      => Lang::get ( 'admin/annexes/messages.menu' ),
-						'section'    => 'annexes-trash',
-						'route'      => 'annexesGetTrash',
-						'permission' => 'formslibrary_display',
 					],[
 						'label'      => Lang::get ( 'admin/administrations/messages.menu' ),
 						'section'    => 'administrations-trash',

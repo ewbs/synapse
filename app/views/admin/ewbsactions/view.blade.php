@@ -62,7 +62,7 @@
 					@endif
 				@elseif ($modelInstance->idea)
 					<p>En lien avec le projet de simplif' <a href="{{ route('ideasGetView', $modelInstance->idea->id) }}">{{$modelInstance->idea->name}}</a>.</p>
-					{{-- TODO: en lien avec le formulaire/annexe --}}
+					{{-- TODO: en lien avec le formulaire --}}
 				@endif
 			</div>
 		</div>

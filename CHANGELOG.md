@@ -6,6 +6,9 @@
 ### Imports
 - Added : Ne plus stopper la synchro lorsqu'une erreur survient à l'import d'une démarche (l'ignorer), et notifier le RTA par email en cas d'erreurs
 
+### Annexes
+Removed : Suppression de la notion d’annexes de formulaires
+
 ## 4.3.0 - Back in action
 *Ce release de Synapse intègre principalement diverses améliorations sur le module actions, ainsi que quelques améliorations et corrections mineures.*
 

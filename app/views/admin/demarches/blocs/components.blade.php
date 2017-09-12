@@ -17,7 +17,6 @@ if(!isset($minimal)) $minimal=false;
                 <thead>
                 <tr>
                     <th>Nom</th>
-                    <th>Annexes</th>
                     @if (!$minimal)
                     	<th>Id Nostra</th>
                         <th>Révision</th>
