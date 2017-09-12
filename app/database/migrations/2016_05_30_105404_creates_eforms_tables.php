@@ -74,65 +74,8 @@ class CreatesEformsTables extends Migration {
 			AND rsub.mx = r.created_at;
 		');
 		
-		/*
-		 * Cette table représente le catalogue des annexes.
-		 * Quand on parle d'une annexe liée à un formulaire, on utilise la table eform_annexe.
-		 * La clé piece_id est un lien vers une piece (sens Pièce justificative, demarchePiece dans le catalogue des pièces). Nullable, donc on ne crée pas d'index
-		 */
-		$output->writeln("Création de la table annexes");
-		Schema::create ( 'annexes', function (Blueprint $table) {
-			$table->increments ( 'id' )->unsigned ();
-			$table->string ( 'title', 2048 )->unique();
-			$table->integer( 'piece_id' )->unsigned ()->nullable()->unique();
-			$table->text ( 'description' )->nullable();
-			$table->timestamps ();
-			$table->softDeletes ();
-			$table->foreign ( 'piece_id' )->references ( 'id' )->on ( 'demarchesPieces' )->onDelete ( 'set null' );
-		});
-		
-		/*
-		 * Cette table représente une annexe liée à un formulaire
-		 * Comme pour les demarches_pieces et demarches_tasks, la révision se fait dans cette table. La dernière révision étant la dernière créée.
-		 * On se facilite la vie avec des VIEWS (plus bas)
-		 */
-		$output->writeln("Création de la table annexe_eform");
-		Schema::create ( 'annexe_eform', function (Blueprint $table) {
-			$table->increments( 'id' )->unsigned();
-			$table->integer ( 'eform_id' )->unsigned();
-			$table->integer ( 'annexe_id' )->unsigned();
-			$table->integer ( 'current_state_id' )->unsigned ()->nullable ();
-			$table->integer ( 'next_state_id' )->unsigned ()->nullable ();
-			$table->integer ( 'user_id' )->unsigned ()->nullable();
-			$table->text( 'comment' )->nullable();
-			$table->timestamps ();
-			$table->softDeletes ();
-			$table->foreign ( 'eform_id' )->references ( 'id' )->on ( 'eforms' )->onDelete ( 'cascade' );
-			$table->foreign ( 'annexe_id' )->references ( 'id' )->on ( 'annexes' )->onDelete ( 'cascade' );
-			$table->foreign ( 'current_state_id' )->references ( 'id' )->on ( 'demarchesPiecesStates' )->onDelete ( 'set null' );
-			$table->foreign ( 'next_state_id' )->references ( 'id' )->on ( 'demarchesPiecesStates' )->onDelete ( 'set null' );
-			$table->foreign ( 'user_id' )->references ( 'id' )->on ( 'users' )->onDelete ( 'set null' );
-		});
-		
-		/*
-		 * Vue pour obtenir les annexes liées à un formulaire dans leur dernière révision
-		 * (donc sans l'historique des modifications)
-		 */
-		$output->writeln("Création de la vue v_lastRevisionAnnexes");
-		DB::statement ('
-			CREATE VIEW v_lastRevisionAnnexes AS
-			SELECT 
-				r.*,
-				rsub.mx
-			FROM (
-				SELECT annexe_id, eform_id, MAX(created_at) AS mx
-				FROM annexe_eform
-				GROUP BY annexe_id, eform_id
-			) rsub
-			JOIN annexe_eform r ON r.annexe_id = rsub.annexe_id 
-			AND rsub.mx = r.created_at 
-			AND r.eform_id = rsub.eform_id;'
-		);
-		
+		self::createAnnexesTables($output);
+				
 		/*
 		 * Ajout dans les actions de la colonne pour les eforms
 		 */
@@ -200,14 +143,7 @@ class CreatesEformsTables extends Migration {
 		$output->writeln("Suppression de la table demarche_eform");
 		Schema::drop ( 'demarche_eform' );
 		
-		$output->writeln("Suppression de la vue v_lastRevisionAnnexes");
-		DB::statement ( 'DROP VIEW v_lastRevisionAnnexes' );
-		
-		$output->writeln("Suppression de la table annexe_eform");
-		Schema::drop ( 'annexe_eform' );
-		
-		$output->writeln("Suppression de la table annexes");
-		Schema::drop ( 'annexes' );
+		self::dropAnnexesTables($output);
 		
 		$output->writeln("Suppression de la vue v_lastRevisionEforms");
 		DB::statement ( 'DROP VIEW v_lastRevisionEforms' );
@@ -217,5 +153,87 @@ class CreatesEformsTables extends Migration {
 		
 		$output->writeln("Suppression de la table eforms");
 		Schema::drop ( 'eforms' );
+	}
+	
+	/**
+	 * Création des tables et vues relatives aux annexes de formulaires
+	 * 
+	 * @param ConsoleOutput $output
+	 */
+	public static function createAnnexesTables(ConsoleOutput $output){
+		/*
+		 * Cette table représente le catalogue des annexes.
+		 * Quand on parle d'une annexe liée à un formulaire, on utilise la table eform_annexe.
+		 * La clé piece_id est un lien vers une piece (sens Pièce justificative, demarchePiece dans le catalogue des pièces). Nullable, donc on ne crée pas d'index
+		 */
+		$output->writeln("Création de la table annexes");
+		Schema::create ( 'annexes', function (Blueprint $table) {
+			$table->increments ( 'id' )->unsigned ();
+			$table->string ( 'title', 2048 )->unique();
+			$table->integer( 'piece_id' )->unsigned ()->nullable()->unique();
+			$table->text ( 'description' )->nullable();
+			$table->timestamps ();
+			$table->softDeletes ();
+			$table->foreign ( 'piece_id' )->references ( 'id' )->on ( 'demarchesPieces' )->onDelete ( 'set null' );
+		});
+		
+		/*
+		 * Cette table représente une annexe liée à un formulaire
+		 * Comme pour les demarches_pieces et demarches_tasks, la révision se fait dans cette table. La dernière révision étant la dernière créée.
+		 * On se facilite la vie avec des VIEWS (plus bas)
+		 */
+		$output->writeln("Création de la table annexe_eform");
+		Schema::create ( 'annexe_eform', function (Blueprint $table) {
+			$table->increments( 'id' )->unsigned();
+			$table->integer ( 'eform_id' )->unsigned();
+			$table->integer ( 'annexe_id' )->unsigned();
+			$table->integer ( 'current_state_id' )->unsigned ()->nullable ();
+			$table->integer ( 'next_state_id' )->unsigned ()->nullable ();
+			$table->integer ( 'user_id' )->unsigned ()->nullable();
+			$table->text( 'comment' )->nullable();
+			$table->timestamps ();
+			$table->softDeletes ();
+			$table->foreign ( 'eform_id' )->references ( 'id' )->on ( 'eforms' )->onDelete ( 'cascade' );
+			$table->foreign ( 'annexe_id' )->references ( 'id' )->on ( 'annexes' )->onDelete ( 'cascade' );
+			$table->foreign ( 'current_state_id' )->references ( 'id' )->on ( 'demarchesPiecesStates' )->onDelete ( 'set null' );
+			$table->foreign ( 'next_state_id' )->references ( 'id' )->on ( 'demarchesPiecesStates' )->onDelete ( 'set null' );
+			$table->foreign ( 'user_id' )->references ( 'id' )->on ( 'users' )->onDelete ( 'set null' );
+		});
+		
+		/*
+		 * Vue pour obtenir les annexes liées à un formulaire dans leur dernière révision
+		 * (donc sans l'historique des modifications)
+		 */
+		$output->writeln("Création de la vue v_lastRevisionAnnexes");
+		DB::statement ('
+			CREATE VIEW v_lastRevisionAnnexes AS
+			SELECT
+				r.*,
+				rsub.mx
+			FROM (
+				SELECT annexe_id, eform_id, MAX(created_at) AS mx
+				FROM annexe_eform
+				GROUP BY annexe_id, eform_id
+			) rsub
+			JOIN annexe_eform r ON r.annexe_id = rsub.annexe_id
+			AND rsub.mx = r.created_at
+			AND r.eform_id = rsub.eform_id;'
+		);
+	}
+	
+	/**
+	 * Suppression des tables et vues relatives aux annexes de formulaires
+	 * 
+	 * @param ConsoleOutput $output
+	 */
+	public static function dropAnnexesTables(ConsoleOutput $output){
+		$output->writeln("Suppression de la vue v_lastRevisionAnnexes");
+		DB::statement ( 'DROP VIEW v_lastRevisionAnnexes' );
+		
+		$output->writeln("Suppression de la table annexe_eform");
+		Schema::drop ( 'annexe_eform' );
+		
+		$output->writeln("Suppression de la table annexes");
+		Schema::drop ( 'annexes' );
 	}
 }

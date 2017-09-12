@@ -22,7 +22,7 @@ class DropAnnexesTables44 extends Migration {
 	 * @return void
 	 */
 	public function up() {
-		//
+		CreatesEformsTables::dropAnnexesTables($this->output);
 	}
 
 	/**
@@ -31,6 +31,6 @@ class DropAnnexesTables44 extends Migration {
 	 * @return void
 	 */
 	public function down() {
-		//
+		CreatesEformsTables::createAnnexesTables($this->output);
 	}
 }
