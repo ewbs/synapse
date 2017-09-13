@@ -51,7 +51,7 @@ class NostraForm extends Eloquent {
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */
 	public function nostraDemarches() {
-		return $this->belongsToMany ( 'NostraDemarche' );
+		return $this->belongsToMany ( 'NostraDemarche' )->withPivot('nostra_form_parent_id');;
 	}
 	
 	/**
