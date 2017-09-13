@@ -647,7 +647,7 @@ class DemarcheController extends TrashableModelController {
 			$demarches_ids = Input::has('demarches_ids') ? explode(',', Input::get('demarches_ids')) : [0];
 			
 			$columns = [
-				'nostra_demarches.id',
+				'nostra_demarches.nostra_id',
 				'nostra_demarches.title',
 				'nostra_demarches.title_long',
 				'nostra_demarches.type',
@@ -738,31 +738,32 @@ class DemarcheController extends TrashableModelController {
 
 			// TITRES DANS EXCEL
 			$worksheet->getCell ( 'A1' )->setValue ( 'Documenté' );
-			$worksheet->getCell ( 'B1' )->setValue ( 'ID' );
-			$worksheet->getCell ( 'C1' )->setValue ( 'Nom' );
-			$worksheet->getCell ( 'D1' )->setValue ( 'Public(s)' );
-			$worksheet->getCell ( 'E1' )->setValue ( 'Thématique(s) usager' );
-			$worksheet->getCell ( 'F1' )->setValue ( 'Thématique(s) administration' );
+			$worksheet->getCell ( 'B1' )->setValue ( 'ID Nostra' );
+			$worksheet->getCell ( 'C1' )->setValue ( 'ID Synapse' );
+			$worksheet->getCell ( 'D1' )->setValue ( 'Nom' );
+			$worksheet->getCell ( 'E1' )->setValue ( 'Public(s)' );
+			$worksheet->getCell ( 'F1' )->setValue ( 'Thématique(s) usager' );
+			$worksheet->getCell ( 'G1' )->setValue ( 'Thématique(s) administration' );
 			
-			$worksheet->getCell ( 'G1' )->setValue ( 'Simplifié' );
-			$worksheet->getCell ( 'H1' )->setValue ( 'Version allemande' );
-			$worksheet->getCell ( 'I1' )->setValue ( 'Type' );
-			$worksheet->getCell ( 'J1' )->setValue ( 'Administrations impliquées' );
-			$worksheet->getCell ( 'K1' )->setValue ( 'Périmètre eWBS' );
-			$worksheet->getCell ( 'L1' )->setValue ( 'Usage e-Form' );
-			$worksheet->getCell ( 'M1' )->setValue ( 'Gain potentiel usager' );
-			$worksheet->getCell ( 'N1' )->setValue ( 'Gain potentiel administration' );
-			$worksheet->getCell ( 'O1' )->setValue ( 'Gain effectif usager' );
-			$worksheet->getCell ( 'P1' )->setValue ( 'Gain effectif administration' );
-			$worksheet->getCell ( 'Q1' )->setValue ( 'Actions' );
-			$worksheet->getCell ( 'R1' )->setValue ( 'Commentaire' );
-			$worksheet->getCell ( 'S1' )->setValue ( 'Taxonomie');
-			$worksheet->getCell ( 'T1' )->setValue ( 'Volume');
-			$worksheet->getCell ( 'U1' )->setValue ( 'Formulaires');
-			$worksheet->getCell ( 'V1' )->setValue ( 'Formulaires NOSTRA');
-			$worksheet->getCell ( 'W1' )->setValue ( 'Documents NOSTRA');
+			$worksheet->getCell ( 'H1' )->setValue ( 'Simplifié' );
+			$worksheet->getCell ( 'I1' )->setValue ( 'Version allemande' );
+			$worksheet->getCell ( 'J1' )->setValue ( 'Type' );
+			$worksheet->getCell ( 'K1' )->setValue ( 'Administrations impliquées' );
+			$worksheet->getCell ( 'L1' )->setValue ( 'Périmètre eWBS' );
+			$worksheet->getCell ( 'M1' )->setValue ( 'Usage e-Form' );
+			$worksheet->getCell ( 'N1' )->setValue ( 'Gain potentiel usager' );
+			$worksheet->getCell ( 'O1' )->setValue ( 'Gain potentiel administration' );
+			$worksheet->getCell ( 'P1' )->setValue ( 'Gain effectif usager' );
+			$worksheet->getCell ( 'Q1' )->setValue ( 'Gain effectif administration' );
+			$worksheet->getCell ( 'R1' )->setValue ( 'Actions' );
+			$worksheet->getCell ( 'S1' )->setValue ( 'Commentaire' );
+			$worksheet->getCell ( 'T1' )->setValue ( 'Taxonomie');
+			$worksheet->getCell ( 'U1' )->setValue ( 'Volume');
+			$worksheet->getCell ( 'V1' )->setValue ( 'Formulaires');
+			$worksheet->getCell ( 'W1' )->setValue ( 'Formulaires NOSTRA');
+			$worksheet->getCell ( 'X1' )->setValue ( 'Documents NOSTRA');
 			
-			$worksheet->getStyle ( 'A1:W1' )->getFont ()->setBold ( true );
+			$worksheet->getStyle ( 'A1:X1' )->getFont ()->setBold ( true );
 			
 			// CONTENU
 			$calculatedGains = Demarche::getAllCalculatedGains ();
@@ -787,61 +788,62 @@ class DemarcheController extends TrashableModelController {
 					
 					$worksheet->getStyle ( "A$line" )->applyFromArray ( $styles ['white_on_blue'] );
 					$worksheet->getCell ( "A$line" )->setValue ( "oui" );
-					$worksheet->getCell ( "B$line" )->setValue ( $nostraDemarche->demarche_completeid );
-					$worksheet->getCell ( "J$line" )->setValue ( $nostraDemarche->administrations )->getStyle ()->getAlignment ()->setWrapText ( true );
+					$worksheet->getCell ( "B$line" )->setValue ( $nostraDemarche->nostra_id );
+					$worksheet->getCell ( "C$line" )->setValue ( $nostraDemarche->demarche_completeid );
+					$worksheet->getCell ( "K$line" )->setValue ( $nostraDemarche->administrations )->getStyle ()->getAlignment ()->setWrapText ( true );
 					if ($nostraDemarche->demarche_ewbs) {
-						$worksheet->getStyle ( "K$line" )->applyFromArray ( $styles ['white_on_blue'] );
-						$worksheet->getCell ( "K$line" )->setValue ( "oui" );
+						$worksheet->getStyle ( "L$line" )->applyFromArray ( $styles ['white_on_blue'] );
+						$worksheet->getCell ( "L$line" )->setValue ( "oui" );
 					}
 					else {
-						$worksheet->getCell ( "K$line" )->setValue ( "non" );
+						$worksheet->getCell ( "L$line" )->setValue ( "non" );
 					}
-					$worksheet->getCell ( "L$line" )->setValue ( $nostraDemarche->demarche_eform_usage . '%' );
-					$worksheet->getCell ( "M$line" )->setValue ( $nostraDemarche->gain_potential_citizen );
-					$worksheet->getCell ( "N$line" )->setValue ( $nostraDemarche->gain_potential_administration );
-					$worksheet->getCell ( "O$line" )->setValue ( $nostraDemarche->gain_real_citizen );
-					$worksheet->getCell ( "P$line" )->setValue ( $nostraDemarche->gain_real_administration );
+					$worksheet->getCell ( "M$line" )->setValue ( $nostraDemarche->demarche_eform_usage . '%' );
+					$worksheet->getCell ( "N$line" )->setValue ( $nostraDemarche->gain_potential_citizen );
+					$worksheet->getCell ( "O$line" )->setValue ( $nostraDemarche->gain_potential_administration );
+					$worksheet->getCell ( "P$line" )->setValue ( $nostraDemarche->gain_real_citizen );
+					$worksheet->getCell ( "Q$line" )->setValue ( $nostraDemarche->gain_real_administration );
 					
 					if ($globalActionsState = EwbsAction::globalState ( $nostraDemarche )) {
 						$value = Lang::get ( "admin/ewbsactions/messages.state.{$globalActionsState}" ) . ' :';
 						foreach(EwbsActionRevision::states() as $state)
 							if ($count=$nostraDemarche->getAttribute("count_state_{$state}"))
 								$value .= PHP_EOL . Lang::choice ( "admin/ewbsactions/messages.wording.{$state}", $count);
-						$cell = $worksheet->getCell ( "Q$line" )->setValue ( $value );
+						$cell = $worksheet->getCell ( "R$line" )->setValue ( $value );
 						$cell->getHyperlink ()->setUrl ( route ( 'demarchesActionsGetIndex', $nostraDemarche->demarche_id ) );
 						$cell->getStyle ()->applyFromArray ( $styles [EwbsActionRevision::stateToClass ( $globalActionsState )] )->getAlignment ()->setWrapText ( true );
 					}
-					$worksheet->getCell ( "R$line" )->setValue ( $nostraDemarche->demarche_comment )->getStyle ()->getAlignment ()->setWrapText ( true );
+					$worksheet->getCell ( "S$line" )->setValue ( $nostraDemarche->demarche_comment )->getStyle ()->getAlignment ()->setWrapText ( true );
 					
 					/*
 					 * Taxonomie
 					 */
 					//FIXME: beau gros kludge par manque de temps : à remplacer par une jointure propre dans la requete principale
 					if ($nostraDemarche->demarche_id) {
-						$worksheet->getCell ( "S$line" )->setValue ( implode($multipleSeparator, Demarche::find($nostraDemarche->demarche_id)->tags()->lists('name')) )->getStyle ()->getAlignment ()->setWrapText ( true );
+						$worksheet->getCell ( "T$line" )->setValue ( implode($multipleSeparator, Demarche::find($nostraDemarche->demarche_id)->tags()->lists('name')) )->getStyle ()->getAlignment ()->setWrapText ( true );
 					}
 					
-					$worksheet->getCell ( "T$line" )->setValue ( $nostraDemarche->volume )->getStyle ()->getAlignment ()->setWrapText ( true );
-					$worksheet->getCell ( "U$line" )->setValue ( $nostraDemarche->eforms )->getStyle ()->getAlignment ()->setWrapText ( true );
-					$worksheet->getCell ( "V$line" )->setValue ( $nostraDemarche->nostra_forms )->getStyle ()->getAlignment ()->setWrapText ( true );
-					$worksheet->getCell ( "W$line" )->setValue ( $nostraDemarche->nostra_documents )->getStyle ()->getAlignment ()->setWrapText ( true );
+					$worksheet->getCell ( "U$line" )->setValue ( $nostraDemarche->volume )->getStyle ()->getAlignment ()->setWrapText ( true );
+					$worksheet->getCell ( "V$line" )->setValue ( $nostraDemarche->eforms )->getStyle ()->getAlignment ()->setWrapText ( true );
+					$worksheet->getCell ( "W$line" )->setValue ( $nostraDemarche->nostra_forms )->getStyle ()->getAlignment ()->setWrapText ( true );
+					$worksheet->getCell ( "X$line" )->setValue ( $nostraDemarche->nostra_documents )->getStyle ()->getAlignment ()->setWrapText ( true );
 				}
 				else {
 					$worksheet->getCell ( "A$line" )->setValue ( "non" );
 				}
 				
-				$worksheet->getCell ( "C$line" )->setValue ( $nostraDemarche->title );
-				$worksheet->getCell ( "D$line" )->setValue ( $nostraDemarche->publics )->getStyle ()->getAlignment ()->setWrapText ( true );
-				$worksheet->getCell ( "E$line" )->setValue ( $nostraDemarche->thematiquesabc )->getStyle ()->getAlignment ()->setWrapText ( true );
-				$worksheet->getCell ( "F$line" )->setValue ( $nostraDemarche->thematiquesadm )->getStyle ()->getAlignment ()->setWrapText ( true );
-				$worksheet->getCell ( "G$line" )->setValue ( $nostraDemarche->simplified ? "oui" : "non" );
-				$worksheet->getCell ( "H$line" )->setValue ( $nostraDemarche->german_version ? "oui" : "non" );
-				$worksheet->getCell ( "I$line" )->setValue ( $nostraDemarche->type );
+				$worksheet->getCell ( "D$line" )->setValue ( $nostraDemarche->title );
+				$worksheet->getCell ( "E$line" )->setValue ( $nostraDemarche->publics )->getStyle ()->getAlignment ()->setWrapText ( true );
+				$worksheet->getCell ( "F$line" )->setValue ( $nostraDemarche->thematiquesabc )->getStyle ()->getAlignment ()->setWrapText ( true );
+				$worksheet->getCell ( "G$line" )->setValue ( $nostraDemarche->thematiquesadm )->getStyle ()->getAlignment ()->setWrapText ( true );
+				$worksheet->getCell ( "H$line" )->setValue ( $nostraDemarche->simplified ? "oui" : "non" );
+				$worksheet->getCell ( "I$line" )->setValue ( $nostraDemarche->german_version ? "oui" : "non" );
+				$worksheet->getCell ( "J$line" )->setValue ( $nostraDemarche->type );
 				
 				// hauteur de ligne en auto (car pas mal de texte dans certaines cellules)
 				$worksheet->getRowDimension ( $line )->setRowHeight ( - 1 );
 			}
-			$worksheet->getStyle ( "M2:P{$line}" )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00 );
+			$worksheet->getStyle ( "N2:Q{$line}" )->getNumberFormat ()->setFormatCode ( PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00 );
 			
 			$fileName = 'synapse-export-demarches-' . uniqid () . '.xlsx';
 			$file = public_path () . '/temp/' . $fileName;

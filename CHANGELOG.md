@@ -9,6 +9,9 @@
 ### Annexes
 Removed : Suppression de la notion d’annexes de formulaires
 
+### Démarches
+Added : Export : Ajout de l'ID Nostra
+
 ## 4.3.0 - Back in action
 *Ce release de Synapse intègre principalement diverses améliorations sur le module actions, ainsi que quelques améliorations et corrections mineures.*
 
