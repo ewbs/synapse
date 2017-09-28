@@ -194,3 +194,138 @@ Les scripts Vagrant exploitent la vagrant box de Laravel/Homestead
 https://github.com/laravel/homestead
 
 Les logos de l'application sont disponibles sur Github : https://github.com/ewbs/synapse-logo
+
+# 5. Principales particularités techniques de Synaspse
+
+## 5.1. Couche objet pour représenter les modèles gérés dans l'application
+Une couche complémentaire a été écrite par dessus les modèles & contrôleurs, afin de définir des :
+- **ManageableModel :** Modèles auquelles corespondent des fonctionnalités de type list, create, update, view, delete
+- **TrashableModel :** Modèles liés en plus à une gestion de corbeille.
+
+A ces modèles correspondent des contrôleurs (ModelController & TrashableModelController), permettant d'avoir une logique commune entre tous ces modèles.  
+A noter que ces modèles héritent de Ardent plutôt que Eloquent, afin de bénéficier des possibilités de validateurs offertes par Ardent.
+
+## 5.2. Historisation de certains contenus
+
+Certaines tables ou tables de liaison sont historisées, cela signifie qu'à chaque modification effectuée, une insertion est effectuée dans la table.
+Cela a été effectué de 2 manière différentes :
+
+### 5.2.1. La table contient directement tout son historique
+
+C'est le cas de :
+- demarche_eform (associée à la vue v_lastrevisiondemarcheeform)
+
+Dans ce cas, la vue reprend la dernière révision de la table, pour faciliter les requêtes à effectuer.
+
+### 5.2.2. La table de base est liée à une seconde table reprenant toutes les données à historiser sur ce contenu
+
+C'est le cas de :
+- demarches + demarchesRevision (associées à la vue v_lastrevisionfromdemarche)
+- demarche_demarchePiece + demarche_demarchePiece_revisions (associées à la vue v_lastrevisionpiecesfromdemarche)
+- demarche_demarcheTask + demarche_demarcheTask_revisions (associées à la vue v_lastrevisiontasksfromdemarche)
+- eforms + eformsRevision (associées à la vue v_lastrevisioneforms)
+- ewbsActions + ewbsActionsRevisions (associées à la vue v_lastrevisionewbsaction)
+
+Dans ce cas, la vue reprend la dernière révision de la table historisée + les données de la table principale, pour faciliter les requêtes à effectuer.
+
+# 5.3. Vues particulières
+
+Outre les vues évoquées dans le point précédent sur les données historisées, 2 vues ont été nécessaires pour faciliter le calcul et l'affichage des gains des démarches :
+
+- **v_calculateddemarchegains :** afin d'obtenir les gains calculés par démarche (calculés = déduits des pièces et tâches liées)
+
+ - **v_demarchegains :** afin d'obtenir les gains soit encodés directement dans la dernière révision de la démarche, ou à défaut de retomber sur le gain calculé
+ 
+ - **v_firstrevisionewbsaction :** afin d'obtenir la première révision d'une action (notamment pour déterminer l'auteur de l'action)
+
+## 5.4. Consolidation des données Nostra au sein de Synapse
+
+Plusieurs types de contenus sont importés depuis Nostra, il s'agit de :
+- démarches
+- documents
+- événements
+- formulaires
+- publics
+- thématiques abc
+- thématiques administration
+
+La routine d'import des données (importFromNostraV2) permet de compléter les tables correspondantes.  
+Parmi ces types de contenus, 2 d'entre eux nécessitent des données complémentaires, gérées alors dans des tables spécifiques de Synapse :
+
+### 5.4.1. Démarches
+
+La table "nostra_demarches" est complétée par la table "demarches".  
+Il est à noter qu'il n'est pas possible de créer une démarche sans avoir une nostraDémarche correspondante.  
+L'action à effectuer est de documenter une "nostraDémarche", ce qui permet d'en dériver une "démarche".
+
+### 5.4.2. Formulaires
+
+La table "nostra_forms" est complétée par la table "eforms".  
+Contrairement aux démarches, il est ici possible de créer un "eform" (un formulaire Synapse donc), sans qu'il n'y a de "nostraForm" correspondant.  
+Cela correspondait à un besoin de pouvoir travailler dans Synapse sur un formulaire, alors qu'il n'était pas encore présent dans Nostra.
+
+Cela débouche sur un mécanisme de "réconciliation", permettant de proposer à l'utilisateur de lier un "eform" à un "nostraForm" lorsqu'il décide de documenter un "nostraForm" (documenter = dériver un eform depuis un "nostraForm").  
+NB : Cette réconciliation se fait sur la correspondance du champ slotId.
+
+## 5.5. Javascript : datatables, modales serveur & select2
+
+Une certaine généricité a été instaurée pour faciliter l'usage de ces mécanismes, et compléter les possibilités de base.  
+Le code javascript correspondant aux précisions se trouve ddans public/js/behaviour/general.js
+
+### 5.5.1 Pour un datatable
+
+Il suffit qu'un tableau ait une classe "datatable", et définisse les attributs html5 suivants :
+
+- **data-ajaxurl :** Url qui sera utilisée par le composant pour charger des données json générées par le serveur
+- **data-bfilter :** Activer le champ de recherche pour filtrer le tableau, false par défaut
+- **data-bpaginate :** Paginer les réultats, false par défaut
+- **data-bsort :** Activer le tri sur les en-têtes de colonnes, false par défaut
+- **data-desc :** Trier par défaut de manière descendante sur la 1e colonne; à défaut, le tri sera ascendant sur la 1e colonne
+- **data-useform :** Lier le datatable à un formulaire, afin d'utiliser les champs du formulaire comme filtres sur le tableau (avec gestion automatique du passage des paramètres à l'url ajax et rechargement des résultats). La valeur de cet attribut sera une expression permettant de cibler le formulaire, par exemple *data-useform="#monSuperForm"* ou *data-useform=".monJoliForm"*
+
+### 5.5.2 Pour une modale serveur
+
+Afin de déclencher l'ouverture d'une modale dont le contenu sera généré côté serveur, il suffit de définir une classe "servermodal" sur un élément "a" ou "button".  
+Le clic sera alors intercepté, et l'attribut href sera utilisé pour effectuer une requête ajax, et charger le résultat dans une modale.
+
+Ce type de modale est surtout utilisé pour proposer un formulaire de création/édition d'un contenu.  
+Un mécanisme est donc prévu pour que la soumission du formulaire se trouvant dans la modale se fasse également en ajax, et que le résultat recharge la modale (et à défaut d'un résultat, la modale est refermée).
+
+A différents endroits de l'application, des fonctions d'édition ou de suppression sur des listes générées en datatables sont proposées. Effectuer cette action impacte le contenu du tableau (dont les colonnes peuvent changer, ou une ligne peut être supprimée).  
+L'attribut html5 "data-reload-datatable" positionné sur le formulaire permet de le lier à un datatable, avec pour impact de recharger le contenu du tableau lorsque la modale contenant le formulaire est refermée.  
+La valeur de cet attribut sera une expression permettant de cibler le datatable, par exemple *data-reload-datatable="#monSuperTableau"* ou *data-reload-datatable=".monJoliTableau"*
+
+### 5.5.3 Pour un select2
+
+La possibilité a été donnée de spécifier un affichage sur maximum 3 lignes par résultat, ainsi que d'une image.
+
+Pour cela, spécifier les attributs html5 suivants :
+- **data-line2 :** Seconde ligne optionnelle de contenu
+- **data-line3 :** Troisème ligne optionnelle de contenu
+- **data-picture :** Image à afficher en regard du texte
+- **data-picturewidth :** Taille de l'image, par défaut 40px
+
+Le comportement défini est le suivant :
+- Si aucun attribut n'est spécifié, le texte est retourné sans aucun formatage
+- Si l'image est renseignée, elle est placé en regard du texte, entouré d'un div class="line1"
+- Si line2 ou line3 sont renseignés, ils sont placés sous la 1e ligne affichant le texte de base (entouré alors d'un div class="line1 title"), eux-mêmes étant entourés d'un div class="linex"
+
+Les classes line1, line2, line3, title sont définies en css.
+
+## 5.6. Migrations
+
+### 5.6.1. Suffixe des scripts de migration
+
+A partir du release 4.0, les scripts ont été suffixés par la version correspondant au release (exemple 2017_09_12_101359_update_forms_tables_44.php).  
+L'objectif est d'éviter les conflits de nommage au niveau objet (car contrairement au nom du fichier qui est préfixé de la date, le nom de la classe reprend seulement le nom donné au script).
+
+### 5.6.2. Exécution dans une seule transaction
+
+Laravel ne prévoit pas de commandes de migration et rollback permettant l'exécution des scripts dans une seule transaction. Cata garantie quand l'exécution se plantait en plein milieu d'une migration...
+ 
+2 commandes ont donc été ajoutées afin de compléter les commandes de base, elles sont accessibles via migrate:transaction et migrate:rollback:transaction.
+
+## 5.7. Gestion d'une queue
+L'envoi de mail a été implémenté via une queue, en se basant sur le plugin laravel-async-queue de barryvdh.  
+Ce plugin était cependant incomplet, si bien qu'un fork a été créé, et c'est ce fork qui est exploité dans le cadre de l'application.  
+Le fork est présent sur [https://github.com/ewbs/laravel-async-queue](https://github.com/ewbs/laravel-async-queue)
