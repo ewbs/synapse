@@ -1,5 +1,65 @@
 # Release Notes
 
+## 4.3.0 - Back in action
+*Ce release de Synapse intègre principalement diverses améliorations sur le module actions, ainsi que quelques améliorations et corrections mineures.*
+
+### Migrations
+- Added : Vue permettant d'obtenir la première révision d'une action
+- Fixed bug : Renommer le script de migration des users, car il interfère avec celui qui se trouve dans Confide
+- Fixed bug : Ajout clé primaire aux tables correspondant aux filtres utilisateur existants (administration, public, tag)
+- Fixed bug : Les clés étrangères créées après un "unsigned() n'étaient en fait pas créées : correction des scripts (attention, va de paire avec un script SQL à exécuter via le queryrunner) - (cf github #40)
+- Fixed bug : Clé étrangère sur les publics et thématiques abc/adm vers leur parent (attention, va de paire avec un script SQL à exécuter via le queryrunner) - (cf github #40)
+
+### Monitoring
+- Added : Database - Ajout d'un check sur la présence de l'extension btree_gist
+
+### Query Runner
+- Fixed bug : Mieux gérer le cas où une requête rend un résultat vide
+
+### Dashboard
+- Added : Filtre "par action" dans la fonction "Mes filtres"
+- Added : Application du filtre "par action" sur mes projets de simplif'
+- Added : Application du filtre "par action" sur mes démarches
+- Added : Application du filtre "par action" sur mes formulaires
+- Added : Application du filtre "par action" sur mes actions
+- Added : Filtres sur mes actions "Celles que j’ai créées" et "Celles qui me sont assignées"
+- Added : Colonnes "Priorité", "Assignation" et "Révision" sur la liste de mes actions
+- Added : Application du filtre "par action" sur mes charges administratives
+- Changed : Désactivation du filtre "par tag"
+- Changed : Présenter les actions en cours par pôle et expertises dans "Mon dashboard"
+- Changed : Retrait de la colonne "Sous-actions" sur la liste de mes actions
+- Changed : Améliorations de l'affichage de mes charges administratives (valeurs en badges)
+- Fixed bug : Les filtres ne s'appliquaient pas sur les pièces et tâches dont le total est présenté dans le pavé "Catalogue des démarches"
+
+### Actions
+- Added : Nouvel état "En standby"
+- Added : Notion d'assignation d'une action à un user (édition, détail, liste)
+- Added : Filtres par assignations, noms/types, administrations sur la liste des actions
+- Changed : Etat "Initialisé" renommé en "A faire"
+- Changed : Choix du nom d'une action limité à la liste des expertises
+- Changed : Retrait de la colonne "Sous-actions" sur la liste des actions
+
+### Démarches
+- Added : Notion d'assignation d'une action à un user (édition & liste d'actions, création d'action suite à édition de pièces/tâches/formulaires)
+- Added : ID Nostra dans le détail d'une démarche
+- Changed : Choix du nom d'une action limité à la liste des expertises
+- Changed : Retrait de la colonne "Sous-actions" sur la liste des actions
+- Changed : Présenter les actions en cours par pôle et expertises dans le détail d'une démarche
+
+### Expertises & pôles
+- Added : Création des nouveaux modèles de données et remplissage avec les valeurs actuelles
+
+### Formulaires
+- Added : Notion d'assignation d'une action à un user (création, édition & liste d'actions)
+- Changed : Choix du nom d'une action limité à la liste des expertises
+
+### Projets
+- Fixed bug : Les actions directement liées à un projet n'étaient pas affichées dans le détail
+
+### Users
+- Added : Nouveau modèle de données "Filtre utilisateur par expertise"
+- Fixed bug : Adaptation des la construction des routes, suppression de code non utilisé, ajout d'un message manquant
+
 ## 4.2.0 - Ministry of Silly Walks
 *Ce release de Synapse intègre principalement les interfaces de gestion des ministres, ainsi que quelques améliorations et corrections mineures.*
 

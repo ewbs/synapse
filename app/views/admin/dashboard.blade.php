@@ -3,7 +3,7 @@
 @section('content')
 @include('site.layouts.userdashboard-menu')
 <div class="row">
-	<div class="col-md-6">
+	<div class="col-md-4">
 		<div class="block-flat">
 			<div class="header">
 				<h3>Projets de simplif'</h3>
@@ -46,121 +46,90 @@
 			</div>
 		</div>
 	</div>
+	<div class="col-md-8">
+	@include('admin.ewbsactions.blocs.expertises',['largedisplay'=>true])
+	</div>
+</div>
 
-	<div class="col-md-6">
+<div class="row">
+	<div class="col-md-4">
 		<div class="block-flat">
 			<div class="header">
-				<h3>Actions en cours</h3>
+				<h3>Catalogue des démarches</h3>
 			</div>
-			<div class="content no-padding">
-				<table class="red">
-					<tbody class="no-border-x no-border-y">
-					<tr>
-						<td style="width:40px;"><i class="fa fa-connectdevelop"></i></td>
-						<td>Demandes à l'équipe Nostra</td>
-						<td class="text-right"><span class="badge badge-default">{{$countNostraActions}}</span></td>
-					</tr>
-					<tr>
-						<td style="width:40px;"><i class="fa fa-clipboard"></i></td>
-						<td>Sur des pièces et des tâches</td>
-						<td class="text-right"><span class="badge badge-default">{{$countDemarcheComponentsActions}}</span></td>
-					</tr>
-					<tr>
-						<td style="width:40px;"><i class="fa fa-wpforms"></i></td>
-						<td>Sur des formulaires</td>
-						<td class="text-right"><span class="badge badge-default">{{$countFormsActions}}</span></td>
-					</tr>
-					<tr>
-						<td style="width:40px;"><i class="fa fa-briefcase"></i></td>
-							<td>Sur des démarches</td>
-							<td class="text-right"><span class="badge badge-default">{{$countDemarchesActions}}</span></td>
-						</tr>
-						</tbody>
-					</table>
+			<div class="content">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="overflow-hidden">
+							<i class="fa fa-briefcase fa-4x pull-left color-primary"></i>
+							<h3 class="no-margin">{{$countFilteredDemarches}} DEMARCHES</h3>
+							<p><span class="color-primary">Dans votre catalogue personnalisé</span></p>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-3"><div class="pull-right"></div>Documentées<h3>{{$countDocumentedDemarches}}</h3></div>
+					<div class="col-sm-3"><div class="pull-right"></div>Gains calculés<h3>{{$countWithGainsDemarches}}</h3></div>
+					<div class="col-sm-3"><div class="pull-right"></div>Pièces<h3>{{$countPiecesDemarches}}</h3></div>
+					<div class="col-sm-3"><div class="pull-right"></div>Tâches<h3>{{$countTasksDemarches}}</h3></div>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<div class="row">
-		<div class="col-md-4">
-			<div class="block-flat">
-				<div class="header">
-					<h3>Catalogue des démarches</h3>
-				</div>
-				<div class="content">
-					<div class="row">
-						<div class="col-md-12">
-							<div class="overflow-hidden">
-								<i class="fa fa-briefcase fa-4x pull-left color-primary"></i>
-								<h3 class="no-margin">{{$countFilteredDemarches}} DEMARCHES</h3>
-								<p><span class="color-primary">Dans votre catalogue personnalisé</span></p>
-							</div>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-sm-3"><div class="pull-right"></div>Documentées<h3>{{$countDocumentedDemarches}}</h3></div>
-						<div class="col-sm-3"><div class="pull-right"></div>Gains calculés<h3>{{$countWithGainsDemarches}}</h3></div>
-						<div class="col-sm-3"><div class="pull-right"></div>Pièces<h3>{{$countPiecesDemarches}}</h3></div>
-						<div class="col-sm-3"><div class="pull-right"></div>Tâches<h3>{{$countTasksDemarches}}</h3></div>
-					</div>
-				</div>
+	<div class="col-md-4">
+		<div class="block-flat">
+			<div class="header">
+				<h3>Charges administratives</h3>
 			</div>
-		</div>
-
-		<div class="col-md-4">
-			<div class="block-flat">
-				<div class="header">
-					<h3>Charges administratives</h3>
-				</div>
-				<div class="content">
-					<div class="row">
-						<div class="col-md-12">
-							<div class="overflow-hidden">
-								<i class="fa fa-calculator fa-4x pull-left color-danger"></i>
-								<h3 class="no-margin">{{$countWithGainsDemarches}} SCMS LIGHT</h3>
-								<p><span class="color-danger">effectués sur vos {{$countDocumentedDemarches}} démarches documentées</span></p>
-							</div>
+			<div class="content">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="overflow-hidden">
+							<i class="fa fa-calculator fa-4x pull-left color-danger"></i>
+							<h3 class="no-margin">{{$countWithGainsDemarches}} SCMS LIGHT</h3>
+							<p><span class="color-danger">Effectués sur vos {{$countDocumentedDemarches}} démarches documentées</span></p>
 						</div>
 					</div>
-					<div class="row">
-						<div class="col-sm-6"><div class="pull-right"></div>Gains potentiels adm.<h3>{{NumberHelper::moneyFormatNoDecimal($potentialAmountAdministration)}}</h3></div>
-						<div class="col-sm-6"><div class="pull-right"></div>Gains potentiels usagers<h3>{{NumberHelper::moneyFormatNoDecimal($potentialAmountCitizen)}}</h3></div>
-					</div>
 				</div>
-			</div>
-		</div>
-
-		<div class="col-md-4">
-			<div class="block-flat">
-				<div class="header">
-					<h3>Formulaires</h3>
-				</div>
-				<div class="content">
-					<div class="row">
-						<div class="col-md-12">
-							<div class="overflow-hidden">
-								<i class="fa fa-wpforms fa-4x pull-left color-success"></i>
-								<h3 class="no-margin">{{$countFilteredForms}} FORMULAIRES</h3>
-								<p><span class="color-success">Liés à vos {{$countDocumentedDemarches}} démarches documentées</span></p>
-							</div>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-sm-4"><div class="pull-right"></div>Simplifiés<h3>{{$countFilteredSimplifiedForms}}</h3></div>
-						<div class="col-sm-4"><div class="pull-right"></div>Electroniques<h3>{{$countFilteredElectronicForms}}</h3></div>
-						<div class="col-sm-4"><div class="pull-right"></div>e-Id<h3>{{$countFilteredEIDForms}}</h3></div>
-					</div>
+				<div class="row">
+					<div class="col-sm-6"><div class="pull-right"></div>Gains potentiels adm.<h3>{{NumberHelper::moneyFormatNoDecimal($potentialAmountAdministration)}}</h3></div>
+					<div class="col-sm-6"><div class="pull-right"></div>Gains potentiels usagers<h3>{{NumberHelper::moneyFormatNoDecimal($potentialAmountCitizen)}}</h3></div>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<div class="row">
-		<div class="col-md-12">
-			<span class="fa fa-info-circle"></span> Votre dashboard est filtré sur : {{$txtUserFiltersAdministration}}
+	<div class="col-md-4">
+		<div class="block-flat">
+			<div class="header">
+				<h3>Formulaires</h3>
+			</div>
+			<div class="content">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="overflow-hidden">
+							<i class="fa fa-wpforms fa-4x pull-left color-success"></i>
+							<h3 class="no-margin">{{$countFilteredForms}} FORMULAIRES</h3>
+							<p><span class="color-success">Liés à vos {{$countDocumentedDemarches}} démarches documentées</span></p>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-4"><div class="pull-right"></div>Simplifiés<h3>{{$countFilteredSimplifiedForms}}</h3></div>
+					<div class="col-sm-4"><div class="pull-right"></div>Electroniques<h3>{{$countFilteredElectronicForms}}</h3></div>
+					<div class="col-sm-4"><div class="pull-right"></div>e-Id<h3>{{$countFilteredEIDForms}}</h3></div>
+				</div>
+			</div>
 		</div>
 	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-12">
+		<span class="fa fa-info-circle"></span> Votre dashboard est filtré sur : {{$txtUserFiltersAdministration}}
+	</div>
+</div>
 @stop
 
 @section('scripts')

@@ -1,6 +1,8 @@
 <?php
 class IdeaController extends TrashableModelController {
 	
+	use Synapse\Controllers\Traits\TraitFilterableController;
+	
 	/**
 	 * Initialisation
 	 *
@@ -19,18 +21,10 @@ class IdeaController extends TrashableModelController {
 	}
 	
 	/**
-	 * 
-	 * @return Datatables
-	 */
-	protected function getDataFilteredJson() {
-		return $this->getDataJson(false, true);
-	}
-	
-	/**
 	 * {@inheritDoc}
 	 * @see ModelController::getDataJson()
 	 */
-	protected function getDataJson($onlyTrashed=false, $withFilter=false) {
+	protected function getDataJson($onlyTrashed=false, $filtered=false) {
 		
 		$selectCols= [
 			'ideas.id',
@@ -52,10 +46,11 @@ class IdeaController extends TrashableModelController {
 			DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_TODO."'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_todo" ),
 			DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_PROGRESS."' THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_progress" ),
 			DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_DONE."'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_done" ),
+			DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_STANDBY."'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_standby" ),
 			DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_GIVENUP."'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_givenup" )
 		];
 
-		if ($withFilter) {
+		if ($filtered) {
 			$builder = Idea::filtered();
 		} else {
 			$builder = Idea::query();
@@ -132,6 +127,7 @@ class IdeaController extends TrashableModelController {
 		->remove_column ( 'count_state_todo' )
 		->remove_column ( 'count_state_progress' )
 		->remove_column ( 'count_state_done' )
+		->remove_column ( 'count_state_standby' )
 		->remove_column ( 'count_state_givenup' )
 		->remove_column ( 'administrations' )
 		->remove_column ( 'publics' )
@@ -157,6 +153,14 @@ class IdeaController extends TrashableModelController {
 			return $return;
 		}); */
 		return $dt->make ();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * @see Synapse\Controllers\Traits\TraitFilterableController::getDataFilteredJson()
+	 */
+	protected function getDataFilteredJson() {
+		return $this->getDataJson(false, true);
 	}
 	
 	/**

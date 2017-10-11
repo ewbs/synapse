@@ -2,6 +2,7 @@
 use Zizaco\Confide\ConfideUserInterface;
 use Zizaco\Entrust\HasRole;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Utilisateurs
@@ -35,28 +36,6 @@ class User extends TrashableModel implements ConfideUserInterface {
 		return $this->username;
 	}
 	
-	public function EWBSMember() {
-		return $this->hasOne ( 'EWBSMember' );
-	}
-	
-	// Utiliser pour gérer des ACL entre utilisateurs et Administration (restriction de contenu)
-	public function administrations() {
-		return ($this->belongsToMany ( 'Administration' ));
-	}
-
-	public function filtersAdministration() {
-		return $this->hasMany('UserFilterAdministration');
-	}
-
-	public function filtersTag() {
-		return $this->hasMany('UserFilterTag');
-	}
-
-	public function filtersPublic() {
-		return $this->hasMany('UserFilterPublic');
-	}
-
-	
 	/**
 	 * Vérifie si l'utilisateur est soumis à des restrictions par administrations
 	 * 
@@ -87,6 +66,10 @@ class User extends TrashableModel implements ConfideUserInterface {
 		
 		return false;
 	}
+	
+	/**
+	 * 
+	 */
 	public function getRestrictedAdministrationsIds() {
 		$return = array ();
 		if ($this->hasRestrictionsByAdministrations ()) {
@@ -100,8 +83,7 @@ class User extends TrashableModel implements ConfideUserInterface {
 	/**
 	 * Get user by username
 	 * 
-	 * @param
-	 *        	$username
+	 * @param $username
 	 * @return mixed
 	 */
 	public function getUserByUsername($username) {
@@ -111,8 +93,7 @@ class User extends TrashableModel implements ConfideUserInterface {
 	/**
 	 * Find the user and check whether they are confirmed
 	 *
-	 * @param array $identity
-	 *        	an array with identities to check (eg. ['username' => 'test'])
+	 * @param array $identity an array with identities to check (eg. ['username' => 'test'])
 	 * @return boolean
 	 */
 	public function isConfirmed($identity) {
@@ -132,8 +113,7 @@ class User extends TrashableModel implements ConfideUserInterface {
 	/**
 	 * Save roles inputted from multiselect
 	 * 
-	 * @param
-	 *        	$inputRoles
+	 * @param $inputRoles
 	 */
 	public function saveRoles($inputRoles) {
 		if (! empty ( $inputRoles )) {
@@ -234,30 +214,132 @@ class User extends TrashableModel implements ConfideUserInterface {
 	public function getReminderEmail() {
 		return $this->email;
 	}
-	public function ideas() {
-		return $this->hasMany ( 'Idea' );
-	}
-	public function demarches() {
-		return $this->hasMany ( 'Demarche' );
-	}
-
-
-
+	
 	/**
-	 * Gestion des données de session
-	 * Cette section permet d'utiliser les sessions pour conserver des paramètres dans toute l'application.
-	 * Comme par exemple, un formulaire de recherche qui retrouve son état tel qu'on l'a quitté avant de passer à une autre page
+	 * Surcharge de la méthode plaçant une info dans la session, afin de la restreindre au scope user
+	 * 
+	 * @param string|array $key
+	 * @param mixed|null $value
+	 * @return void 
 	 */
-
 	public function sessionSet($key, $value) {
 		Session::put('user_'.$key, $value);
 	}
-
-	public function sessionGet($key) {
-		return Session::get('user_'.$key, false);
+	
+	/**
+	 * Surcharge de la méthode récupérant une info de la session, afin de la restreindre au scope user
+	 * 
+	 * @param string $name The attribute name
+	 * @param mixed $default The default value if not found.
+	 * @return mixed
+	 */
+	public function sessionGet($name, $default=null) {
+		return Session::get('user_'.$name, $default);
 	}
-
+	
+	/**
+	 * Surcharge de la méthode supprimant une info de la session, afin de la restreindre au scope user
+	 * 
+	 * @param string $key
+	 * @return void 
+	 */
 	public function sessionDestroy($key) {
 		Session::forget('user_'.$key);
+	}
+	
+	/**
+	 * 
+	 * @param Builder $query
+	 * @return unknown
+	 */
+	public function scopeEwbsOrSelf(Builder $query) {
+		return $query
+		->leftjoin('ewbs_members', 'ewbs_members.user_id', '=', 'users.id')
+		->whereNotNull('ewbs_members.id')
+		->orWhere('users.id', '=', Auth::user()->id)
+		->order();
+	}
+	
+	/**
+	 * 
+	 * @param Builder $query
+	 * @return unknown
+	 */
+	public function scopeOrder(Builder $query) {
+		return $query->orderBy('username');
+	}
+	
+	/**
+	 * 
+	 * Relation entre le user et les administrations dont il fait partie.
+	 * Attention, utiliser pour gérer des ACL entre utilisateurs et Administration (restriction de contenu)
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function administrations() {
+		return ($this->belongsToMany ( 'Administration' ));
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function demarches() {
+		return $this->hasMany ( 'Demarche' );
+	}
+	
+	/**
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function ewbsActionRevisions() {
+		return $this->hasMany('EwbsActionRevision');
+	}
+	
+	/**
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
+	 */
+	public function EWBSMember() {
+		return $this->hasOne ( 'EWBSMember' );
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function filtersAdministration() {
+		return $this->hasMany('UserFilterAdministration');
+	}
+	
+	/**
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function filtersExpertise() {
+		return $this->hasMany('UserFilterExpertise');
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function filtersPublic() {
+		return $this->hasMany('UserFilterPublic');
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function filtersTag() {
+		return $this->hasMany('UserFilterTag');
+	}
+	
+	/**
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function ideas() {
+		return $this->hasMany ( 'Idea' );
 	}
 }

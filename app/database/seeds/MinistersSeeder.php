@@ -106,106 +106,76 @@ class MinistersSeeder extends Seeder {
 				array (
 						'minister_id' => 1,
 						'governement_id' => 1,
-						'start' => new DateTime ( '2014-01-01 00:00:00.0' ),
-						'end' => new DateTime ( '2017-12-31 23:59:59.0' ),
 						'function' => 'Ministre du Budget, de la Fonction publique et de la Simplification administrative' 
 				),
 				array (
 						'minister_id' => 2,
 						'governement_id' => 2,
-						'start' => new DateTime ( '2014-01-01 00:00:00.0' ),
-						'end' => new DateTime ( '2017-12-31 23:59:59.0' ),
 						'function' => 'Ministre de l\'Aide à la jeunesse, des Maisons de justice et de la Promotion de Bruxelles' 
 				),
 				array (
 						'minister_id' => 3,
 						'governement_id' => 1,
-						'start' => new DateTime ( '2014-01-01 00:00:00.0' ),
-						'end' => new DateTime ( '2017-12-31 23:59:59.0' ),
 						'function' => 'Ministre-Président de la Wallonie' 
 				),
 				array (
 						'minister_id' => 4,
 						'governement_id' => 2,
-						'start' => new DateTime ( '2014-01-01 00:00:00.0' ),
-						'end' => new DateTime ( '2017-12-31 23:59:59.0' ),
 						'function' => 'Ministre-Président de la Fédération Wallonie-Bruxelles' 
 				),
 				array (
 						'minister_id' => 5,
 						'governement_id' => 1,
-						'start' => new DateTime ( '2014-01-01 00:00:00.0' ),
-						'end' => new DateTime ( '2017-12-31 23:59:59.0' ),
 						'function' => 'Ministre de l\'Agriculture, de la Nature, de la Ruralité, du Tourisme, des Sports et des Infrastructures sportives' 
 				),
 				array (
 						'minister_id' => 5,
 						'governement_id' => 2,
-						'start' => new DateTime ( '2014-01-01 00:00:00.0' ),
-						'end' => new DateTime ( '2017-12-31 23:59:59.0' ),
 						'function' => 'Ministre des Sports' 
 				),
 				array (
 						'minister_id' => 6,
 						'governement_id' => 2,
-						'start' => new DateTime ( '2014-01-01 00:00:00.0' ),
-						'end' => new DateTime ( '2017-12-31 23:59:59.0' ),
 						'function' => 'Vice-Présidente de la Fédération Wallonie-Bruxelles, Ministre de l’Education, de la Culture et de l\'Enfance' 
 				),
 				array (
 						'minister_id' => 7,
 						'governement_id' => 1,
-						'start' => new DateTime ( '2014-01-01 00:00:00.0' ),
-						'end' => new DateTime ( '2017-12-31 23:59:59.0' ),
 						'function' => 'Ministre de l\'Environnement, de l\'Aménagement du territoire, de la Mobilité et des Transports, des Aéroports et du Bien-être animal' 
 				),
 				array (
 						'minister_id' => 8,
 						'governement_id' => 1,
-						'start' => new DateTime ( '2014-01-01 00:00:00.0' ),
-						'end' => new DateTime ( '2017-12-31 23:59:59.0' ),
 						'function' => 'Vice-Président et Ministre de l\'Economie, de l\'Industrie, de l\'Innovation et du Numérique' 
 				),
 				array (
 						'minister_id' => 8,
 						'governement_id' => 2,
-						'start' => new DateTime ( '2014-01-01 00:00:00.0' ),
-						'end' => new DateTime ( '2017-12-31 23:59:59.0' ),
 						'function' => 'Vice-Président, Ministre de l\'Enseignement Supérieur, de la Recherche et des Médias' 
 				),
 				array (
 						'minister_id' => 9,
 						'governement_id' => 2,
-						'start' => new DateTime ( '2014-01-01 00:00:00.0' ),
-						'end' => new DateTime ( '2017-12-31 23:59:59.0' ),
 						'function' => 'Ministre de l\'Enseignement de promotion sociale, de la Jeunesse, des Droits des femmes et de l\'Egalité des chances' 
 				),
 				array (
 						'minister_id' => 10,
 						'governement_id' => 1,
-						'start' => new DateTime ( '2014-01-01 00:00:00.0' ),
-						'end' => new DateTime ( '2017-12-31 23:59:59.0' ),
 						'function' => 'Ministre de l\'Emploi et de la Formation' 
 				),
 				array (
 						'minister_id' => 11,
 						'governement_id' => 1,
-						'start' => new DateTime ( '2014-01-01 00:00:00.0' ),
-						'end' => new DateTime ( '2017-12-31 23:59:59.0' ),
 						'function' => 'Vice-Président et Ministre des Travaux publics, de la Santé, de l\'Action sociale et du Patrimoine' 
 				),
 				array (
 						'minister_id' => 12,
 						'governement_id' => 1,
-						'start' => new DateTime ( '2014-01-01 00:00:00.0' ),
-						'end' => new DateTime ( '2017-12-31 23:59:59.0' ),
 						'function' => 'Ministre des Pouvoirs locaux, de la Ville, du Logement et de l\'Energie' 
 				),
 				array (
 						'minister_id' => 13,
 						'governement_id' => 2,
-						'start' => new DateTime ( '2014-01-01 00:00:00.0' ),
-						'end' => new DateTime ( '2017-12-31 23:59:59.0' ),
 						'function' => 'Ministre du Budget, de la Fonction publique et de la Simplification administrative' 
 				) 
 		)

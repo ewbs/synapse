@@ -1,4 +1,6 @@
 <?php
+use Illuminate\Database\Eloquent\Builder;
+
 /**
  * Eforms
  * 
@@ -16,8 +18,8 @@
  * @author jdavreux
  */
 class Eform extends RevisableModel {
-
-
+	
+	use TraitFilterable;
 	
 	/**
 	 *
@@ -207,6 +209,108 @@ class Eform extends RevisableModel {
 	 */
 	public function setNextStateId($value) {
 		$this->addRevisionAttributes(['next_state_id'=>$value]);
+	}
+	
+	/**
+	 * Filtre les données sur base du filtre utilisateurs par administrations
+	 *
+	 * Remarque : la liaison vers demarcheEforms est inconditionnelle, car même sans filtre ce scope doit considérer uniquement les eforms liés à des démarches
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeAdministrationsIds(Builder $query, array $ids) {
+		return
+		$query->whereHas( 'demarcheEforms', function ($query) use ($ids) {
+			if (!empty($ids)) {
+				$query->whereHas( 'demarche', function ($query) use ($ids) {
+					$query->wherehas ( 'administrations', function ($query) use($ids) {
+						$query->whereIn ( 'administrations.id', $ids );
+					});
+				});
+			}
+		});
+	}
+	
+	/**
+	 * Filtre les données sur base du filtre utilisateur par expertises
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeExpertisesIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->whereHas('actions', function ($query) use ($ids) {
+				$query->whereIn('ewbsActions.name', function($query) use ($ids) {
+					$query->select('name')
+					->from(with(new Expertise())->getTable())
+					->whereIn('id', $ids);
+				});
+			});
+		}
+		return $query;
+	}
+	
+	/**
+	 * Filtre les données sur base du filtre utilisateur par publics-cibles
+	 * 
+	 * Remarque : la liaison vers demarcheEforms est inconditionnelle, car même sans filtre ce scope doit considérer uniquement les eforms liés à des démarches
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeNostraPublicsIds(Builder $query, array $ids) {
+		return $query->whereHas( 'demarcheEforms', function ($query) use ($ids) {
+			if (!empty($ids)) {
+				$query->whereHas( 'demarche', function ($query) use ($ids) {
+					$query->whereHas( 'nostraDemarche', function ($query) use ($ids) {
+						$query->whereHas( 'nostraPublics', function ($query) use ($ids) {
+							$query->whereIn ( 'nostra_publics.id', $ids );
+						});
+					});
+				});
+			}
+		});
+	}
+	
+	/**
+	 * Filtre les données sur base du filtre utilisateur par tags
+	 * 
+	 * Attention, il faut retourner les démarches directement taggées, mais également les démarches liées à un ou plusieurs projets (Idea) taggés :-)
+	 * Remarque : la liaison vers demarcheEforms est inconditionnelle, car même sans filtre ce scope doit considérer uniquement les eforms liés à des démarches
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeTaxonomyTagsIds(Builder $query, array $ids) {
+		// Je le dis tout de suite ... ca génère une dizaine de requetes ... sans doute les whereHas qui sont en lazy loading dans l'orm, mais on peut pas jouer avec with() car on est au niveau querybuilder, pas eloquent
+		
+		return $query->whereHas( 'demarcheEforms', function ($query) use ($ids) {
+			if (!empty($ids)) {
+				$query->whereHas( 'demarche', function ($query) use ($ids) {
+					//Sélection des démarches taggées directement
+					$query->where( function ($query) use ($ids) {
+						$query->wherehas ( 'tags', function ($query) use($ids) {
+							$query->whereIn('taxonomytags.id', $ids);
+						});
+					})
+					//et celle liée a des ideas taggées (mais le lien demarche_idea n'existe pas ... il se fait au travers de nostra_demarche ... raaaaaah !
+					->orWhere( function ($query) use ($ids) {
+						$query
+						->whereHas('nostraDemarche', function ($query) use ($ids) {
+							$query->whereHas('ideas', function ($query) use ($ids) {
+								$query->whereHas('tags', function ($query) use ($ids) {
+									$query->whereIn('taxonomy_tag_id', $ids);
+								});
+							});
+						});
+					});
+				});
+			}
+		});
 	}
 	
 	/**

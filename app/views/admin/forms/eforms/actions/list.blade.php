@@ -22,6 +22,7 @@ $lastRevision=$modelInstance->getLastRevisionEform();
 								<th>Nom</th>
 								<th class="col-md-1">Etat</th>
 								<th class="col-md-1">Priorité</th>
+								<th class="col-md-1">Assignation</th>
 								<th class="col-md-1">Révision</th>
 								<th class="col-md-2">Actions</th>
 							</tr>

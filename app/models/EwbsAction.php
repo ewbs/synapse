@@ -81,8 +81,8 @@ class EwbsAction extends RevisableModel {
 	
 	/**
 	 * Route listant les instances d'une action liée à une démarche.
-	 * Si une démarche est bien liée à l'action retour vers le détail de la démarche (qui liste les actions), sinon retour vers la liste des démarches.
 	 * 
+	 * Si une démarche est bien liée à l'action retour vers le détail de la démarche (qui liste les actions), sinon retour vers la liste des démarches.
 	 * {@inheritDoc}
 	 * @see ManageableModel::routeGetIndex()
 	 */
@@ -94,7 +94,160 @@ class EwbsAction extends RevisableModel {
 	}
 	
 	/**
-	 * Query scope listant les actions principales (=qui n'ont pas de parent) avec leur dernière révision, les composants liés (pièce ou tâche), les éléments éventuellement liés (démarche, eform, idée), et le dernier user l'ayant sauvegardé
+	 * A partir d'un id de EwbsActionRevision, retourne l'historique de l'action dans cette démarche
+	 *
+	 * @return mixed|static
+	 */
+	public function getRevisions() {
+		return EwbsActionRevision
+		::withTrashed ()
+		->leftjoin('users', 'users.id', '=', 'ewbsActionsRevisions.user_id')
+		->where ( 'ewbsActionsRevisions.ewbs_action_id', '=', $this->id )
+		->orderBy ( 'ewbsActionsRevisions.created_at', 'DESC' )
+		->get (['ewbsActionsRevisions.id as revision_id', 'users.username', 'ewbsActionsRevisions.state', 'ewbsActionsRevisions.description', 'ewbsActionsRevisions.created_at', 'ewbsActionsRevisions.deleted_at']);
+	}
+	
+	/**
+	 * Retourne un état global selon un nombre d'actions à différents états.
+	 *
+	 * La particularité est que l'état est globalement en progrès si des actions sont dans 2 des 3 états todo/standby/done.
+	 * @param Object, ayant comme propriétés minimum les entiers suivants $count_state_todo, $count_state_progress, $count_state_done, $count_state_standby, $count_state_givenup
+	 * @return string|NULL
+	 */
+	public static function globalState($obj) {
+		if($obj->count_state_progress || ($obj->count_state_todo && $obj->count_state_done)|| ($obj->count_state_todo && $obj->count_state_standby)|| ($obj->count_state_standby && $obj->count_state_done)) return EwbsActionRevision::$STATE_PROGRESS;
+		if($obj->count_state_todo) return EwbsActionRevision::$STATE_TODO;
+		if($obj->count_state_done) return EwbsActionRevision::$STATE_DONE;
+		if($obj->count_state_standby) return EwbsActionRevision::$STATE_STANDBY;
+		if($obj->count_state_givenup) return EwbsActionRevision::$STATE_GIVENUP;
+		return null;
+	}
+	
+	/**
+	 * Spécifier une description qui sera sauvée dans la future révision liée à l'action
+	 *
+	 * @param string $value
+	 */
+	public function setDescription($value) {
+		$this->addRevisionAttributes(['description'=>$value]);
+	}
+	
+	/**
+	 * Spécifier un état qui sera sauvé dans la future révision liée à l'action
+	 *
+	 * @param string $value
+	 */
+	public function setState($value) {
+		$this->addRevisionAttributes(['state'=>$value]);
+	}
+	
+	/**
+	 * Retourne l'historique d'une action sous forme d'une collection
+	 *
+	 * @return mixed
+	 */
+	public function getHistory() {
+		return EwbsActionRevision
+		::withTrashed ()
+		->leftjoin('users', 'users.id', '=', 'ewbsActionsRevisions.user_id')
+		->leftjoin('users as responsibles', 'responsibles.id', '=', 'ewbsActionsRevisions.responsible_id')
+		->where ( 'ewbsActionsRevisions.ewbs_action_id', '=', $this->id )
+		->orderBy ( 'ewbsActionsRevisions.created_at', 'DESC' )
+		->get (['ewbsActionsRevisions.id as revision_id', 'users.username', 'users.email AS usermail', 'responsibles.username as responsible_username', 'ewbsActionsRevisions.state', 'ewbsActionsRevisions.priority', 'ewbsActionsRevisions.description', 'ewbsActionsRevisions.created_at', 'ewbsActionsRevisions.deleted_at']);
+	}
+	
+	/**
+	 * Compter les actions en cours
+	 *
+	 * @return int
+	 */
+	public static function getCountTodo() {
+		return DB::table('v_lastrevisionewbsaction')
+		->where('state', '=',  EwbsActionRevision::$STATE_TODO)
+		->whereNull('deleted_at')
+		->count();
+	}
+	
+	/**
+	 * Compter les actions terminées
+	 *
+	 * @return int
+	 */
+	public static function getCountDone() {
+		return DB::table('v_lastrevisionewbsaction')
+		->where('state', '=',  EwbsActionRevision::$STATE_DONE)
+		->whereNull('deleted_at')
+		->count();
+	}
+	
+	/**
+	 * Restreindre aux actions créées par l'utilisateur courant
+	 * 
+	 * @param Builder $query
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeCreatedByMe(Builder $query) {
+		$query->whereExists(function($query) {
+			$query->select('id')
+			->from('v_firstrevisionewbsaction')
+			->whereRaw('ewbs_action_id="ewbsActions".id')
+			->where('user_id', '=', Auth::id());
+		});
+		return $query;
+	}
+	
+	/**
+	 * Restreindre aux actions assignées à l'utilisateur courant
+	 * 
+	 * @param Builder $query
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeAssignedToMe(Builder $query) {
+		return $query->where('v_lastrevisionewbsaction.responsible_id', '=', Auth::id());
+	}
+	
+	/**
+	 * Cibler les différents noms des actions
+	 *
+	 * @param Builder $query
+	 * @return Builder
+	 */
+	public function scopeDistinctNames(Builder $query) {
+		return $query->distinct()->main()->addSelect(['name'])->orderBy('name');
+	}
+	
+	/**
+	 * Restreindre aux différentes actions principales (=qui n'ont pas de parent) avec leur dernière révision, les composants liés (pièce ou tâche), les éléments éventuellement liés (démarche, eform, idée), et le dernier user l'ayant sauvegardé
+	 *
+	 * @param Builder $query
+	 * @return Builder
+	 */
+	public function scopeDistinctResponsibles(Builder $query) {
+		return $query->joinResponsibles()->distinct()->addSelect(['resp.id','resp.username']);
+	}
+	/**
+	 * Lier aux actions les responsables associés
+	 * 
+	 * @param Builder $query
+	 * @param string $trashed
+	 * @return unknown
+	 */
+	public function scopeJoinResponsibles(Builder $query, $trashed=false) {
+		return $query->main()->joinLastRevision($trashed, false)->join('users as resp', 'resp.id', '=', 'v_lastrevisionewbsaction.responsible_id');
+	}
+	
+	/**
+	 * Restreindre aux actions principales (=qui n'ont pas de parent)
+	 *
+	 * @param Builder $query
+	 * @return Builder
+	 */
+	public function scopeMain(Builder $query) {
+		return $query->whereNull('ewbsActions.parent_id');
+	}
+	
+	/**
+	 * Restreindre aux actions principales (=qui n'ont pas de parent) avec leur dernière révision, les composants liés (pièce ou tâche), les éléments éventuellement liés (démarche, eform, idée), et le dernier user l'ayant sauvegardé
 	 *
 	 * @param Builder $query
 	 * @param string $trashed Prendre les soft-deletés, false par défaut
@@ -103,12 +256,12 @@ class EwbsAction extends RevisableModel {
 	public function scopeEach(Builder $query, $trashed=false) {
 		return $query
 		->addSelect(['ewbsActions.id AS action_id', 'ewbsActions.name'])
-		->whereNull('ewbsActions.parent_id')
+		->main()
 		->joinComponents()->joinLastRevision($trashed)->joinLinkedElement();
 	}
 	
 	/**
-	 * Query scope listant les actions principales (=qui n'ont pas de parent) avec leur dernière révision, les composants liés (pièce ou tâche), les éléments éventuellement liés (démarche, eform, idée), et le dernier user l'ayant sauvegardé
+	 * Restreindre aux sous-actions de l'action de l'action courante, en joignant leur dernière révision, les composants liés (pièce ou tâche), les éléments éventuellement liés (démarche, eform, idée), et le dernier user l'ayant sauvegardé
 	 *
 	 * @param Builder $query
 	 * @param string $trashed Prendre les soft-deletés, false par défaut
@@ -122,7 +275,41 @@ class EwbsAction extends RevisableModel {
 	}
 	
 	/**
-	 * Query scope ciblant les actions liées à la démarche
+	 * Restreindre aux actions liées à une ou plusieurs administrations via un projet de simplif' ou une démarche
+	 *
+	 * @param Builder $query
+	 * @param array $values Identifiants d'administration
+	 * @return unknown|\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeForAdministrations(Builder $query, array $values) {
+		if($values) {
+			return $query->where(
+				function(Builder $query) use($values) {
+					$query
+					->whereExists(
+						function($query) use($values) {
+							$query->select(DB::raw(1))
+							->from('administration_idea')
+							->whereRaw('administration_idea.idea_id = "ewbsActions".idea_id')
+							->whereIn('administration_idea.administration_id', $values);
+						}
+					)
+					->OrWhereExists(
+						function($query) use($values) {
+							$query->select(DB::raw(1))
+							->from('administration_demarche')
+							->whereRaw('administration_demarche.demarche_id = "ewbsActions".demarche_id')
+							->whereIn('administration_demarche.administration_id', $values);
+						}
+					);
+				}
+			);
+		}
+		else return $query;
+	}
+	
+	/**
+	 * Restreindre aux actions liées à une démarche
 	 *
 	 * @param Builder $query
 	 * @param Demarche $demarche
@@ -131,22 +318,46 @@ class EwbsAction extends RevisableModel {
 	public function scopeForDemarche(Builder $query, Demarche $demarche) {
 		return $query->where('ewbsActions.demarche_id', '=', $demarche->id);
 	}
-
+	
 	/**
-	 * Ne retourner que les actions liées à des démarches (sans prendre celles liées à des pièces et des taches)
+	 * Restreindre aux actions correspondant à un ou plusieurs noms
+	 * 
+	 * @param Builder $query
+	 * @param array $values Noms d'actions
+	 * @return unknown|\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeForNames(Builder $query, array $values) {
+		if($values) return $query->whereIn('ewbsActions.name', $values);
+		else return $query;
+	}
+	
+	/**
+	 * Restreindre aux actions liées à un ou plusieurs responsables
+	 *
+	 * @param Builder $query
+	 * @param array $values Identifiants de responsables
+	 * @return unknown|\Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeForResponsibles(Builder $query, array $values) {
+		if($values) return $query->whereIn('v_lastrevisionewbsaction.responsible_id', $values);
+		else return $query;
+	}
+	
+	/**
+	 * Restreindre aux actions actions liées à des démarches (sans prendre celles liées à des pièces et des taches)
 	 * @param Builder $query
 	 * @param Demarche $demarche
 	 * @return $this
 	 */
 	public function scopeOnlyLinkedToDemarches(Builder $query) {
 		return $query
-				->where('ewbsActions.demarche_id', '>', 0)
-				->whereNull('ewbsActions.demarche_piece_id')
-				->whereNull('ewbsActions.demarche_task_id');
+			->where('ewbsActions.demarche_id', '>', 0)
+			->whereNull('ewbsActions.demarche_piece_id')
+			->whereNull('ewbsActions.demarche_task_id');
 	}
 
 	/**
-	 * Query scope ciblant les actions liées à l'eform
+	 * Restreindre aux actions liées à un eform
 	 *
 	 * @param Builder $query
 	 * @param Eform $eform
@@ -157,7 +368,8 @@ class EwbsAction extends RevisableModel {
 	}
 
 	/**
-	 * Scope ciblant les actions liées à un formulaire (formulaire suel, ou lié à une démarche, sans distinction)
+	 * Restreindre aux actions liées à un formulaire (formulaire seul ou via une démarche, sans distinction)
+	 * 
 	 * @param Builder $query
 	 * @return $this
 	 */
@@ -166,7 +378,7 @@ class EwbsAction extends RevisableModel {
 	}
 
 	/**
-	 * Query scope ciblant les actions liées à l'idée
+	 * Restreindre aux actions liées à une idée
 	 *
 	 * @param Builder $query
 	 * @param Idea $idea
@@ -175,8 +387,13 @@ class EwbsAction extends RevisableModel {
 	public function scopeForIdea(Builder $query, Idea $idea) {
 		return $query->where ('ewbsActions.idea_id', '=', $idea->id);
 	}
-
-
+	
+	/**
+	 * Restreindre aux actions liées à une pièce ou tâche
+	 * 
+	 * @param Builder $query
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
 	public function scopeForComponents(Builder $query) {
 		return $query->where( function ($query) {
 			$query->whereNotNull('ewbsActions.demarche_piece_id')->orWhereNotNull('ewbsActions.demarche_task_id');
@@ -184,7 +401,7 @@ class EwbsAction extends RevisableModel {
 	}
 	
 	/**
-	 * Query scope joignant la dernière révision d'une action
+	 * Lier aux actions les composants éventuellement associés (pièce, tâche)
 	 *
 	 * @param Builder $query
 	 * @return Builder
@@ -202,7 +419,7 @@ class EwbsAction extends RevisableModel {
 	}
 	
 	/**
-	 * Query scope joignant les éléments éventuellement liés (démarche, eform, idée)
+	 * Lier aux actions les éléments éventuellement associés (démarche, eform, idée)
 	 *
 	 * @param Builder $query
 	 * @return Builder
@@ -222,47 +439,59 @@ class EwbsAction extends RevisableModel {
 		->leftjoin('ideas', 'ideas.id', '=', 'ewbsActions.idea_id');
 	}
 
-
-	public function scopeJoinTaxonomy(Builder $query) {
-		return $query
-			->addSelect([DB::raw('(	SELECT 
-										ARRAY_TO_STRING(ARRAY_AGG(DISTINCT taxonomytags.name), \', \', \'\') 
-									FROM 
-										taxonomytags,
-										ewbs_action_taxonomy_tag
-									WHERE 
-										taxonomytags.deleted_at IS NULL 
-										AND taxonomytags.id = ewbs_action_taxonomy_tag.taxonomy_tag_id
-										AND ewbs_action_taxonomy_tag.ewbs_action_id = "ewbsActions".id 
-								   ) AS tags' )]);
-	}
-	
 	/**
-	 * Query scope joignant la dernière révision
+	 * Joindre aux actions leur taxonomie
 	 * 
 	 * @param Builder $query
 	 * @return Builder
 	 */
-	public function scopeJoinLastRevision(Builder $query, $trashed=false) {
-		return $query
-		->addSelect([
-			'v_lastrevisionewbsaction.id AS revision_id',
-			'v_lastrevisionewbsaction.description',
-			'v_lastrevisionewbsaction.state',
-			'v_lastrevisionewbsaction.priority',
-			'v_lastrevisionewbsaction.created_at',
-			'v_lastrevisionewbsaction.deleted_at',
-			'users.username'
-		])
+	public function scopeJoinTaxonomy(Builder $query) {
+		return $query->addSelect([DB::raw('(
+		SELECT 
+			ARRAY_TO_STRING(ARRAY_AGG(DISTINCT taxonomytags.name), \', \', \'\') 
+		FROM 
+			taxonomytags,
+			ewbs_action_taxonomy_tag
+		WHERE 
+			taxonomytags.deleted_at IS NULL 
+			AND taxonomytags.id = ewbs_action_taxonomy_tag.taxonomy_tag_id
+			AND ewbs_action_taxonomy_tag.ewbs_action_id = "ewbsActions".id 
+		) AS tags' )]);
+	}
+	
+	/**
+	 * Lier aux actions leur dernière révision
+	 * 
+	 * @param Builder $query
+	 * @return Builder
+	 */
+	public function scopeJoinLastRevision(Builder $query, $trashed=false, $addColumn=true) {
+		$query
 		->join('v_lastrevisionewbsaction', 'ewbsActions.id', '=', 'v_lastrevisionewbsaction.ewbs_action_id')
 		->leftjoin('users', 'users.id', '=', 'v_lastrevisionewbsaction.user_id')
+		->leftjoin('users as responsibles', 'responsibles.id', '=', 'v_lastrevisionewbsaction.responsible_id')
 		->whereRaw('v_lastrevisionewbsaction.deleted_at '.($trashed?'is not null':'is null'));
+		
+		if($addColumn) {
+			$query->addSelect([
+				'v_lastrevisionewbsaction.id AS revision_id',
+				'v_lastrevisionewbsaction.description',
+				'v_lastrevisionewbsaction.state',
+				'v_lastrevisionewbsaction.priority',
+				'responsibles.username as responsible',
+				'v_lastrevisionewbsaction.created_at',
+				'v_lastrevisionewbsaction.deleted_at',
+				'users.username'
+			]);
+		}
+		return $query;
 	}
-
-
+	
 	/**
-	 * Ne prendre que les actions pour l'équipe nostra.
-	 * ATTENTION !! Cette méthode est pourrie. On se limite à se dire que "si il y a un token dans la db, c'est que c'est pour nostra"
+	 * Restreindre aux actions à traiter par l'équipe nostra
+	 * 
+	 * ATTENTION !! Cette méthode est peu perenne :
+	 * On se limite à dire que "s'il y a un token dans la db, c'est que c'est pour nostra"
 	 * C'est vrai à l'heure actuelle ... mais à revoir si d'autres utilisateurs sont amenés à traiter des actions en dehors de synapse
 	 * @param Builder $query
 	 * @return $this
@@ -270,99 +499,118 @@ class EwbsAction extends RevisableModel {
 	public function scopeForNostraTeam (Builder $query) {
 		return $query->where('token', '>', 0);
 	}
-
-
+	
 	/**
-	 * Scope par administration pour le trait Filterable
-	 * une action peut être reliée à une administration :
+	 * Filtre les données sur base du filtre utilisateur par administrations
+	 * 
+	 * Une action peut être reliée à une administration :
 	 *  - par une Idea
 	 * 	- par une Demarche
-	 *  - par une piece, une tache ou un eform dans une Demarche (et on a cette info lorsqu'on a une pice ou une tache)
-	 * @param $query
-	 * @param $administrationsIds
+	 *  - par une piece, une tache ou un eform dans une Demarche (et on a cette info lorsqu'on a une pièce ou une tâche)
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
-	public function scopeAdministrationsIds($query, $administrationsIds) {
-		if (is_array ( $administrationsIds ) && count ( $administrationsIds )) {
-			return $query->where(function ($query) use ($administrationsIds) {
-				$query
-					->whereHas('idea', function ($query) use ($administrationsIds) {
-						$query->whereHas('administrations', function ($query) use ($administrationsIds) {
-							$query->whereIn('administration_id', $administrationsIds);
-						});
-					})
-					->orWhereHas('demarche', function ($query) use ($administrationsIds) {
-						$query->whereHas('administrations', function ($query) use ($administrationsIds) {
-							$query->whereIn('administration_id', $administrationsIds);
-						});
+	public function scopeAdministrationsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->where(function ($query) use ($ids) {
+				$query->whereHas('idea', function ($query) use ($ids) {
+					$query->whereHas('administrations', function ($query) use ($ids) {
+						$query->whereIn('administration_id', $ids);
 					});
+				})
+				->orWhereHas('demarche', function ($query) use ($ids) {
+					$query->whereHas('administrations', function ($query) use ($ids) {
+						$query->whereIn('administration_id', $ids);
+					});
+				});
 			});
 		}
 		return $query;
 	}
-
+	
 	/**
+	 * Filtre les données sur base du filtre utilisateur par expertises
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeExpertisesIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->whereIn('ewbsActions.name', function($query) use ($ids) {
+				$query->select('name')
+				->from(with(new Expertise())->getTable())
+				->whereIn('id', $ids);
+			});
+		}
+		return $query;
+	}
+	
+	/**
+	 * Filtre les données sur base du filtre utilisateur par publics-cibles
+	 * 
+	 * On prend les actions
+	 * 	- liées à des idées liées aux publics
+	 * 	- liées à des démarche sliées aux publics
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeNostraPublicsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->where(function ($query) use ($ids) {
+				$query->whereHas('demarche', function($query) use($ids) {
+					$query->whereHas('nostraDemarche', function ($query) use ($ids) {
+						$query->whereHas('nostraPublics', function ($query) use ($ids) {
+							$query->whereIn('nostra_public_id', $ids);
+						});
+					});
+				})
+				->orWhereHas('idea', function ($query) use($ids) {
+					$query->whereHas('nostraPublics', function ($query) use ($ids) {
+						$query->whereIn('nostra_public_id', $ids);
+					});
+				});
+			});
+		}
+		return $query;
+	}
+	
+	/**
+	 * Filtre les données sur base du filtre utilisateur par tags
+	 * 
 	 * On prend les actions liées directement aux tags
 	 * Mais on doit aussi prendre :
 	 *  - les actions liées à des demarches qui ont ces tags
 	 *  - les actions liées à des ideas qui ont ces tags
-	 * @param $query
-	 * @param $tagsIds
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
-	public function scopetaxonomyTagsIds($query, $tagsIds) {
-		if (is_array ( $tagsIds ) && count ( $tagsIds )) {
-			return $query->where(function ($query) use ($tagsIds){
-				$query
-				->whereHas('tags', function ($query) use ($tagsIds) {
-					$query->whereIn('taxonomy_tag_id', $tagsIds);
+	public function scopeTaxonomyTagsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->where(function ($query) use ($ids){
+				$query->whereHas('tags', function ($query) use ($ids) {
+					$query->whereIn('taxonomy_tag_id', $ids);
 				})
-				->orWhereHas('demarche', function ($query) use ($tagsIds) {
-					$query->whereHas('tags', function ($query) use ($tagsIds) {
-						$query->whereIn('taxonomy_tag_id', $tagsIds);
+				->orWhereHas('demarche', function ($query) use ($ids) {
+					$query->whereHas('tags', function ($query) use ($ids) {
+						$query->whereIn('taxonomy_tag_id', $ids);
 					});
 				})
-				->orWhereHas('demarche', function ($query) use ($tagsIds) {
-					$query->whereHas('tags', function ($query) use ($tagsIds) {
-						$query->whereIn('taxonomy_tag_id', $tagsIds);
+				->orWhereHas('demarche', function ($query) use ($ids) {
+					$query->whereHas('tags', function ($query) use ($ids) {
+						$query->whereIn('taxonomy_tag_id', $ids);
 					});
 				});
 			});
 		}
 		return $query;
 	}
-
+	
 	/**
-	 * On prend les actions
-	 * 	- liées à des idées liées aux publics
-	 * 	- liées à des démarche sliées aux publics
-	 * @param $query
-	 * @param $publicsIds
-	 */
-	public function scopenostraPublicsIds($query, $publicsIds) {
-		if (is_array($publicsIds) && count($publicsIds)) {
-			return $query->where(function ($query) use ($publicsIds) {
-				$query
-				->whereHas('demarche', function($query) use($publicsIds) {
-					$query->whereHas('nostraDemarche', function ($query) use ($publicsIds) {
-						$query->whereHas('nostraPublics', function ($query) use ($publicsIds) {
-							$query->whereIn('nostra_public_id', $publicsIds);
-						});
-					});
-				})
-				->orWhereHas('idea', function ($query) use($publicsIds) {
-					$query->whereHas('nostraPublics', function ($query) use ($publicsIds) {
-						$query->whereIn('nostra_public_id', $publicsIds);
-					});
-				});
-			});
-		}
-		return $query;
-	}
-
-
-
-
-	/**
-	 * Query scope joignant les noms des éventuelles sous-actions
+	 * Lier aux actions les noms des éventuelles sous-actions
 	 *
 	 * @param Builder $query
 	 * @return Builder
@@ -372,90 +620,6 @@ class EwbsAction extends RevisableModel {
 		->addSelect([
 			DB::raw('(SELECT ARRAY_TO_STRING(ARRAY_AGG(DISTINCT subactions.name), \', \', \'\') FROM "ewbsActions" subactions WHERE subactions.parent_id="ewbsActions".id AND subactions.deleted_at IS NULL) AS subactions'),
 		]);
-	}
-	/**
-	 * A partir d'un id de EwbsActionRevision, retourne l'historique de l'action dans cette démarche
-	 *
-	 * @return mixed|static
-	 */
-	public function getRevisions() {
-		return EwbsActionRevision
-		::withTrashed ()
-		->leftjoin('users', 'users.id', '=', 'ewbsActionsRevisions.user_id')
-		->where ( 'ewbsActionsRevisions.ewbs_action_id', '=', $this->id )
-		->orderBy ( 'ewbsActionsRevisions.created_at', 'DESC' )
-		->get (['ewbsActionsRevisions.id as revision_id', 'users.username', 'ewbsActionsRevisions.state', 'ewbsActionsRevisions.description', 'ewbsActionsRevisions.created_at', 'ewbsActionsRevisions.deleted_at']);
-	}
-	
-	/**
-	 * Retourne un état global selon un nombre d'actions à différents états.
-	 * 
-	 * La particularité est que l'état est globalement en progrès si des actions sont en todo ET en done.
-	 * @param Object, ayant comme propriétés minimum les entiers suivants $count_state_todo, $count_state_progress, $count_state_done, $count_state_givenup
-	 * @return string|NULL
-	 */
-	public static function globalState($obj) {
-		if($obj->count_state_progress || ($obj->count_state_todo && $obj->count_state_done)) return EwbsActionRevision::$STATE_PROGRESS;
-		if($obj->count_state_todo) return EwbsActionRevision::$STATE_TODO;
-		if($obj->count_state_done) return EwbsActionRevision::$STATE_DONE;
-		if($obj->count_state_givenup) return EwbsActionRevision::$STATE_GIVENUP;
-		return null;
-	}
-	
-	/**
-	 * Spécifier une description qui sera sauvée dans la future révision liée à l'action
-	 * 
-	 * @param string $value
-	 */
-	public function setDescription($value) {
-		$this->addRevisionAttributes(['description'=>$value]);
-	}
-	
-	/**
-	 * Spécifier un état qui sera sauvé dans la future révision liée à l'action
-	 * 
-	 * @param string $value
-	 */
-	public function setState($value) {
-		$this->addRevisionAttributes(['state'=>$value]);
-	}
-	
-	/**
-	 * Retourne l'historique d'une action sous forme d'une collection
-	 * 
-	 * @return mixed
-	 */
-	public function getHistory() {
-		return EwbsActionRevision
-			::withTrashed ()
-			->leftjoin('users', 'users.id', '=', 'ewbsActionsRevisions.user_id')
-			->where ( 'ewbsActionsRevisions.ewbs_action_id', '=', $this->id )
-			->orderBy ( 'ewbsActionsRevisions.created_at', 'DESC' )
-			->get (['ewbsActionsRevisions.id as revision_id', 'users.username', 'users.email AS usermail', 'ewbsActionsRevisions.state', 'ewbsActionsRevisions.priority', 'ewbsActionsRevisions.description', 'ewbsActionsRevisions.created_at', 'ewbsActionsRevisions.deleted_at']);
-	}
-	
-	/**
-	 * Compter les actions en cours
-	 * 
-	 * @return int
-	 */
-	public static function getCountTodo() {
-		return DB::table('v_lastrevisionewbsaction')
-			->where('state', '=',  EwbsActionRevision::$STATE_TODO)
-			->whereNull('deleted_at')
-			->count();
-	}
-	
-	/**
-	 * Compter les actions terminées
-	 * 
-	 * @return int
-	 */
-	public static function getCountDone() {
-		return DB::table('v_lastrevisionewbsaction')
-			->where('state', '=',  EwbsActionRevision::$STATE_DONE)
-			->whereNull('deleted_at')
-			->count();
 	}
 	
 	/**

@@ -18,7 +18,7 @@ class AdminDashboardController extends BaseController {
 	 */
 	public function getIndex() {
 
-		//TODO: O na un couplage fort avec les modèles appelés ici ... il faudrait transformer tous les appels en scope pour éviter les soucis à la maintenante évolutive --jda décembre 2016
+		//TODO: On a un couplage fort avec les modèles appelés ici ... il faudrait transformer tous les appels en scope pour éviter les soucis à la maintenante évolutive --jda décembre 2016
 
 		// on récupère les noms de filtres
 		$txtUserFiltersAdministration = $this->getFilterString();
@@ -42,14 +42,25 @@ class AdminDashboardController extends BaseController {
 		// -----------------------------------------
 		// ACTIONS
 		// -----------------------------------------
-
-		// Les actions affectées à l'équipe Nostra ne peuvent pas être filtrée. En effet, en cas de demande d'ajout de démarche ... l'action n'est liée à rien.
-		$countNostraActions = EwbsAction::filtered()->each()->forNostraTeam()->whereIn('v_lastrevisionewbsaction.state', ['todo', 'progress'])->count();
-		$countDemarcheComponentsActions = EwbsAction::filtered()->each()->forComponents()->whereIn('v_lastrevisionewbsaction.state', ['todo', 'progress'])->count();
-		$countFormsActions = EwbsAction::filtered()->each()->forEforms()->whereIn('v_lastrevisionewbsaction.state', ['todo', 'progress'])->count();
-		$countDemarchesActions = EwbsAction::filtered()->each()->onlylinkedToDemarches()->whereIn('v_lastrevisionewbsaction.state', ['todo', 'progress'])->count();
-
-
+		// Préparer un tableau par pôle ayant au moins une expertise liée à une action en cours
+		$poles=Pole::ordered()->get();
+		$aPoles=array();
+		$totalActions=0;
+		foreach($poles as $pole) {
+			$aPoles[$pole->id]=[
+				'expertises'=>array()
+			];
+			foreach(Expertise::filtered()->ordered()->forPole($pole)->each()->countActions()->get() as $expertise) {
+				if($expertise->actions>0) {
+					array_push($aPoles[$pole->id]['expertises'], $expertise);
+					$totalActions+=$expertise->actions;
+				}
+			}
+			if(empty($aPoles[$pole->id]['expertises'])) {
+				unset($aPoles[$pole->id]);
+			}
+		}
+		
 		// -----------------------------------------
 		// DEMARCHES
 		// -----------------------------------------
@@ -70,50 +81,43 @@ class AdminDashboardController extends BaseController {
 		// -----------------------------------------
 		// FORMULAIRES
 		// -----------------------------------------
-		// Remarque : on utilise pas le trait Filterable sur les formulaires ici.
-		// comme les formulaires sont liés à des démarches, et qu'on connait les démarches ...
-		// Attention tout de même ... il faut prendre les valeurs de la table eForms , MAIS si on a un lien avec un NostraForm, ce sont ces valeurs qui comptent !
+		// Remarques :
+		// - On ne compte pas les nostraforms, mais bien les eforms liés aux démarches
+		// - Anciennement on n'utilisait pas le filtre afin de bénéficier des ids de démarches déjà déterminés. Mais avec le filtre sur les actions qui doit s'appliquer directement sur des eforms, il faut mnt passer par le filtre complet...
+		// - Attention tout de même ... il faut prendre les valeurs de la table eForms , MAIS si on a un lien avec un NostraForm, ce sont ces valeurs qui comptent !
 
-		$countFilteredForms = Eform::whereHas('demarcheEforms', function ($q) use ($filteredDemarchesIds) { // on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
-									$q->whereIn('demarche_eform.demarche_id', $filteredDemarchesIds);
-								})->count();
+		$countFilteredForms = Eform
+		::filtered()
+		->count();
 
 		$countFilteredSimplifiedForms = Eform
-										::whereHas('demarcheEforms', function ($q) use ($filteredDemarchesIds) { // on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
-											$q->whereIn('demarche_eform.demarche_id', $filteredDemarchesIds);
-										})
-										->leftJoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
-										->where(DB::raw('CASE WHEN eforms.nostra_form_id > 0 THEN nostra_forms.simplified ELSE eforms.simplified END'), '>', 0)
-										->count();
+		::filtered()
+		->leftJoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
+		->where(DB::raw('CASE WHEN eforms.nostra_form_id > 0 THEN nostra_forms.simplified ELSE eforms.simplified END'), '>', 0)
+		->count();
 
 		$countFilteredElectronicForms = Eform
-										::whereHas('demarcheEforms', function ($q) use ($filteredDemarchesIds) { // on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
-											$q->whereIn('demarche_eform.demarche_id', $filteredDemarchesIds);
-										})
-										->leftJoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
-										->where(DB::raw('CASE WHEN eforms.nostra_form_id > 0 THEN nostra_forms.format ELSE eforms.format END'), '=', 'PEL')
-										->count();
+		::filtered()
+		->leftJoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
+		->where(DB::raw('CASE WHEN eforms.nostra_form_id > 0 THEN nostra_forms.format ELSE eforms.format END'), '=', 'PEL')
+		->count();
 
 		$countFilteredEIDForms = Eform
-			::whereHas('demarcheEforms', function ($q) use ($filteredDemarchesIds) { // on ne compte pas les nostraforms, mais bien les eforms liés aux démarches
-				$q->whereIn('demarche_eform.demarche_id', $filteredDemarchesIds);
-			})
-			->leftJoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
-			->where(DB::raw('CASE WHEN eforms.nostra_form_id > 0 THEN nostra_forms.esign ELSE eforms.esign END'), '>', 0)
-			->count();
-
-
-		return View::make ( 'admin/dashboard', compact( 'txtUserFiltersAdministration',
-														'countFilteredProjects', 'countPrioritaryProjects', 'countGenericProjects', 'countInProgressProjects', 'countDoneProjects', 'countCanceledProjects', 'countValidatedProjects',
-														'countNostraActions', 'countDemarchesActions', 'countDemarcheComponentsActions', 'countFormsActions',
-														'countFilteredDemarches', 'countDocumentedDemarches', 'countWithGainsDemarches', 'countPiecesDemarches', 'countTasksDemarches',
-														'potentialAmountAdministration', 'potentialAmountCitizen',
-														'countFilteredForms', 'countFilteredSimplifiedForms', 'countFilteredElectronicForms', 'countFilteredEIDForms'
-												) );
-
+		::filtered()
+		->leftJoin('nostra_forms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
+		->where(DB::raw('CASE WHEN eforms.nostra_form_id > 0 THEN nostra_forms.esign ELSE eforms.esign END'), '>', 0)
+		->count();
+		
+		return View::make ( 'admin/dashboard', compact(
+			'txtUserFiltersAdministration',
+			'countFilteredProjects', 'countPrioritaryProjects', 'countGenericProjects', 'countInProgressProjects', 'countDoneProjects', 'countCanceledProjects', 'countValidatedProjects',
+			'aPoles','totalActions',
+			'countFilteredDemarches', 'countDocumentedDemarches', 'countWithGainsDemarches', 'countPiecesDemarches', 'countTasksDemarches',
+			'potentialAmountAdministration', 'potentialAmountCitizen',
+			'countFilteredForms', 'countFilteredSimplifiedForms', 'countFilteredElectronicForms', 'countFilteredEIDForms'
+		));
 	}
-
-
+	
 	/**
 	 * Obtenir l'écran de liste des projets filtrés
 	 * @return \Illuminate\View\View
@@ -184,75 +188,14 @@ class AdminDashboardController extends BaseController {
 
 		// on sauve la route en cours pour gérer les retour à la liste
 		$this->setReturnTo();
-
-		// pour récupérer les TOP, on procédera en deux temps.
-		// 1. récupérer la liste des démarches filtrées de l'utilisateur.
-		// 2. récupérer les top
-		// TODO: cette portion de code est elle à sa place ici ?
-
-		// 1. la liste des ids de démarche
-		$aFilteredDemarcheIds = Demarche::filtered()->lists('id');
-
-		// 2.
-		// Top des pièces les plus demandées
-		$aTopExecutedPieces = Piece
-								::join('v_lastrevisionpiecesfromdemarche', 'v_lastrevisionpiecesfromdemarche.piece_id', '=', 'demarchesPieces.id')
-								->whereNull('demarchesPieces.deleted_at')
-								->whereNull('v_lastrevisionpiecesfromdemarche.deleted_at')
-								->whereIn('v_lastrevisionpiecesfromdemarche.demarche_id', $aFilteredDemarcheIds)
-								->having(DB::raw('SUM(v_lastrevisionpiecesfromdemarche.volume * v_lastrevisionpiecesfromdemarche.frequency)'), '>', 0)
-								->groupBy('demarchesPieces.id')
-								->orderBy('count_items', "DESC")
-								->limit(3)
-								->get([
-									'demarchesPieces.name AS displayname',
-									DB::raw('SUM(v_lastrevisionpiecesfromdemarche.volume * v_lastrevisionpiecesfromdemarche.frequency) AS count_items')
-								])->toArray();
-		// Top des tâches les plus exéctuée
-		$aTopExecutedTasks = Task
-								::join('v_lastrevisiontasksfromdemarche', 'v_lastrevisiontasksfromdemarche.task_id', '=', 'demarchesTasks.id')
-								->whereNull('demarchesTasks.deleted_at')
-								->whereNull('v_lastrevisiontasksfromdemarche.deleted_at')
-								->whereIn('v_lastrevisiontasksfromdemarche.demarche_id', $aFilteredDemarcheIds)
-								->having(DB::raw('SUM(v_lastrevisiontasksfromdemarche.volume * v_lastrevisiontasksfromdemarche.frequency)'), '>', 0)
-								->groupBy('demarchesTasks.id')
-								->orderBy('count_items', "DESC")
-								->limit(3)
-								->get([
-									'demarchesTasks.name AS displayname',
-									DB::raw('SUM(v_lastrevisiontasksfromdemarche.volume * v_lastrevisiontasksfromdemarche.frequency) AS count_items')
-								])->toArray();
-		// Top des pièces qui dégageraient le plus de pognon
-		$aTopValuablePieces = Piece
-								::join('v_lastrevisionpiecesfromdemarche', 'v_lastrevisionpiecesfromdemarche.piece_id', '=', 'demarchesPieces.id')
-								->whereNull('demarchesPieces.deleted_at')
-								->whereNull('v_lastrevisionpiecesfromdemarche.deleted_at')
-								->whereIn('v_lastrevisionpiecesfromdemarche.demarche_id', $aFilteredDemarcheIds)
-								->groupBy('demarchesPieces.id')
-								->orderBy('gpagpc', "DESC")
-								->limit(3)
-								->get([
-									'demarchesPieces.name AS displayname',
-									DB::raw('SUM(v_lastrevisionpiecesfromdemarche.gain_potential_administration + v_lastrevisionpiecesfromdemarche.gain_potential_citizen) AS gpagpc')
-								])->toArray();
-		// Top des taches qui dégageraient le plus de pognon
-		$aTopValuableTasks = Task
-								::join('v_lastrevisiontasksfromdemarche', 'v_lastrevisiontasksfromdemarche.task_id', '=', 'demarchesTasks.id')
-								->whereNull('demarchesTasks.deleted_at')
-								->whereNull('v_lastrevisiontasksfromdemarche.deleted_at')
-								->whereIn('v_lastrevisiontasksfromdemarche.demarche_id', $aFilteredDemarcheIds)
-								->groupBy('demarchesTasks.id')
-								->orderBy('gpagpc', "DESC")
-								->limit(3)
-								->get([
-									'demarchesTasks.name AS displayname',
-									DB::raw('SUM(v_lastrevisiontasksfromdemarche.gain_potential_administration + v_lastrevisiontasksfromdemarche.gain_potential_citizen) AS gpagpc')
-								])->toArray();
-
-
-
+		
+		// On récupère les top utilisation et gain des pièces et tâches 
+		$aTopExecutedPieces = DemarchePiece::filtered()->mostUsed(3)->get()->toArray();
+		$aTopExecutedTasks = DemarcheTask::filtered()->mostUsed(3)->get()->toArray();
+		$aTopValuablePieces = DemarchePiece::filtered()->potentiallyMostGainful(3)->get()->toArray();
+		$aTopValuableTasks = DemarcheTask::filtered()->potentiallyMostGainful(3)->get()->toArray();
+		
 		return View::make( 'admin/demarches/dashboard-listcharges', compact('model', 'loggedUser', 'txtUserFiltersAdministration', 'aTopExecutedPieces', 'aTopExecutedTasks', 'aTopValuablePieces', 'aTopValuableTasks') );
-
 	}
 
 
@@ -265,16 +208,25 @@ class AdminDashboardController extends BaseController {
 		$string = implode(', ',  Administration::whereHas('filters', function($query) {
 			$query->where('user_id', '=', Auth::user()->id);
 		})->lists('name'));
+		
+		// #desactivatedtags
 		// tags
-		$string .= ' | '; //TODO: faire qqe chose de plus propre, comme aller taper une icone devant les termes, tirée du fichier de langue
+		/*$string .= ' | '; //TODO: faire qqe chose de plus propre, comme aller taper une icone devant les termes, tirée du fichier de langue
 		$string .= implode(', ',  TaxonomyTag::whereHas('filters', function($query) {
 			$query->where('user_id', '=', Auth::user()->id);
-		})->lists('name'));
+		})->lists('name'));*/
+		
 		// publics
 		$string .= ' | '; //TODO: faire qqe chose de plus propre, comme aller taper une icone devant les termes, tirée du fichier de langue
 		$string .= implode(', ',  NostraPublic::whereHas('filters', function($query) {
 			$query->where('user_id', '=', Auth::user()->id);
 		})->lists('title'));
+		
+		$string .= ' | ';
+		$string .= implode(', ',  Expertise::whereHas('filters', function($query) {
+			$query->where('user_id', '=', Auth::user()->id);
+		})->lists('name'));
+		
 		return $string;
 	}
 

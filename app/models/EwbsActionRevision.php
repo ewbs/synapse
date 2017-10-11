@@ -6,6 +6,7 @@
  * @property string         $state           Maximum 255 caractères
  * @property string         $priority
  * @property string         $description
+ * @property int            $responsible_id  Obligatoire, @see User
  * @author mgrenson
  */
 class EwbsActionRevision extends RevisionModel {
@@ -15,6 +16,7 @@ class EwbsActionRevision extends RevisionModel {
 	public static $STATE_TODO='todo';
 	public static $STATE_PROGRESS='progress';
 	public static $STATE_DONE='done';
+	public static $STATE_STANDBY='standby';
 	public static $STATE_GIVENUP='givenup';
 	
 	public static $PRIORITY_LOW='low';
@@ -35,7 +37,7 @@ class EwbsActionRevision extends RevisionModel {
 	 * @see RevisionModel::attributes()
 	 */
 	public function attributes(){
-		return ['description', 'state', 'priority'];
+		return ['description', 'state', 'priority', 'responsible_id'];
 	}
 	
 	/**
@@ -44,7 +46,7 @@ class EwbsActionRevision extends RevisionModel {
 	 * return array
 	 */
 	public static function states() {
-		return [self::$STATE_TODO, self::$STATE_PROGRESS, self::$STATE_DONE, self::$STATE_GIVENUP];
+		return [self::$STATE_TODO, self::$STATE_PROGRESS, self::$STATE_DONE, self::$STATE_STANDBY, self::$STATE_GIVENUP];
 	}
 	
 	/**
@@ -58,6 +60,7 @@ class EwbsActionRevision extends RevisionModel {
 			case self::$STATE_TODO     :return 'default';
 			case self::$STATE_PROGRESS :return 'primary';
 			case self::$STATE_DONE     :return 'success';
+			case self::$STATE_STANDBY  :return 'info';
 			case self::$STATE_GIVENUP  :return 'warning';
 			default : throw new \UnexpectedValueException($state);
 		}
@@ -74,7 +77,8 @@ class EwbsActionRevision extends RevisionModel {
 			case self::$STATE_TODO     :return 1;
 			case self::$STATE_PROGRESS :return 2;
 			case self::$STATE_DONE     :return 3;
-			case self::$STATE_GIVENUP  :return 4;
+			case self::$STATE_STANDBY  :return 4;
+			case self::$STATE_GIVENUP  :return 5;
 			default : throw new \UnexpectedValueException($state);
 		}
 	}
@@ -150,13 +154,12 @@ class EwbsActionRevision extends RevisionModel {
 	}
 	
 	/**
-	 * {@inheritDoc}
-	 * @see RevisionModel::user()
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
-	public function user() {
+	public function responsible() {
 		return $this->belongsTo ( 'User' );
 	}
-	
 	
 	/**
 	 * Liste les événements à enregistrer pour le modèle courant
@@ -170,6 +173,17 @@ class EwbsActionRevision extends RevisionModel {
 		 * (et que la transaction soit commitée)
 		 */
 		parent::boot();
+		
+		/**
+		 * Traitement avant création de la révision d'action
+		 */
+		self::creating(function(EwbsActionRevision $modelInstance) {
+			
+			// L'action est par défaut assignée au créateur de la révision
+			if(!$modelInstance->responsible_id)
+				$modelInstance->responsible_id=$modelInstance->user_id;
+		});
+		
 		/**
 		 * Traitements suite au create/update/restore d'une action ou sous-action :
 		 * Recalculer l'état de l'action selon l'état de ses sous-actions
@@ -195,6 +209,7 @@ class EwbsActionRevision extends RevisionModel {
 				DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_TODO."'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_todo"),
 				DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_PROGRESS."' THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_progress"),
 				DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_DONE."'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_done"),
+				DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_STANDBY."'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_standby"),
 				DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_GIVENUP."'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_givenup")
 			]);
 			if(empty($substates)) return;

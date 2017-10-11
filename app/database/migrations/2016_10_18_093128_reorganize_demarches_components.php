@@ -5,38 +5,46 @@ use Illuminate\Database\Schema\Blueprint;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 class ReorganizeDemarchesComponents extends Migration {
-
+	
+	/**
+	 *
+	 * @var ConsoleOutput
+	 */
+	private $output;
+	
+	public function __construct() {
+		$this->output = new ConsoleOutput();
+	}
+	
 	/**
 	 * Run the migrations.
 	 *
 	 * @return void
 	 */
 	public function up() {
-		$output=new ConsoleOutput();
-		
-		$this->dropDependantViews($output);
+		$this->dropDependantViews();
 		
 		foreach(['piece','task'] as $type) {
 			$ptype=str_plural($type);
 			$uctype=ucfirst($type);
 			$puctype=ucfirst($ptype);
 			
-			$output->writeln("Creation de la table demarche_demarche{$uctype}");
+			$this->output->writeln("Creation de la table demarche_demarche{$uctype}");
 			Schema::create("demarche_demarche{$uctype}", function(Blueprint $table) use($type,$ptype,$uctype,$puctype) {
 				$table->increments('id')->unsigned();
-				$table->integer('demarche_id')->unsigned()->foreign('demarche_id')->references('id')->on('demarches')->onDelete('cascade');
-				$table->integer("{$type}_id")->unsigned()->foreign("{$type}_id")->references('id')->on("demarches{$puctype}")->onDelete('cascade');
+				$table->unsignedInteger('demarche_id')->foreign('demarche_id')->references('id')->on('demarches')->onDelete('cascade'); // Note : clé étrangère non appliquée à cause du unsigned, corrigé via CorrectTablesKeys43
+				$table->unsignedInteger("{$type}_id")->foreign("{$type}_id")->references('id')->on("demarches{$puctype}")->onDelete('cascade'); // Note : clé étrangère non appliquée à cause du unsigned, corrigé via CorrectTablesKeys43
 				$table->text('name');
 				$table->timestamps();
 				$table->softDeletes();
 				$table->unique(['demarche_id', "{$type}_id", 'name'], "demarche_demarche{$uctype}_unique");
 			});
 			
-			$output->writeln("Creation de la table demarche_demarche{$uctype}_revisions");
+			$this->output->writeln("Creation de la table demarche_demarche{$uctype}_revisions");
 			Schema::create("demarche_demarche{$uctype}_revisions", function(Blueprint $table) use($type,$ptype,$uctype,$puctype) {
 				$table->increments('id')->unsigned();
-				$table->integer("demarche_demarche{$uctype}_id")->unsigned()->foreign("demarche_demarche{$uctype}_id")->references('id')->on("demarche_demarche{$uctype}")->onDelete('cascade');
-				$table->integer('user_id')->unsigned()->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+				$table->unsignedInteger("demarche_demarche{$uctype}_id")->foreign("demarche_demarche{$uctype}_id")->references('id')->on("demarche_demarche{$uctype}")->onDelete('cascade'); // Note : clé étrangère non appliquée à cause du unsigned, corrigé via CorrectTablesKeys43
+				$table->unsignedInteger('user_id')->foreign('user_id')->references('id')->on('users')->onDelete('set null'); // Note : clé étrangère non appliquée à cause du unsigned, corrigé via CorrectTablesKeys43
 				$table->text('comment')->nullable();
 				$table->decimal('cost_administration_currency', 10, 2);
 				$table->decimal('cost_citizen_currency', 10, 2);
@@ -46,13 +54,13 @@ class ReorganizeDemarchesComponents extends Migration {
 				$table->decimal('gain_potential_citizen', 15, 2);
 				$table->decimal('gain_real_administration', 15, 2);
 				$table->decimal('gain_real_citizen', 15, 2);
-				$table->integer('current_state_id')->unsigned()->nullable()->foreign('current_state_id')->references('id')->on( "demarches{$puctype}States")->onDelete('set null');
-				$table->integer('next_state_id')->unsigned()->nullable()->foreign('next_state_id')->references('id')->on( "demarches{$puctype}States")->onDelete('set null');
+				$table->unsignedInteger('current_state_id')->nullable()->foreign('current_state_id')->references('id')->on( "demarches{$puctype}States")->onDelete('set null');
+				$table->unsignedInteger('next_state_id')->nullable()->foreign('next_state_id')->references('id')->on( "demarches{$puctype}States")->onDelete('set null');
 				$table->timestamps();
 				$table->softDeletes();
 			});
 			
-			$output->writeln("Modification de la vue v_lastRevision{$puctype}FromDemarche");
+			$this->output->writeln("Modification de la vue v_lastRevision{$puctype}FromDemarche");
 			DB::statement("DROP VIEW v_lastRevision{$puctype}FromDemarche");
 			DB::statement ("
 				CREATE VIEW v_lastRevision{$puctype}FromDemarche
@@ -73,15 +81,15 @@ class ReorganizeDemarchesComponents extends Migration {
 			//Note : Mettre rev.* en dernier dans le select, car si des nouvelles colonnes sont ajoutées dans le futur, un CREATE OR REPLACE sera alors possible
 			
 			
-			$output->writeln("Modification de la colonne demarche_{$type}_id de la table ewbsActions");
+			$this->output->writeln("Modification de la colonne demarche_{$type}_id de la table ewbsActions");
 			DB::statement('ALTER TABLE "ewbsActions" RENAME COLUMN "demarche_'.$type.'_id" TO "todelete_demarche_'.$type.'_id";');
 			Schema::table('ewbsActions',  function(Blueprint $table) use($type,$uctype) {
-				$table->integer("demarche_{$type}_id")->unsigned()->nullable();
+				$table->unsignedInteger("demarche_{$type}_id")->nullable();
 				$table->foreign("demarche_{$type}_id")->references('id')->on("demarche_demarche{$uctype}")->onDelete('set null');
 			});
 		}
 		
-		$this->createDependantViews($output);
+		$this->createDependantViews();
 	}
 
 	/**
@@ -90,22 +98,20 @@ class ReorganizeDemarchesComponents extends Migration {
 	 * @return void
 	 */
 	public function down() {
-		$output=new ConsoleOutput();
-		
-		$this->dropDependantViews($output);
+		$this->dropDependantViews();
 		
 		foreach(['piece','task'] as $type) {
 			$ptype=str_plural($type);
 			$uctype=ucfirst($type);
 			$puctype=ucfirst($ptype);
 			
-			$output->writeln("Restauration de la colonne demarche_{$type}_id de la table ewbsActions");
+			$this->output->writeln("Restauration de la colonne demarche_{$type}_id de la table ewbsActions");
 			Schema::table('ewbsActions', function(Blueprint $table) use($type,$puctype) {
 				$table->dropColumn(["demarche_{$type}_id"]);
 			});
 			DB::statement('ALTER TABLE "ewbsActions" RENAME COLUMN "todelete_demarche_'.$type.'_id" TO "demarche_'.$type.'_id";');
 			
-			$output->writeln("Restauration de l'ancienne vue v_lastRevision{$puctype}FromDemarche");
+			$this->output->writeln("Restauration de l'ancienne vue v_lastRevision{$puctype}FromDemarche");
 			DB::statement("DROP VIEW v_lastRevision{$puctype}FromDemarche");
 			DB::statement ("
 				CREATE VIEW v_lastRevision{$puctype}FromDemarche
@@ -123,31 +129,29 @@ class ReorganizeDemarchesComponents extends Migration {
 			);
 			//Note : Mettre cp.* en dernier dans le select, car si des nouvelles colonnes sont ajoutées dans le futur, un CREATE OR REPLACE sera alors possible
 			
-			$output->writeln("Suppression de la table demarche_demarche{$uctype}_revisions");
+			$this->output->writeln("Suppression de la table demarche_demarche{$uctype}_revisions");
 			Schema::drop("demarche_demarche{$uctype}_revisions");
 			
-			$output->writeln("Suppression de la table demarche_demarche{$uctype}");
+			$this->output->writeln("Suppression de la table demarche_demarche{$uctype}");
 			Schema::drop("demarche_demarche{$uctype}");
 		}
 		
-		$this->createDependantViews($output);
+		$this->createDependantViews();
 	}
 	
 	/**
 	 * 
-	 * @param ConsoleOutput $output
 	 */
-	private function dropDependantViews(ConsoleOutput $output){
-		$output->writeln("Suppression des vues v_calculatedDemarcheGains et v_calculatedDemarcheGains");
+	private function dropDependantViews(){
+		$this->output->writeln("Suppression des vues v_calculatedDemarcheGains et v_calculatedDemarcheGains");
 		DB::statement('DROP VIEW v_calculatedDemarcheGains CASCADE');
 	}
 	
 	/**
 	 * 
-	 * @param ConsoleOutput $output
 	 */
-	private function createDependantViews(ConsoleOutput $output){
-		$output->writeln("Creation de la vue v_calculatedDemarcheGains");
+	private function createDependantViews(){
+		$this->output->writeln("Creation de la vue v_calculatedDemarcheGains");
 		DB::statement ('
 			CREATE VIEW v_calculatedDemarcheGains AS
 			SELECT demarche_id, SUM(gpa) AS gain_potential_administration, SUM(gpc) AS gain_potential_citizen, SUM(gra) AS gain_real_administration, SUM(grc) AS gain_real_citizen FROM
@@ -159,7 +163,7 @@ class ReorganizeDemarchesComponents extends Migration {
 			GROUP BY demarche_id;
 		');
 		
-		$output->writeln("Creation de la vue v_demarcheGains");
+		$this->output->writeln("Creation de la vue v_demarcheGains");
 		DB::statement ('
 			CREATE VIEW v_demarcheGains AS
 			SELECT d.id AS demarche_id,

@@ -28,7 +28,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
 	 * This will cause the tests to run quickly.
 	 */
 	private function prepareForTests() {
-		Artisan::call ( 'migrate' );
+		Artisan::call ( 'migrate:transaction' );
 		$this->seed ();
 		Mail::pretend ( true );
 	}

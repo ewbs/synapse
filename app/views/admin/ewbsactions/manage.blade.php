@@ -4,13 +4,19 @@
  * 
  * @var EwbsAction $modelInstance
  * @var EwbsActionRevision $revision
+ * @var Illuminate\Database\Eloquent\Collection $aTaxonomy
+ * @var array $aSelectedTags
+ * @var array $aExpertises
+ * @var Illuminate\Database\Eloquent\Collection $aUsers
  */
 
 $state=Input::old('state', $revision ? $revision->state : EwbsActionRevision::$STATE_TODO);
+$name=Input::old('name', $modelInstance ? $modelInstance->name():null);
 $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRevision::$PRIORITY_NORMAL);
+$responsible_id=Input::old('responsible_id', $revision ? $revision->responsible_id : $loggedUser->id);
 ?>
 @extends('site.layouts.container-fluid')
-@section('title')Edition de l'action <em>{{ $modelInstance->name }}</em> @stop
+@section('title')Edition de l'action <em>{{ $modelInstance->name() }}</em> @stop
 @section('content')
 <div class="row">
 	<div class="col-md-12">
@@ -19,8 +25,21 @@ $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRev
 			<form class="form-horizontal" method="post" autocomplete="off" action="{{ $modelInstance->routeGetEdit() }}">
 				{{-- CSRF Token --}}
 				<input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
-				<input type="hidden" name="name" value="{{$modelInstance->name}}" /> {{-- le validator demande à ce que name soit présent --}}
 				{{-- ./ csrf token --}}
+				
+				{{-- Name --}}
+				<div class="form-group">
+					<label class="col-md-2 control-label" for="state">Nom</label>
+					<div class="col-md-10">
+						<select class="form-control select2 {{ $errors->has('name') ? 'has-error' : '' }}" name="name">
+						@foreach($aExpertises as $expertise)
+							<option {{ $expertise==$name ? ' selected': '' }}>{{$expertise}}</option>
+						@endforeach
+						</select>
+						{{ $errors->first('name', '<span class="help-inline">:message</span>') }}
+					</div>
+				</div>
+				{{-- ./ Name --}}
 				
 				{{-- Description --}}
 				<div class="form-group {{{ $errors->has('description') ? 'has-error' : '' }}}">
@@ -57,6 +76,19 @@ $priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRev
 					</div>
 				</div>
 				{{-- ./ Priority --}}
+				
+				{{-- Responsible --}}
+				<div class="form-group">
+					<label class="col-md-2 control-label" for="state">Responsable</label>
+					<div class="col-md-10">
+						<select class="form-control select2" name="responsible_id">
+						@foreach($aUsers as $user)
+							<option value="{{$user->id}}"{{ $user->id==$responsible_id ? ' selected': '' }}>{{ $user->username }}</option>
+						@endforeach
+						</select>
+					</div>
+				</div>
+				{{-- ./ Responsible --}}
 				
 				{{-- Sub --}}
 				@if($loggedUser->hasRole('admin'))

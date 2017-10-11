@@ -9,16 +9,36 @@
 				<h3>Mes actions</h3>
 			</div>
 			<div class="content">
+				<h4>Filtrer :</h4>
+				<form id="actions_filter" data-dontobserve="1">
+					<div class="form-group">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" class="icheck" name="createdbyme" {{Auth::user()->sessionGet('ewbsactions_createdbyme') ? 'checked="checked"':''}}/> Celles que j'ai créées
+							</label>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" class="icheck" name="assignedtome" {{Auth::user()->sessionGet('ewbsactions_assignedtome') ? 'checked="checked"':''}}/> Celles qui me sont assignées
+							</label>
+						</div>
+					</div>
+				</form>
+				<hr/>
 				<div class="table-responsive">
-					<table id="datatable" class="table table-hover">
+					<table class="table table-hover datatable" data-ajaxurl="{{ $model->routeGetFilteredData() }}" data-bFilter="true" data-bSort="true" data-bPaginate="true" data-useform="#actions_filter">
 						<thead>
-						<tr>
-							<th>#</th>
-							<th>Nom</th>
-							<th>Etat</th>
-							<th>Sous actions</th>
-							<th>Elements liés</th>
-						</tr>
+							<tr>
+								<th>#</th>
+								<th>Nom</th>
+								<th class="col-md-1">Etat</th>
+								<th class="col-md-1">Priorité</th>
+								<th class="col-md-3">Elément lié</th>
+								<th class="col-md-2">Assignation</th>
+								<th class="col-md-1">Révision</th>
+							</tr>
 						</thead>
 						<tbody>
 						</tbody>
@@ -34,19 +54,4 @@
 		<span class="fa fa-info-circle"></span> Votre liste d'actions est filtrée sur : {{$txtUserFiltersAdministration}}
 	</div>
 </div>
-@stop
-
-
-@section('scripts')
-<script type="text/javascript">
-	$(document).ready(function() {
-
-		var $tableDemarches = $('#datatable').dataTable( {
-			"aoColumnDefs": [],
-			"aaSorting" : [[0, "desc"]],
-			"sAjaxSource": "{{ $model->routeGetFilteredData() }}",
-		});
-
-	});
-</script>
 @stop

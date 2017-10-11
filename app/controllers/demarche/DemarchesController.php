@@ -6,6 +6,8 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Illuminate\Filesystem\FileNotFoundException;
 class DemarcheController extends TrashableModelController {
 	
+	use Synapse\Controllers\Traits\TraitFilterableController;
+	
 	/**
 	 * Inject the models.
 	 *
@@ -243,7 +245,7 @@ class DemarcheController extends TrashableModelController {
 						if($count=$item->getAttribute("count_state_{$state}"))
 							$tooltip.="<li>".Lang::choice("admin/ewbsactions/messages.wording.{$state}", $count)."</li>";
 					$tooltip.='</ul>';
-					return '<a href="'.route('demarchesActionsGetIndex', $item->demarche_id).'" data-toggle="popover" data-content="'.$tooltip.'" data-html="true"><span class="label label-'.EwbsActionRevision::stateToClass($globalState).'">'.($item->count_state_todo + $item->count_state_progress + $item->count_state_done + $item->count_state_givenup).'</span></a>';
+					return '<a href="'.route('demarchesActionsGetIndex', $item->demarche_id).'" data-toggle="popover" data-content="'.$tooltip.'" data-html="true"><span class="label label-'.EwbsActionRevision::stateToClass($globalState).'">'.($item->count_state_todo + $item->count_state_progress + $item->count_state_done + $item->count_state_standby + $item->count_state_givenup).'</span></a>';
 				}
 			})
 			->remove_column('titlelong')
@@ -254,18 +256,16 @@ class DemarcheController extends TrashableModelController {
 			->remove_column('count_state_todo')
 			->remove_column('count_state_progress')
 			->remove_column('count_state_done')
+			->remove_column('count_state_standby')
 			->remove_column('count_state_givenup');
 
 		return $dt->make ();
 
 	}
-
-
-	/** Cette fonction retourne les démarches filtrées (sur base des filtres utilisateurs) pour le dashboard
-	 * L'url est appelée par DataTables en ajax et peut prendre en paramètres :
-		 * - onlyDocumented=... --> n'afficher que les démarches documentées
-	 * @param string $multipleSeparator
-	 * @return mixed
+	
+	/**
+	 * {@inheritDoc}
+	 * @see Synapse\Controllers\Traits\TraitFilterableController::getDataFilteredJson()
 	 */
 	protected function getDataFilteredJson() {
 
@@ -321,7 +321,7 @@ class DemarcheController extends TrashableModelController {
 						if($count=$item->getAttribute("count_state_{$state}"))
 							$tooltip.="<li>".Lang::choice("admin/ewbsactions/messages.wording.{$state}", $count)."</li>";
 					$tooltip.='</ul>';
-					return '<a href="'.route('demarchesActionsGetIndex', $item->demarche_id).'" data-toggle="popover" data-content="'.$tooltip.'" data-html="true"><span class="label label-'.EwbsActionRevision::stateToClass($globalState).'">'.($item->count_state_todo + $item->count_state_progress + $item->count_state_done + $item->count_state_givenup).'</span></a>';
+					return '<a href="'.route('demarchesActionsGetIndex', $item->demarche_id).'" data-toggle="popover" data-content="'.$tooltip.'" data-html="true"><span class="label label-'.EwbsActionRevision::stateToClass($globalState).'">'.($item->count_state_todo + $item->count_state_progress + $item->count_state_done + $item->count_state_standby + $item->count_state_givenup).'</span></a>';
 				}
 			})
 			->remove_column('titlelong')
@@ -332,6 +332,7 @@ class DemarcheController extends TrashableModelController {
 			->remove_column('count_state_todo')
 			->remove_column('count_state_progress')
 			->remove_column('count_state_done')
+			->remove_column('count_state_standby')
 			->remove_column('count_state_givenup');
 
 		return $dt->make ();
@@ -374,6 +375,7 @@ class DemarcheController extends TrashableModelController {
 			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_TODO . "'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_todo"),
 			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_PROGRESS . "' THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_progress"),
 			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_DONE . "'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_done"),
+			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_STANDBY . "'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_standby"),
 			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_GIVENUP . "'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_givenup")
 		];
 
@@ -489,8 +491,26 @@ class DemarcheController extends TrashableModelController {
 	 * @return type
 	 */
 	public function getView(Demarche $demarche) {
+		// Préparer un tableau par pôle ayant au moins une expertise liée à une action en cours
+		$poles=Pole::ordered()->get();
+		$aPoles=array();
+		foreach($poles as $pole) {
+			$aPoles[$pole->id]=[
+				'expertises'=>array()
+			];
+			foreach(Expertise::ordered()->forPole($pole)->each()->countActionsForDemarche($demarche)->get() as $expertise) {
+				if($expertise->actions>0) {
+					array_push($aPoles[$pole->id]['expertises'], $expertise);
+				}
+			}
+			if(empty($aPoles[$pole->id]['expertises'])) {
+				unset($aPoles[$pole->id]);
+			}
+		}
+		
 		return $this->makeDetailView ( $demarche, 'admin/demarches/view', [
-			'gains' => $demarche->getGains ()
+			'gains' => $demarche->getGains (),
+			'aPoles' => $aPoles
 		] );
 	}
 	
@@ -647,6 +667,7 @@ class DemarcheController extends TrashableModelController {
 				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_TODO."'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_todo" ),
 				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_PROGRESS."' THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_progress" ),
 				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_DONE."'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_done" ),
+				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_STANDBY."'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_standby" ),
 				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_GIVENUP."'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_givenup" ),
 				DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT eforms.title), '{$multipleSeparator}', '') AS eforms"),
 				DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nostra_forms.title), '{$multipleSeparator}', '') AS nostra_forms"),
@@ -2302,7 +2323,7 @@ class DemarcheController extends TrashableModelController {
 		 * Note : Si une tâche était soft-deletée cela donnerait une erreur car $item est un non object lorsqu'elle a une date de suppression .
 		 * Mais actuellement on interdit le soft-delete d'une tâche si elle est liée à une demarche-tâche => ce cas ne se produira pas tant que ce check sera souhaité.
 		 */
-		foreach ( EwbsAction::each()->forDemarche($demarche)->joinSubActions()->get() as $item ) {
+		foreach ( EwbsAction::each()->forDemarche($demarche)->get() as $item ) {
 			if ($minimal) {
 				$rows[] = [
 					'<strong>' . $item->name . '</strong><br/><em>' . $item->description . '</em>',
@@ -2321,11 +2342,6 @@ class DemarcheController extends TrashableModelController {
 				];
 			}
 			else {
-				$subactions=explode(',', $item->subactions);
-				$tooltip='<ul>';
-				foreach($subactions as $subaction) $tooltip.="<li>".$subaction."</li>";
-				$tooltip.='</ul>';
-				
 				$rows[] = [
 					'<strong>' . $item->name . '</strong><br/><em>' . $item->description . '</em>',
 					EwbsActionRevision::graphicState($item->state),
@@ -2340,7 +2356,7 @@ class DemarcheController extends TrashableModelController {
 							)
 						)
 					),
-					(!$item->subactions)?'':'<a class="btn btn-xs btn-default" " href="' . route ( 'ewbsactionsGetView', $item->action_id ) . '#subactions" data-toggle="popover" data-content="'.$tooltip.'" data-html="true">'.count($subactions).'</a>',
+					$item->responsible,
 					DateHelper::sortabledatetime($item->created_at) . '<br/>' . $item->username,
 					(
 						'<a title="' . Lang::get('button.historical') . '" class="history btn btn-xs btn-default servermodal" href="' . route('demarchesActionsGetHistory', [$item->demarche_id, $item->action_id]) . '"><span class="fa fa-clock-o"></span></a>' .
@@ -2385,13 +2401,20 @@ class DemarcheController extends TrashableModelController {
 	 * @return \Illuminate\View\View
 	 */
 	protected function actionsGetManage(Demarche $demarche, EwbsAction $action = null, array $extra=[]) {
+		$edit=($action && $action->id);
 		$aTaxonomy = TaxonomyCategory::orderBy('name')->get();
 		$selectedTags = [];
+		$aExpertises=Expertise::names($edit?$action->name():null);
+		$aUsers= [];
 		if ($action) {
 			$selectedTags = $action->tags->lists('id');
+			
+			//FIXME : Il faudrait aussi ajouter les conditions nécessaires pour inclure le user supprimé qui serait en fait celui lié à l'action courante (afin que le lien ne se perde pas)
+			$aUsers=User::query()->ewbsOrSelf()->get(['users.id', 'users.username']);
+			
 		}
 		$returnTo = $this->getReturnTo();
-		return View::make ( 'admin/demarches/actions/modal-manage', array_merge(compact('demarche', 'action', 'aTaxonomy', 'selectedTags', 'returnTo'), $extra));
+		return View::make ( 'admin/demarches/actions/modal-manage', array_merge(compact('demarche', 'action', 'edit', 'aTaxonomy', 'selectedTags', 'aUsers', 'aExpertises', 'returnTo'), $extra));
 	}
 	
 	/**
@@ -2459,7 +2482,8 @@ class DemarcheController extends TrashableModelController {
 					$action->addRevisionAttributes ( [ 
 						'description' => Input::get ( 'description' ),
 						'state' => Input::get('state', ($lastRevision?$lastRevision->state:EwbsActionRevision::$STATE_TODO)),
-						'priority'=>$priority
+						'priority'=>$priority,
+						'responsible_id' => Input::get('responsible_id')
 					] );
 
 					if (! $action->save ()) {

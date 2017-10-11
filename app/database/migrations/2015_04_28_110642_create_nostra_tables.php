@@ -1,5 +1,7 @@
 <?php
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+
 class CreateNostraTables extends Migration {
 	
 	/**
@@ -9,10 +11,10 @@ class CreateNostraTables extends Migration {
 	 */
 	public function up() {
 		// Creation de la table des publics
-		Schema::create ( 'nostra_publics', function ($table) {
+		Schema::create ( 'nostra_publics', function (Blueprint $table) {
 			$table->increments ( 'id' )->unsigned ();
 			$table->string ( 'nostra_id', 64 );
-			$table->integer ( 'parent_id' )->unsigned ();
+			$table->unsignedInteger ( 'parent_id' )->nullable()->foreign('parent_id')->references('id')->on('nostra_publics')->onDelete('set null');
 			$table->string ( 'title', 2048 );
 			$table->timestamp ( 'nostra_state' );
 			$table->timestamps ();
@@ -20,10 +22,10 @@ class CreateNostraTables extends Migration {
 		} );
 		
 		// Creation de la table des thématiques ABC
-		Schema::create ( 'nostra_thematiquesabc', function ($table) {
+		Schema::create ( 'nostra_thematiquesabc', function (Blueprint $table) {
 			$table->increments ( 'id' )->unsigned ();
 			$table->string ( 'nostra_id', 64 );
-			$table->integer ( 'parent_id' )->unsigned ();
+			$table->unsignedInteger ( 'parent_id' )->nullable()->foreign('parent_id')->references('id')->on('nostra_thematiquesabc')->onDelete('set null');
 			$table->string ( 'title', 2048 );
 			$table->timestamp ( 'nostra_state' );
 			$table->timestamps ();
@@ -31,7 +33,7 @@ class CreateNostraTables extends Migration {
 		} );
 		
 		// Creation de la table des événements
-		Schema::create ( 'nostra_evenements', function ($table) {
+		Schema::create ( 'nostra_evenements', function (Blueprint $table) {
 			$table->increments ( 'id' )->unsigned ();
 			$table->string ( 'nostra_id', 64 );
 			$table->string ( 'title', 2048 );
@@ -41,7 +43,7 @@ class CreateNostraTables extends Migration {
 		} );
 		
 		// Creation de la table des démarches (fiches Nostra)
-		Schema::create ( 'nostra_demarches', function ($table) {
+		Schema::create ( 'nostra_demarches', function (Blueprint $table) {
 			$table->increments ( 'id' )->unsigned ();
 			$table->string ( 'nostra_id', 64 );
 			$table->string ( 'title', 2048 );
@@ -60,7 +62,7 @@ class CreateNostraTables extends Migration {
 		} );
 		
 		// Creation de la table des formulaires, liées aux démarches (fiches Nostra)
-		Schema::create ( 'nostra_forms', function ($table) {
+		Schema::create ( 'nostra_forms', function (Blueprint $table) {
 			$table->increments ( 'id' )->unsigned ();
 			$table->string ( 'nostra_id', 64 );
 			$table->string ( 'title', 2048 );
@@ -78,7 +80,7 @@ class CreateNostraTables extends Migration {
 		} );
 		
 		// Creation de la table des documents, liées aux démarches (fiches Nostra)
-		Schema::create ( 'nostra_documents', function ($table) {
+		Schema::create ( 'nostra_documents', function (Blueprint $table) {
 			$table->increments ( 'id' )->unsigned ();
 			$table->string ( 'nostra_id', 64 );
 			$table->string ( 'title', 2048 );
@@ -91,7 +93,7 @@ class CreateNostraTables extends Migration {
 		} );
 		
 		// Creation de la table pivot publics-thematiquesabc
-		Schema::create ( 'nostra_public_nostra_thematiqueabc', function ($table) {
+		Schema::create ( 'nostra_public_nostra_thematiqueabc', function (Blueprint $table) {
 			$table->integer ( 'nostra_public_id' )->unsigned ()->index ();
 			$table->integer ( 'nostra_thematiqueabc_id' )->unsigned ()->index ();
 			$table->foreign ( 'nostra_public_id' )->references ( 'id' )->on ( 'nostra_publics' )->onDelete ( 'cascade' );
@@ -99,7 +101,7 @@ class CreateNostraTables extends Migration {
 		} );
 		
 		// Creation de la table pivot publics-evenements
-		Schema::create ( 'nostra_evenement_nostra_public', function ($table) {
+		Schema::create ( 'nostra_evenement_nostra_public', function (Blueprint $table) {
 			$table->integer ( 'nostra_public_id' )->unsigned ()->index ();
 			$table->integer ( 'nostra_evenement_id' )->unsigned ()->index ();
 			$table->foreign ( 'nostra_public_id' )->references ( 'id' )->on ( 'nostra_publics' )->onDelete ( 'cascade' );
@@ -107,7 +109,7 @@ class CreateNostraTables extends Migration {
 		} );
 		
 		// Creation de la table pivot evenements-thematiquesabc
-		Schema::create ( 'nostra_evenement_nostra_thematiqueabc', function ($table) {
+		Schema::create ( 'nostra_evenement_nostra_thematiqueabc', function (Blueprint $table) {
 			$table->integer ( 'nostra_thematiqueabc_id' )->unsigned ()->index ();
 			$table->integer ( 'nostra_evenement_id' )->unsigned ()->index ();
 			$table->foreign ( 'nostra_thematiqueabc_id' )->references ( 'id' )->on ( 'nostra_thematiquesabc' )->onDelete ( 'cascade' );
@@ -115,10 +117,10 @@ class CreateNostraTables extends Migration {
 		} );
 		
 		// Creation de la table des thématiques ADM
-		Schema::create ( 'nostra_thematiquesadm', function ($table) {
+		Schema::create ( 'nostra_thematiquesadm', function (Blueprint $table) {
 			$table->increments ( 'id' )->unsigned ();
 			$table->string ( 'nostra_id', 64 );
-			$table->integer ( 'parent_id' )->unsigned ();
+			$table->unsignedInteger ( 'parent_id' )->nullable()->foreign('parent_id')->references('id')->on('nostra_thematiquesadm')->onDelete('set null');
 			$table->string ( 'title', 2048 );
 			$table->timestamp ( 'nostra_state' );
 			$table->timestamps ();
@@ -126,7 +128,7 @@ class CreateNostraTables extends Migration {
 		} );
 		
 		// Création de la table pivot demarches-formulaires
-		Schema::create ( 'nostra_demarche_nostra_form', function ($table) {
+		Schema::create ( 'nostra_demarche_nostra_form', function (Blueprint $table) {
 			$table->integer ( 'nostra_demarche_id' )->unsigned ()->index ();
 			$table->integer ( 'nostra_form_id' )->unsigned ()->index ();
 			$table->foreign ( 'nostra_demarche_id' )->references ( 'id' )->on ( 'nostra_demarches' )->onDelete ( 'cascade' );
@@ -134,7 +136,7 @@ class CreateNostraTables extends Migration {
 		} );
 		
 		// Création de la table pivot demarches-documents
-		Schema::create ( 'nostra_demarche_nostra_document', function ($table) {
+		Schema::create ( 'nostra_demarche_nostra_document', function (Blueprint $table) {
 			$table->integer ( 'nostra_demarche_id' )->unsigned ()->index ();
 			$table->integer ( 'nostra_document_id' )->unsigned ()->index ();
 			$table->foreign ( 'nostra_demarche_id' )->references ( 'id' )->on ( 'nostra_demarches' )->onDelete ( 'cascade' );
@@ -142,7 +144,7 @@ class CreateNostraTables extends Migration {
 		} );
 		
 		// Creation de la table pivot demarches-publics
-		Schema::create ( 'nostra_demarche_nostra_public', function ($table) {
+		Schema::create ( 'nostra_demarche_nostra_public', function (Blueprint $table) {
 			$table->integer ( 'nostra_demarche_id' )->unsigned ()->index ();
 			$table->integer ( 'nostra_public_id' )->unsigned ()->index ();
 			$table->foreign ( 'nostra_demarche_id' )->references ( 'id' )->on ( 'nostra_demarches' )->onDelete ( 'cascade' );
@@ -150,7 +152,7 @@ class CreateNostraTables extends Migration {
 		} );
 		
 		// Creation de la table pivot demarches-evenements
-		Schema::create ( 'nostra_demarche_nostra_evenement', function ($table) {
+		Schema::create ( 'nostra_demarche_nostra_evenement', function (Blueprint $table) {
 			$table->integer ( 'nostra_demarche_id' )->unsigned ()->index ();
 			$table->integer ( 'nostra_evenement_id' )->unsigned ()->index ();
 			$table->foreign ( 'nostra_demarche_id' )->references ( 'id' )->on ( 'nostra_demarches' )->onDelete ( 'cascade' );
@@ -158,7 +160,7 @@ class CreateNostraTables extends Migration {
 		} );
 		
 		// Creation de la table pivot demarches-thematiquesabc
-		Schema::create ( 'nostra_demarche_nostra_thematiqueabc', function ($table) {
+		Schema::create ( 'nostra_demarche_nostra_thematiqueabc', function (Blueprint $table) {
 			$table->integer ( 'nostra_demarche_id' )->unsigned ()->index ();
 			$table->integer ( 'nostra_thematiqueabc_id' )->unsigned ()->index ();
 			$table->foreign ( 'nostra_demarche_id' )->references ( 'id' )->on ( 'nostra_demarches' )->onDelete ( 'cascade' );
@@ -166,7 +168,7 @@ class CreateNostraTables extends Migration {
 		} );
 		
 		// Creation de la table pivot demarches-thematiquesadm
-		Schema::create ( 'nostra_demarche_nostra_thematiqueadm', function ($table) {
+		Schema::create ( 'nostra_demarche_nostra_thematiqueadm', function (Blueprint $table) {
 			$table->integer ( 'nostra_demarche_id' )->unsigned ()->index ();
 			$table->integer ( 'nostra_thematiqueadm_id' )->unsigned ()->index ();
 			$table->foreign ( 'nostra_demarche_id' )->references ( 'id' )->on ( 'nostra_demarches' )->onDelete ( 'cascade' );

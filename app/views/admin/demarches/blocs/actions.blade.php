@@ -23,7 +23,7 @@ if(!isset($minimal)) $minimal=false;
 					<th>Priorité</th>
 					<th>Elément lié</th>
 					@if(!$minimal)
-						<th>Sous-actions</th>
+						<th>Assignation</th>
 						<th>Révision</th>
 						<th{{$manage?' class="col-md-2"':''}}></th>
 					@endif

@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Database\Eloquent\Builder;
+
 /**
  * Liaisons entre les pièces et les démarches
  * 
@@ -71,6 +73,58 @@ class DemarchePiece extends DemarcheComponent {
 		return array_merge(parent::formRulesMessages(), [
 			'name.unique' => 'Cette pièce est déjà liée à la démarche courante avec ce nom. Peut-être est-ce cette autre pièce que vous souhaitiez éditer ?<br/><i>nb : Si cette pièce n\'est pas présente parmi la liste, elle a alors été supprimée de la démarche => il est possible de la recréer via la fonction "Ajouter une pièce"</i>',
 		]);
+	}
+	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see DemarcheComponent::scopeJoinLastRevision()
+	 */
+	public function scopeJoinLastRevision(Builder $query, $trashed=false) {
+		$query
+		->join('v_lastrevisionpiecesfromdemarche', 'v_lastrevisionpiecesfromdemarche.demarche_demarchePiece_id', '=', 'demarche_demarchePiece.id')
+		->whereRaw('v_lastrevisionpiecesfromdemarche.deleted_at '.($trashed?'is not null':'is null'));
+		return $query;
+	}
+	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see DemarcheComponent::scopeMostAsked()
+	 */
+	public function scopeMostUsed(Builder $query, $limit=0) {
+		$query
+		->select([
+			'demarche_demarchePiece.name AS displayname',
+			DB::raw('SUM(v_lastrevisionpiecesfromdemarche.volume * v_lastrevisionpiecesfromdemarche.frequency) AS count_items')
+		])
+		->joinLastRevision()
+		->having(DB::raw('SUM(v_lastrevisionpiecesfromdemarche.volume * v_lastrevisionpiecesfromdemarche.frequency)'), '>', 0)
+		->groupBy('demarche_demarchePiece.id')
+		->orderBy('count_items', "DESC");
+		if($limit>0) {
+			$query->limit($limit);
+		}
+	}
+	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see DemarcheComponent::scopePotentiallyMostGainful()
+	 */
+	public function scopePotentiallyMostGainful(Builder $query, $limit=0) {
+		$query
+		->select([
+			'demarche_demarchePiece.name AS displayname',
+			DB::raw('SUM(v_lastrevisionpiecesfromdemarche.gain_potential_administration + v_lastrevisionpiecesfromdemarche.gain_potential_citizen) AS gpagpc')
+		])
+		->joinLastRevision()
+		->having(DB::raw('SUM(v_lastrevisionpiecesfromdemarche.gain_potential_administration + v_lastrevisionpiecesfromdemarche.gain_potential_citizen)'), '>', 0)
+		->groupBy('demarche_demarchePiece.id')
+		->orderBy('gpagpc', "DESC");
+		if($limit>0) {
+			$query->limit($limit);
+		}
 	}
 	
 	/**

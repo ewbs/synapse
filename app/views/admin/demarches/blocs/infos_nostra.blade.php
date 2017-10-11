@@ -27,6 +27,7 @@
 	<div class="content">
 		<ul class="list-group">
 			<li class="list-group-item">
+				<p><strong>Id Nostra : </strong>{{ManageableModel::formatId($modelInstance->nostraDemarche->nostra_id)}}</p>
 				<p>
 					<strong>Publics cibles : </strong> {{ implode(', ',$modelInstance->nostraDemarche->getNostraPublicsNames()) }}
 				</p>

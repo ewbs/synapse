@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Database\Eloquent\Builder;
+
 /**
  * Liaisons entre les tâches et les démarches
  * 
@@ -60,6 +62,58 @@ class DemarcheTask extends DemarcheComponent {
 			'componentId' => 'required',
 			'name'=>$namerules
 		];
+	}
+	
+	/**
+	 *
+	 * {@inheritDoc}
+	 * @see DemarcheComponent::scopeJoinLastRevision()
+	 */
+	public function scopeJoinLastRevision(Builder $query, $trashed=false) {
+		$query
+		->join('v_lastrevisiontasksfromdemarche', 'v_lastrevisiontasksfromdemarche.demarche_demarcheTask_id', '=', 'demarche_demarcheTask.id')
+		->whereRaw('v_lastrevisiontasksfromdemarche.deleted_at '.($trashed?'is not null':'is null'));
+		return $query;
+	}
+	
+	/**
+	 *
+	 * {@inheritDoc}
+	 * @see DemarcheComponent::scopeMostAsked()
+	 */
+	public function scopeMostUsed(Builder $query, $limit=0) {
+		$query
+		->select([
+			'demarche_demarcheTask.name AS displayname',
+			DB::raw('SUM(v_lastrevisiontasksfromdemarche.volume * v_lastrevisiontasksfromdemarche.frequency) AS count_items')
+		])
+		->joinLastRevision()
+		->having(DB::raw('SUM(v_lastrevisiontasksfromdemarche.volume * v_lastrevisiontasksfromdemarche.frequency)'), '>', 0)
+		->groupBy('demarche_demarcheTask.id')
+		->orderBy('count_items', "DESC");
+		if($limit>0) {
+			$query->limit($limit);
+		}
+	}
+	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see DemarcheComponent::scopePotentiallyMostGainful()
+	 */
+	public function scopePotentiallyMostGainful(Builder $query, $limit=0) {
+		$query
+		->select([
+			'demarche_demarcheTask.name AS displayname',
+			DB::raw('SUM(v_lastrevisiontasksfromdemarche.gain_potential_administration + v_lastrevisiontasksfromdemarche.gain_potential_citizen) AS gpagpc')
+		])
+		->joinLastRevision()
+		->having(DB::raw('SUM(v_lastrevisiontasksfromdemarche.gain_potential_administration + v_lastrevisiontasksfromdemarche.gain_potential_citizen)'), '>', 0)
+		->groupBy('demarche_demarcheTask.id')
+		->orderBy('gpagpc', "DESC");
+		if($limit>0) {
+			$query->limit($limit);
+		}
 	}
 	
 	/**

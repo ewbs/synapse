@@ -58,8 +58,8 @@ class MaintenanceController extends BaseController {
 			$cpt=0;
 			foreach(explode(';',Input::get('q')) as $q) { // Parcourir chaque requête
 				$q=StringHelper::getStringOrNull($q);
-				if(!$q || starts_with($q, ['--','//'])) {
-					continue; // Ignorer les lignes vides ou commentées
+				if(!$q) {
+					continue; // Ignorer les lignes vides
 				}
 				$cpt++;
 				Log::info("queryrunner [{$user->username}, $transaction] : {$q}");

@@ -32,16 +32,18 @@ return [
 	],
 		
 	'state' => [
-		'todo' => 'Initialisé',
+		'todo' => 'A faire',
 		'progress' => 'En cours',
 		'done' => 'Terminé',
+		'standby' => 'En standby',
 		'givenup' => 'Abandonné',
 	],
 		
 	'wording'=> [
-		'todo' => ':count action initialisée|:count actions initialisées',
+		'todo' => ':count action à faire|:count actions à faire',
 		'progress' => ':count action en cours|:count actions en cours',
 		'done' => ':count action terminée|:count actions terminées',
+		'standby' => ':count action en standby|:count actions en standby',
 		'givenup' => ':count action abandonnée|:count actions abandonnées',
 	],
 		

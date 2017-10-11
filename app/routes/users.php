@@ -4,7 +4,7 @@
 
 // User reset routes
 Route::get('users/reset_password/{token}', ['as'=>'userGetReset', 'uses' => 'UserController@getReset']);
-Route::post('users/reset_password', ['as'=>'userPostReset', 'uses' => 'UserController@postReset']);
+Route::post('users/reset_password', ['as'=>'userPostReset', 'uses' => 'UserController@postReset'       ,'before' => 'csrf']);
 
 Route::get('users/confirm/{token}', ['as'=>'userGetConfirm', 'uses' => 'UserController@getConfirm']);
 

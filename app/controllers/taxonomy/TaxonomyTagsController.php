@@ -4,7 +4,7 @@ class TaxonomyTagsController extends TrashableModelController {
 	/**
 	 * Inject the models.
 	 *
-	 * @param Annexe $model
+	 * @param TaxonomyTag $model
 	 */
 	public function __construct(TaxonomyTag $model) {
 		parent::__construct ($model);
@@ -50,10 +50,10 @@ class TaxonomyTagsController extends TrashableModelController {
 	}
 	
 	/**
-	 * Visualisation d'une annexe
-	 *
-	 * @param Annexe $annexe
-	 * @return type
+	 * Visualisation d'un tag
+	 * 
+	 * @param TaxonomyTag $tag
+	 * @return View
 	 */
 	public function getView(TaxonomyTag $tag) {
 		return $this->makeDetailView($tag, 'admin/taxonomy/tags/view');
@@ -75,7 +75,7 @@ class TaxonomyTagsController extends TrashableModelController {
 	 * @see ModelController::save()
 	 */
 	protected function save(ManageableModel $modelInstance) {
-		/* @var Annexe $modelInstance */
+		/* @var TaxonomyTag $modelInstance */
 		$modelInstance->name = Input::get ( 'name' );
 		$modelInstance->taxonomy_category_id = Input::get('category');
 		return $modelInstance->save();

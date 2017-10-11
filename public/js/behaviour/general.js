@@ -1,8 +1,15 @@
 /*
  * 
  * C'est un peu le bordel, mais je vais ranger (jda)
+ * Update mgr : Mouais, depuis l'etnic alors ? Moi je m'engage pas à ranger, suis pas fou mdrrr ;)
  */
 
+/**
+ * Stocke les ids de datatables initialisés dans la page.
+ * Certains datatables ajoutent à la volée des events sur des champs d'un formulaire lié au datatable via l'attribut data-useform
+ * => cette variable sert à s'assurer que l'event n'est défini que lors de l'initialisation de chaque datatable.
+ */
+var datatablesAjax=[];
 
 var App = function() {
 	var config = {
@@ -43,16 +50,54 @@ var App = function() {
 	 * - Si le datatable doit permettre le filtre, le tri et la pagination (data-bfilter, data-bpaginate, data-bsort)
 	 *   (Précision : alors que le plugin datatables active ces 3 options par défaut, ici ils sont justement désactivés par défaut.)
 	 * - Si les résultats doivent être présentés en ordre descendant de la 1e colonne (data-desc), ou ascendant si le paramètre n'est pas passé
+	 * - Un formulaire à lier au datatable via l'attribut data-useform : Tous les champs de ce formulaire seront alors ajoutés aux paramètres passés à la requête ajax
 	 */
+	
 	function initDatatableAjax(datatable) {
-	datatable.dataTable({
+		datatable=datatable.dataTable({
 			'bDestroy': true,
 			'bFilter': (datatable.data('bfilter'))?true:false,
 			'bPaginate': (datatable.data('bpaginate'))?true:false,
 			'bSort': (datatable.data('bsort'))?true:false,
 			"aaSorting": [ [0,datatable.data('desc')?'desc':'asc'] ],
-			'sAjaxSource': datatable.data('ajaxurl'),
+			'sAjaxSource': datatableAjaxGetUrl(datatable),
 		});
+		
+		if(datatablesAjax.indexOf(datatable.context.id)==-1) {
+			var useform=$(datatable.data('useform'));
+			if(useform.length) {
+				useform.change(function(e){ // Détecter changement sur contenu du form
+					// TODO : Repasser à l'occasion dans cette partie, car je n'ai pas compris pourquoi le passage par la méthode d'init ne fonctionnait pas dans ce cas, alors que le reload oui
+					datatable.fnReloadAjax(datatableAjaxGetUrl(datatable));
+					//initDatatableAjax(datatable);
+				});
+				useform.on('ifChanged', function(event){ // Specifique pour icheck, qui passe au travers du simple change
+					datatable.fnReloadAjax(datatableAjaxGetUrl(datatable));
+				});
+			}
+			datatablesAjax.push(datatable.context.id);
+		}
+	}
+	
+	/**
+	 * Déterminer l'url d'un datatable Ajax
+	 * 
+	 * Prend en compte la présence d'un formulaire ciblé par l'attribut data-useform :
+	 * S'il existe, il considère tous les champs de ce formulaire et les passe en paramètres supplémentaires à la requête ajax de base.
+	 * Cela permet par ex. d'implémenter des filtres liés aux tableaux.
+	 * 
+	 * @param datatable
+	 * @returns
+	 */
+	function datatableAjaxGetUrl(datatable) {
+		var url=datatable.data('ajaxurl');
+		var useform=$(datatable.data('useform'));
+		
+		if(useform.length) {
+			var parameters=useform.serialize();
+			if(parameters) url+=(url.indexOf('?')>-1?'&':'?')+parameters;
+		}
+		return url;
 	}
 	
 	/* Sidebar */

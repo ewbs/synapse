@@ -57,10 +57,6 @@ abstract class ModelController extends BaseController {
 	public final function getData() {
 		return $this->getDataJson();
 	}
-
-	public final function getDataFiltered() {
-		return $this->getDataFilteredJson();
-	}
 	
 	/**
 	 * Affiche le formulaire de création d'une instance du modèle courant

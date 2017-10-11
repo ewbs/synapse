@@ -19,7 +19,7 @@ class MonitorController extends Controller {
 			}
 			
 			// TEST : DB
-			if (! $this->testDatabase ()) {
+			if (! $this->testDatabase () || ! $this->testDatabaseBtreeGist()) {
 				return ("ko");
 			}
 			
@@ -89,10 +89,20 @@ class MonitorController extends Controller {
 			if ($this->testDatabase ()) {
 				$response ['checks'] ['database'] ['result'] = "passed";
 				$response ['checks'] ['database'] ['driver'] = Config::get ( "database.default" );
+				if ($this->testDatabaseBtreeGist()) {
+					$response ['checks'] ['database'] ['extensions'] ['btree_gist'] = "installed";
+				} else {
+					$response ['checks'] ['database'] ['extensions'] ['btree_gist'] = "not installed";
+					$response ['checks'] ['database'] ['result'] = "failed";
+					$onError = true;
+				}
 			} else {
 				$response ['checks'] ['database'] ['result'] = "failed";
+				$response ['checks'] ['database'] ['connection'] = "in error";
 				$onError = true;
 			}
+			
+			
 			
 			// TEST : Présence de curl
 			if ($this->testCURL ()) {
@@ -179,6 +189,20 @@ class MonitorController extends Controller {
 	private function testDatabase() {
 		try {
 			return false != DB::select ( 'SELECT 1' );
+		} catch ( Exception $e ) {
+			Log::error($e);
+			return false;
+		}
+	}
+	
+	/**
+	 * Test DB
+	 *
+	 * @return bool ok ou pas
+	 */
+	private function testDatabaseBtreeGist() {
+		try {
+			return false != DB::select ('SELECT * FROM pg_extension WHERE extname=\'btree_gist\'');
 		} catch ( Exception $e ) {
 			Log::error($e);
 			return false;

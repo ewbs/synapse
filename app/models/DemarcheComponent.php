@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Database\Eloquent\Builder;
+
 /**
  * Liaisons entre les composants (pièces, tâches) et les démarches
  * 
@@ -121,6 +123,106 @@ abstract class DemarcheComponent extends RevisableModel {
 	}
 	
 	/**
+	 * Filtre les données sur base du filtre utilisateur par administrations
+	 *
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeAdministrationsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->whereHas('demarche', function ($query) use ($ids) {
+				$query->wherehas('administrations', function ($query) use ($ids) {
+					$query->whereIn('administrations.id', $ids);
+				});
+			});
+		}
+		return $query;
+	}
+	
+	/**
+	 * Filtre les données sur base du filtre utilisateur par expertises
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeExpertisesIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->whereHas('actions', function ($query) use ($ids) {
+				$query->whereIn('ewbsActions.name', function($query) use ($ids) {
+					$query->select('name')
+					->from(with(new Expertise())->getTable())
+					->whereIn('id', $ids);
+				});
+			});
+		}
+		return $query;
+	}
+	
+	/**
+	 * Filtre les données sur base du filtre utilisateur par publics-cibles
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeNostraPublicsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->whereHas('demarche', function ($query) use ($ids) {
+				$query->whereHas('nostraDemarche', function ($query) use ($ids) {
+					$query->whereHas('nostraPublics', function ($query) use ($ids) {
+						$query->whereIn('nostra_publics.id', $ids);
+					});
+				});
+			});
+		}
+		return $query;
+	}
+	
+	/**
+	 * Filtre les données sur base du filtre utilisateur par tags
+	 * 
+	 * @param Builder $query
+	 * @param array $ids
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeTaxonomyTagsIds(Builder $query, array $ids) {
+		if (!empty($ids)) {
+			$query->whereHas('demarche', function ($query) use ($ids) {
+				$query->wherehas('tags', function ($query) use ($ids) {
+					$query->whereIn('taxonomytags.id', $ids);
+				});
+			});
+		}
+		return $query;
+	}
+	
+	/**
+	 * Lier aux composants leur dernière révision
+	 *
+	 * @param Builder $query
+	 * @return Builder
+	 */
+	public abstract function scopeJoinLastRevision(Builder $query, $trashed=false);
+	
+	/**
+	 * Obtenir les composants les plus utilisées
+	 * 
+	 * @param Builder $query
+	 * @param int $limit
+	 */
+	public abstract function scopeMostUsed(Builder $query, $limit=0);
+	
+	/**
+	 * Obtenir les composants dont le gain potentiel est le plus important
+	 *
+	 * @param Builder $query
+	 * @param int $limit
+	 */
+	public abstract function scopePotentiallyMostGainful(Builder $query, $limit=0);
+	
+	/**
 	 * Relation vers les actions liées
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -144,47 +246,4 @@ abstract class DemarcheComponent extends RevisableModel {
 	public function demarche() {
 		return $this->belongsTo ( 'Demarche' );
 	}
-
-
-
-	/**
-	 * SCOPES
-	 */
-
-	public function scopeNostraPublicsIds($query, $publicsIds) {
-		if (is_array ( $publicsIds ) && count ( $publicsIds )) {
-			return $query->with(['demarche' => function($query) {
-				$query->where(function ($query) use ($publicsIds) {
-					$query->whereHas('nostraDemarche', function ($query) use ($publicsIds) {
-						$query->whereHas('nostraPublics', function ($query) use ($publicsIds) {
-							$query->whereIn('nostra_publics.id', $publicsIds);
-						});
-					});
-				});
-			}]);
-		}
-		return $query;
-	}
-	public function scopeAdministrationsIds($query, $administrationsIds) {
-		if (is_array ( $administrationsIds ) && count ( $administrationsIds )) {
-			return
-					$query->with(['demarche' => function ($query) {
-						$query->wherehas('administrations', function ($query) use ($administrationsIds) {
-							$query->whereIn('administrations.id', $administrationsIds);
-						});
-					} ]);
-		}
-		return $query;
-	}
-	public function scopeTaxonomyTagsIds($query, $tagsIds) {
-		if (is_array ( $tagsIds ) && count ( $tagsIds )) {
-			return $query->with(['demarche' => function ($query) {
-				$query->wherehas('tags', function ($query) use ($tagsIds) {
-					$query->whereIn('taxonomytags.id', $tagsIds);
-				});
-			}]);
-		}
-		return $query;
-	}
-
 }
