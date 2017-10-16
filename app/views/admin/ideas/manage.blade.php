@@ -147,7 +147,7 @@
 							<select class="form-control select2" name="tags[]" id="tags" multiple>
 								@foreach($aTaxonomy as $category)
 									<optgroup label="{{$category->name}}">
-										@foreach($category->tags as $tag)
+										@foreach($category->tags()->orderBy('name')->get() as $tag)
 											<option value="{{$tag->id}}"{{ in_array($tag->id, $selectedTags) ? ' selected': '' }}>{{$tag->name}}</option>
 										@endforeach
 									</optgroup>

@@ -43,7 +43,7 @@
 								<select class="select2 form-control" multiple name="administrations[]">
 									@foreach($regions as $region)
 										<optgroup label="{{$region->name}}">
-											@foreach($region->administrations as $administration)
+											@foreach($region->administrations()->orderBy('name')->get() as $administration)
 												<option value="{{$administration->id}}" {{in_array($administration->id, $selectedAdministrations) ? 'selected="selected"':''}}>{{{$administration->name}}}</option>
 											@endforeach
 										</optgroup>

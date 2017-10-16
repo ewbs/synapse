@@ -20,13 +20,13 @@ class EwbsActionController extends TrashableModelController {
 	protected function getList($onlyTrashed=false) {
 		$params=['trash'=>$onlyTrashed];
 		if(!$onlyTrashed) {
-			$params['responsibles']=EwbsAction::distinctResponsibles()->get();
+			$params['responsibles']=EwbsAction::distinctResponsibles()->orderBy('username')->get();
 			$params['selectedResponsibles']=Auth::user()->sessionGet('ewbsactions_selectedResponsibles', []);
 			
 			$params['names']=EwbsAction::distinctNames()->get();
 			$params['selectedNames']=Auth::user()->sessionGet('ewbsactions_selectedNames', []);
 			
-			$params['regions']=Region::all ();
+			$params['regions']=Region::orderBy('name')->get();
 			$params['selectedAdministrations']=Auth::user()->sessionGet('ewbsactions_selectedAdministrations', []);
 		}
 		return View::make ('admin/ewbsactions/list', $params);

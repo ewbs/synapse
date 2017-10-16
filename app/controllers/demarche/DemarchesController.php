@@ -83,8 +83,8 @@ class DemarcheController extends TrashableModelController {
 	 * @see ModelController::getList()
 	 */
 	protected function getList($trash=false) {
-		$aRegions = Region::all ();
-		$aPublics = NostraPublic::root()->get();
+		$aRegions = Region::orderBy('name')->get();
+		$aPublics = NostraPublic::root()->orderBy('title')->get();
 		return View::make ( 'admin/demarches/list', compact ( 'aRegions', 'aPublics', 'trash' ) );
 	}
 	

@@ -70,10 +70,9 @@ class AdminUsersController extends TrashableModelController {
 	 * @see ModelController::getManage()
 	 */
 	protected function getManage(ManageableModel $user=null){
-		$roles = Role::orderBy('name')->get ();
-		$permissions = Permission::all ();
-		$administrations = Administration::all ();
-		return $this->makeDetailView ($user, 'admin/users/manage', compact ( 'roles', 'permissions', 'mode', 'administrations' ) );
+		$roles = Role::orderBy('name')->get();
+		$administrations = Administration::orderBy('name')->get();
+		return $this->makeDetailView ($user, 'admin/users/manage', compact ( 'roles', 'mode', 'administrations' ) );
 	}
 	
 	/**
