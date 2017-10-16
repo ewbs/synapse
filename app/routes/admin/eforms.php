@@ -16,7 +16,6 @@ Route::group(['prefix' => 'eforms'], function() {
 			Route::post('edit'        ,['as'=>'eformsPostEdit'           ,'uses'=>'EformController@postEdit'          ,'before' => 'csrf']);
 			Route::get ('delete'      ,['as'=>'eformsGetDelete'          ,'uses'=>'EformController@getDelete']);
 			Route::post('delete'      ,['as'=>'eformsPostDelete'         ,'uses'=>'EformController@postDelete'        ,'before' => 'csrf']);
-			Route::get ('revisions'   ,['as'=>'eformsRevisionsGetData'   ,'uses'=>'EformController@getRevisionsData']);
 			
 			// Annexes liées à un Eform
 			Route::group(['prefix' => 'annexes'], function() {
@@ -41,9 +40,14 @@ Route::group(['prefix' => 'eforms'], function() {
 				});
 			});
 			
+			// Actions liées à une révision
+			Route::group(['prefix' => 'revisions'], function() {
+				Route::get(''    , ['as'=>'eformsRevisionsGetIndex', 'uses'=>'EformController@revisionsGetIndex']);
+				Route::get('data', ['as'=>'eformsRevisionsGetData' ,'uses'=>'EformController@getRevisionsData']);
+			});
+			
 			// Actions liées à un Eform
 			Route::group(['prefix' => 'actions'], function() {
-				Route::get (''         ,['as'=>'eformsActionsGetIndex'     ,'uses'=>'EformController@actionsGetIndex']);
 				Route::get ('data'     ,['as'=>'eformsActionsGetData'      ,'uses'=>'EformController@actionsGetData']);
 				Route::get ('create'   ,['as'=>'eformsActionsGetCreate'    ,'uses'=>'EformController@actionsGetCreate']);
 				Route::post('create'   ,['as'=>'eformsActionsPostCreate'   ,'uses'=>'EformController@actionsPostCreate' ,'before' => 'csrf']);

@@ -36,9 +36,9 @@ class EformController extends TrashableModelController {
 			'icon' => 'wpforms'
 		];
 		$features[]=[
-			'label' => Lang::get ( 'admin/ewbsactions/messages.title' ),
-			'url' => route('eformsActionsGetIndex', $modelInstance->id),
-			'icon' => 'magic'
+			'label' => Lang::get ( 'admin/eforms/messages.revisions' ),
+			'url' => route('eformsRevisionsGetIndex', $modelInstance->id),
+			'icon' => 'road'
 		];
 		if($modelInstance->canDelete()) {
 			$features[]=[
@@ -592,19 +592,25 @@ class EformController extends TrashableModelController {
 	
 	/**
 	 * *********************************************************************************************************
-	 * Gestion des actions liées à un eform
+	 * Gestion des révisions liées à un eform
 	 * *********************************************************************************************************
 	 */
 	
 	/**
-	 * Liste des actions liées à un eform
+	 * Liste des révisions liées à un eform
 	 *
 	 * @param Eform $modelInstance
 	 *
 	 */
-	public function actionsGetIndex(Eform $modelInstance) {
-		return $this->makeDetailView ( $modelInstance, 'admin/forms/eforms/actions/list');
+	public function revisionsGetIndex(Eform $modelInstance) {
+		return $this->makeDetailView ( $modelInstance, 'admin/forms/eforms/revisions/list');
 	}
+	
+	/**
+	 * *********************************************************************************************************
+	 * Gestion des actions liées à un eform
+	 * *********************************************************************************************************
+	 */
 	
 	/**
 	 * Liste des actions liées à un eform au format json pour le datatable
