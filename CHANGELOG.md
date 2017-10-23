@@ -4,10 +4,10 @@
 *Ce release de Synapse consolide les données provenant de Nostra.*
 
 ### Imports
-- Added : Ne plus stopper la synchro lorsqu'une erreur survient à l'import d'une démarche (l'ignorer), et notifier le RTA par email en cas d'erreurs
+- Added : Ne plus stopper la synchro lorsqu'une erreur survient à l'import d'une démarche (l'ignorer), et notifier le RTA par email en cas d'erreurs (cf github #38 & #39)
 
 ### Démarches
-Added : Export : Ajout de l'ID Nostra
+- Added : Export : Ajout de l'ID Nostra (cf github #70)
 
 ## 4.3.0 - Back in action
 *Ce release de Synapse intègre principalement diverses améliorations sur le module actions, ainsi que quelques améliorations et corrections mineures.*
