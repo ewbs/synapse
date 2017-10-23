@@ -68,6 +68,6 @@ class DatabaseSeeder extends Seeder {
 		$this->call ( 'PiecesAndTasksSeeder' );
 		$this->call ( 'TaxonomySeeder' );
 		$this->call ( 'ServicesCatalogSeeder' );
-		
+		$this->call ( 'ExpertisesPolesSeeder');
 	}
 }
