@@ -32,3 +32,8 @@ Thumbs.db
 #spécifique Vagrant
 /.vagrant/
 
+/app/config/local/app.php
+/app/config/local/
+Supprimerait app/config/local/
+Supprimerait app/storage/
+Supprimerait package-lock.json
