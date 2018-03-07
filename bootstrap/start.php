@@ -31,6 +31,9 @@ $env = $app->detectEnvironment ( array (
 		'local-mgr' => array (
 			'BRUL-CHQGFC2' 
 		),
+		'local-fsc' => array (
+			'audaxis'
+		),
         'homestead' => array(
                 'html',
                 'vagrant',

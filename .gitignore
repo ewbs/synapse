@@ -28,12 +28,12 @@ Thumbs.db
 /app/config/local-mgr/
 /app/config/valid/
 /app/config/testing/
+/app/config/local-fsc/
 
 #spécifique Vagrant
 /.vagrant/
 
-/app/config/local/app.php
-/app/config/local/
-Supprimerait app/config/local/
-Supprimerait app/storage/
-Supprimerait package-lock.json
+app/config/local/
+app/storage/
+package-lock.json
+/synapse.iml
