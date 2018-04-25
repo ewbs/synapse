@@ -31,9 +31,14 @@ class EformController extends TrashableModelController {
 			];
 		}
 		$features[]=[
-			'label' => Lang::get ( 'admin/ewbsactions/messages.title' ),
-			'url' => route('eformsActionsGetIndex', $modelInstance->id),
-			'icon' => 'magic'
+			'label' => Lang::get ( 'admin/annexes/messages.menu' ),
+			'url' => route('eformsAnnexesGetIndex', $modelInstance->id),
+			'icon' => 'wpforms'
+		];
+		$features[]=[
+			'label' => Lang::get ( 'admin/eforms/messages.revisions' ),
+			'url' => route('eformsRevisionsGetIndex', $modelInstance->id),
+			'icon' => 'road'
 		];
 		if($modelInstance->canDelete()) {
 			$features[]=[
@@ -98,7 +103,7 @@ class EformController extends TrashableModelController {
 			else {
 				$entry[] = '<a title="' . Lang::get ( 'button.view' ) . '" href="' . route ( 'eformsGetView', $item->eform_id ) . '"><strong>' . $item->title . '</strong><br/><em>' . $item->description . '</em></a>';
 			}
-			$entry[]=$item->countannexes;
+			$entry[]='<a '. ($item->countannexes > 0 ? ' class="label label-info" ':''). ' href="'.route('eformsAnnexesGetIndex', $item->eform_id).'">'.$item->countannexes.'</a>';
 			$entry[]=$demarches;
 			$entry[]=$item->deleted_at ? DateHelper::sortabledatetime ( $item->deleted_at ) : DateHelper::sortabledatetime ( $item->created_at ) . '<br/>' . $item->username;
 			if($onlyTrashed) {
@@ -380,6 +385,225 @@ class EformController extends TrashableModelController {
 			Log::error($e);
 			return Redirect::secure ('eformsUndocumentedGetIndex')->withInput ()->with ( 'error', Lang::get ( 'general.baderror' ) . '<pre>' . $e->getMessage () . '</pre>' );
 		}
+
+	}
+	
+	/**
+	 * ******************************************************
+	 * Annexes liée à un eform
+	 * ******************************************************
+	 */
+	
+	/**
+	 * Annexes liées à un eform
+	 *
+	 * @param Eform $eform
+	 * @return \Illuminate\View\View 
+	 */
+	public function annexesGetIndex(Eform $eform) {
+		return $this->makeDetailView($eform, 'admin/forms/eforms/annexes/list');
+	}
+	
+	/**
+	 * Annexes liées à un eform, au format JSON
+	 *
+	 * @param Eform $eform
+	 * @return Datatables JSON
+	 */
+	public function annexesGetData(Eform $eform) {
+		$states=DemarchePieceState::all();
+		$array=[];
+		foreach ( $eform->getAnnexes() as $item ) {
+			$entry=[];
+			$entry[0]=$item->annexe_title;
+			$entry[1]=''; foreach($states as $state) if($state->id == $item->current_state_id) $entry[1]="<span data-toggle=\"tooltip\" title=\"{$state->name}\">{$state->code}</span>";
+			$entry[2]=''; foreach($states as $state) if($state->id == $item->next_state_id)    $entry[2]="<span data-toggle=\"tooltip\" title=\"{$state->name}\">{$state->code}</span>";
+			$entry[3]=nl2br($item->comment);
+			$entry[4]=DateHelper::sortabledatetime ( $item->created_at ) . '<br/>' . $item->username;
+			$entry[5]='';
+			if($eform->canManage())
+				$entry[5]=
+				'<a title="' . Lang::get ( 'button.historical' ) . '" href="' . route ( 'eformsAnnexesGetHistory', [$eform->id, $item->revision_id] ) . '" class="btn btn-xs btn-default servermodal"><span class="fa fa-clock-o"></a>'.
+				'<a title="' . Lang::get ( 'button.edit'       ) . '" href="' . route ( 'eformsAnnexesGetEdit'   , [$eform->id, $item->revision_id] ) . '" class="btn btn-xs btn-default servermodal"><span class="fa fa-pencil"></a>'.
+				'<a title="' . Lang::get ( 'button.delete'     ) . '" href="' . route ( 'eformsAnnexesGetDelete' , [$eform->id, $item->revision_id] ) . '" class="btn btn-xs btn-danger servermodal"><span class="fa fa-trash"></a>';
+			$array[]=$entry;
+		}
+		return Response::json (['aaData' => $array], 200 );
+	}
+	
+	/**
+	 * Affiche le formulaire de création d'une annexe liée à un eform
+	 *
+	 * @param Eform $eform
+	 * @return \Illuminate\View\View
+	 */
+	public function annexesGetCreate(Eform $eform) {
+		return $this->annexesGetManage($eform);
+	}
+	
+	/**
+	 * Affiche le formulaire d'édition d'une annexe liée à un eform
+	 *
+	 * @param Eform $eform
+	 * @param AnnexeEform $annexe_eform
+	 * @return \Illuminate\View\View
+	 */
+	public function annexesGetEdit(Eform $eform, AnnexeEform $annexe_eform) {
+		return $this->annexesGetManage($eform, $annexe_eform);
+	}
+	
+	/**
+	 * Affiche le formulaire de création et édition d'une annexe liée à un eform
+	 * 
+	 * @param Eform $eform
+	 * @param AnnexeEform $annexe_eform
+	 * @return \Illuminate\View\View
+	 */
+	private function annexesGetManage(Eform $eform, AnnexeEform $annexe_eform=null, $errors=null) {
+		if(!$errors) $errors=new MessageBag();
+		if($annexe_eform) {
+			$aAnnexes[]=$annexe_eform->annexe()->getResults();
+		}
+		else {
+			$aAnnexes=Annexe
+			::whereRaw("annexes.id NOT IN(SELECT annexe_id FROM v_lastrevisionannexes WHERE eform_id={$eform->id} AND deleted_at IS NULL)")
+			->orderby('title')->select(['id', 'title'])->get();
+		}
+
+		return View::make ( 'admin/forms/eforms/annexes/modal-manage', compact ( 'eform', 'annexe_eform', 'aAnnexes', 'errors' ) );
+	}
+	
+	/**
+	 * Création d'une annexe liée à un eform
+	 * 
+	 * @param Eform $eform
+	 * @return \Illuminate\View\View
+	 */
+	public function annexesPostCreate(Eform $eform) {
+		return $this->annexesPostManage($eform);
+	}
+	
+	/**
+	 * Edition d'une annexe liée à un eform
+	 * 
+	 * @param Eform $eform
+	 * @param AnnexeEform $annexe_eform
+	 * @return \Illuminate\View\View
+	 */
+	public function annexesPostEdit(Eform $eform, AnnexeEform $annexe_eform) {
+		return $this->annexesPostManage($eform, $annexe_eform);
+	}
+	
+	/**
+	 * Création ou édition d'une annexe liée à un eform
+	 * 
+	 * @param Eform $eform
+	 * @param AnnexeEform $annexe_eform
+	 * @return \Illuminate\View\View
+	 */
+	private function annexesPostManage(Eform $eform, AnnexeEform $annexe_eform=null) {
+		try {
+			$revision=new AnnexeEform();
+			$revision->eform()->associate($eform);
+			
+			$annexe_id=Input::get('annexe_id');
+			if($annexe_id) $revision->annexe()->associate(Annexe::find($annexe_id));
+			
+			$current_state=Input::get('current_state');
+			if($current_state) $revision->current_state()->associate(DemarchePieceState::find($current_state));
+			
+			$next_state=Input::get('next_state');
+			if($next_state) $revision->next_state()->associate(DemarchePieceState::find($next_state));
+			
+			$revision->comment=Input::get('comment');
+			$revision->user()->associate($this->getLoggedUser());
+			if($revision->save())
+				return View::make ( 'notifications', ['success'=>Lang::get('admin/eforms/messages.annexes.manage.success')] );
+			else {
+				return $this->annexesGetManage($eform, $annexe_eform, $revision->errors());
+			}
+		}
+		catch ( Exception $e ) {
+			Log::error ( $e );
+			return View::make('notifications', ['error'=>Lang::get('general.baderror',['exception'=>$e->getMessage()])]);
+		}
+	}
+	
+	/**
+	 * Demande de suppression d'une annexes liée à un eform
+	 *
+	 * @param Eform $eform
+	 * @param AnnexeEform $annexe_eform
+	 * @return \Illuminate\View\View
+	 */
+	public function annexesGetDelete(Eform $eform, AnnexeEform $annexe_eform) {
+		return View::make ( 'servermodal.delete', ['url'=>route('eformsAnnexesPostDelete', [$eform->id, $annexe_eform->id])]);
+	}
+	
+	/**
+	 * Suppression d'une annexes liée à un eform
+	 *
+	 * @param Eform $eform
+	 * @param AnnexeEform $annexe_eform
+	 * @return \Illuminate\View\View
+	 */
+	public function annexesPostDelete(Eform $eform, AnnexeEform $annexe_eform) {
+		try {
+			if($annexe_eform->delete()) return Response::make();
+			return View::make('notifications', ['error'=>Lang::get('general.delete.error')]);
+		}
+		catch ( Exception $e ) {
+			Log::error ( $e );
+			return View::make('notifications', ['error'=>Lang::get('general.baderror',['exception'=>$e->getMessage()])]);
+		}
+	}
+	
+	/**
+	 * Historique des versions d'une annexe liée à un formulaire
+	 *
+	 * @param Eform $eform
+	 * @param AnnexeEform $annexe_eform
+	 * @return \Illuminate\View\View
+	 */
+	public function annexesGetHistory(Eform $eform, AnnexeEform $annexe_eform) {
+		return View::make('admin/forms/eforms/annexes/modal-history', compact('eform', 'annexe_eform'));
+	}
+	
+	/**
+	 * Historique des versions d'une annexe liée à un formulaire au format json pour le datatable
+	 *
+	 * @param Eform $eform
+	 * @param AnnexeEform $annexe_eform
+	 * @return \Illuminate\Http\JsonResponse
+	 */
+	public function annexesGetHistoryData(Eform $eform, AnnexeEform $annexe_eform) {
+		$states=DemarchePieceState::all();
+		$array = [];
+		foreach ( $annexe_eform->getHistory() as $item ) {
+			$entry=[];
+			$entry[0]=''; foreach($states as $state) if($state->id == $item->current_state_id) $entry[0]="<span data-toggle=\"tooltip\" title=\"{$state->name}\">{$state->code}</span>";
+			$entry[1]=''; foreach($states as $state) if($state->id == $item->next_state_id)    $entry[1]="<span data-toggle=\"tooltip\" title=\"{$state->name}\">{$state->code}</span>";
+			$entry[2]=($item->deleted_at ? '<span class="label label-danger">Supprimé</span>' : '') . nl2br($item->comment);
+			$entry[3]=$item->deleted_at ? DateHelper::sortabledatetime ( $item->deleted_at ) : DateHelper::sortabledatetime ( $item->created_at ) . '<br/>' . $item->username;
+			$array[]=$entry;
+		}
+		return Response::json (['aaData' => $array], 200 );
+	}
+	
+	/**
+	 * *********************************************************************************************************
+	 * Gestion des révisions liées à un eform
+	 * *********************************************************************************************************
+	 */
+	
+	/**
+	 * Liste des révisions liées à un eform
+	 *
+	 * @param Eform $modelInstance
+	 *
+	 */
+	public function revisionsGetIndex(Eform $modelInstance) {
+		return $this->makeDetailView ( $modelInstance, 'admin/forms/eforms/revisions/list');
 	}
 	
 	/**
@@ -387,16 +611,6 @@ class EformController extends TrashableModelController {
 	 * Gestion des actions liées à un eform
 	 * *********************************************************************************************************
 	 */
-	
-	/**
-	 * Liste des actions liées à un eform
-	 *
-	 * @param Eform $modelInstance
-	 *
-	 */
-	public function actionsGetIndex(Eform $modelInstance) {
-		return $this->makeDetailView ( $modelInstance, 'admin/forms/eforms/actions/list');
-	}
 	
 	/**
 	 * Liste des actions liées à un eform au format json pour le datatable

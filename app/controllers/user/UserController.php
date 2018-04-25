@@ -202,7 +202,7 @@ class UserController extends BaseController {
 	 * @return \Illuminate\View\View
 	 */
 	public function getFilters() {
-		$regions = Region::all();
+		$regions = Region::orderBy('name')->get();
 		$publics = NostraPublic::orderBy('title')->get();
 		$taxonomyCategories = TaxonomyCategory::orderBy('name')->get();
 		$expertises = Expertise::ordered()->get(['id', 'name']);

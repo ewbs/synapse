@@ -71,10 +71,11 @@ class MaintenanceController extends BaseController {
 					default       : $results["{$cpt}. statement : {$q}"]=DB::statement($q);
 				};
 			}
-			if($transaction=='commit')
+			if($transaction=='commit') {
 				DB::commit();
-			else
+			} else {
 				DB::rollBack();
+			}
 			return $this->queryrunnerGetIndex(['results'=>$results]);
 		}
 		catch(Exception $e) {

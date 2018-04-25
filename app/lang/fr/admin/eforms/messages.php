@@ -4,6 +4,8 @@ return [
 	'menu' => 'Formulaires',
 	'title' => 'Catalogue des formulaires',
 	'item' => 'Formulaire',
+	
+	'revisions' => 'Révisions', 
 		
 	'does_not_exist' => 'Ce formulaire n\'existe pas.',
 

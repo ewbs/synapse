@@ -180,8 +180,8 @@ class IdeaController extends TrashableModelController {
 	protected function getManage(ManageableModel $modelInstance=null){
 		// Tous les membres de eWBS
 		$ewbsMembers = EWBSMember::orderBy ( 'lastname' )->orderBy ( 'firstname' )->get ();
-		$aRegions = Region::all ();
-		$aGovernements = Governement::all ();
+		$aRegions = Region::orderBy('name')->get();
+		$aGovernements = Governement::orderBy('name')->get();
 		$aTaxonomy = TaxonomyCategory::orderBy('name')->get();
 		$aNostraPublics = NostraPublic::root()->get();
 		$aNostraDemarches = NostraDemarche::orderBy('title')->get();

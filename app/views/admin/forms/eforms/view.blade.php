@@ -57,25 +57,30 @@ $lastRevision=$modelInstance->getLastRevisionEform();
 	<div class="col-md-8">
 		<div class="block-flat">
 			<div class="header">
-				<h3>Révisions</h3>
+				<h3><span class="fa fa-magic"></span> Actions</h3>
 			</div>
 			<div class="content">
-				<fieldset>
-					<div class="table-responsive">
-						<table class="table table-hover datatable" data-ajaxurl="{{ route('eformsRevisionsGetData', $modelInstance->id) }}" data-bFilter="true" data-bSort="false" data-bPaginate="true">
-							<thead>
-								<tr>
-									<th class="col-md-2">Révision</th>
-									<th class="col-md-2">Etat courant</th>
-									<th class="col-md-2">Etat suivant</th>
-									<th>Commentaire</th>
-								</tr>
-							</thead>
-							<tbody>
-							</tbody>
-						</table>
-					</div>
-				</fieldset>
+				<div class="table-responsive">
+					<table id="datatable-eforms-actions" class="table table-hover datatable" data-ajaxurl="{{ route('eformsActionsGetData', $modelInstance->id) }}" data-bsort="true" data-bfilter="true" data-bpaginate="true">
+						<thead>
+							<tr>
+								<th>Nom</th>
+								<th class="col-md-1">Etat</th>
+								<th class="col-md-1">Priorité</th>
+								<th class="col-md-1">Assignation</th>
+								<th class="col-md-1">Révision</th>
+								<th class="col-md-2">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+				@if($modelInstance->canManage())
+				<div class="form-group">
+					<button type="submit" class="btn btn-sm btn-primary servermodal" href="{{route('eformsActionsGetCreate', [$modelInstance->id])}}" data-reload-datatable="table#datatable-eforms-actions"><i class="fa fa-plus"></i> Ajouter une action</button>
+				</div>
+				@endif
 			</div>
 		</div>
 	</div>
