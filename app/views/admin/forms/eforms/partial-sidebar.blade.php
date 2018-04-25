@@ -1,6 +1,6 @@
 <?php
 /*
- * 
+ * @var Annexes $modelInstance
  */
 ?>
 <div class="col-md-4">

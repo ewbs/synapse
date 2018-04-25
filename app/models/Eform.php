@@ -136,8 +136,7 @@ class Eform extends RevisableModel {
 		];
 
 		if ($withCountAnnexes) {
-			// TODO Remplacer par le nombre d'annexes comptées via les données Nostra
-			$columns[] = DB::raw ('\'unknown\' AS countannexes');
+			$columns[] = DB::raw ('(SELECT COUNT(*) FROM annexe_eform ae, annexes a WHERE ae.eform_id = eforms.id AND ae.annexe_id = a.id AND a.deleted_at IS NULL) AS countannexes');
 		}
 
 		if(!$eform) return $qb->get ($columns);
@@ -155,6 +154,39 @@ class Eform extends RevisableModel {
 		return null;
 	}
 	
+	/**
+	 * Dernières révisions des annexes liées à un eform
+	 *
+	 * @param boolean $trashed
+	 * @return array|static[]
+	 */
+	public function getAnnexes($trashed=false) {
+		$qb = DB::table ( 'v_lastrevisionannexes' )
+		->join('annexes', 'annexes.id', '=', 'v_lastrevisionannexes.annexe_id')
+		->leftjoin('users', 'users.id', '=', 'v_lastrevisionannexes.user_id')
+		->leftjoin('demarchesPieces', 'demarchesPieces.id', '=', 'annexes.piece_id')
+		->whereRaw('v_lastrevisionannexes.deleted_at '.($trashed?'IS NOT NULL':'IS NULL')) //Note : la méthode 'whereNull' génère une erreur de syntaxe SQL (le 'AND' n'est pas positionné, bug laravel ?) => je le fais en RAW...
+		->where('eform_id', "=", $this->id)
+		->orderBy('annexe_title');
+
+		$columns=[
+			'v_lastrevisionannexes.id AS revision_id',
+			'annexes.id AS annexe_id',
+			'annexes.title AS annexe_title',
+			'annexes.piece_id',
+			'demarchesPieces.name AS piece_name',
+			'v_lastrevisionannexes.current_state_id',
+			'v_lastrevisionannexes.next_state_id',
+			'v_lastrevisionannexes.comment',
+			'users.username',
+			'v_lastrevisionannexes.created_at'
+		];
+		if($trashed)
+			$column[]='v_lastrevisionannexes.deleted_at';
+
+		return $qb->get ($columns);
+	}
+
 	/**
 	 * Spécifier un commentaire qui sera sauvé dans la future révision liée au formulaire
 	 * @param string $value
@@ -306,6 +338,14 @@ class Eform extends RevisableModel {
 		return $this->hasMany ( 'EwbsAction' );
 	}
 	
+	/**
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function annexes() {
+		return $this->hasMany ( 'annexes' );
+	}
+
 	/**
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany

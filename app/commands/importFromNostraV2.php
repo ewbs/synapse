@@ -8,7 +8,6 @@
 use Illuminate\Console\Command;
 use Symfony\Component\Process\Exception\LogicException;
 use Doctrine\Instantiator\Exception\UnexpectedValueException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 class importFromNostraV2 extends Command {
 	
 	/**
@@ -111,17 +110,23 @@ class importFromNostraV2 extends Command {
 		$this->client=new GuzzleHttp\Client();
 		DB::beginTransaction();
 		try {
-			/*// 1. Import des publics cibles
+			/*
+			 *		1.	Import des publics cibles
+			 */
 			Log::info ( "----- Import des publics cibles -----" );
 			$totalPublicsCibles = $this->_importPublics();
 			Log::info ( "$totalPublicsCibles public importes" );
 			
-			// 2. Import des thématique ABC
+			/*
+			 *		2.	Import des thématique ABC
+			 */
 			Log::info ( "----- Import des thematiques ABC -----" );
 			$totalThematiquesABC = $this->_importThematiquesABC();
 			Log::info ( "$totalThematiquesABC thematiques ABC importees" );
 			
-			// 3. Lien entre les publics et les thématiques ABC
+			/*
+			 *		3.	Lien entre les publics et les thématiques ABC
+			 */
 			Log::info ( "----- Lien entre publics et thematiques ABC -----" );
 			$arrayNostraPublics = NostraPublic::all ();
 			foreach ( $arrayNostraPublics as $nostraPublic ) {
@@ -129,7 +134,9 @@ class importFromNostraV2 extends Command {
 				Log::info(" + ".$nostraPublic->title . " [$total thematiques ABC] ");
 			}
 			
-			//4. Import des événements déclencheurs
+			/*
+			 *		4. Import des événements déclencheurs
+			 */
 			Log::info ( "----- Import des événements déclencheurs -----" );
 			$arrayNostraPublics = NostraPublic::all ();
 			foreach ( $arrayNostraPublics as $nostraPublic ) {
@@ -141,12 +148,16 @@ class importFromNostraV2 extends Command {
 				}
 			}
 			
-			//5. Import des thématique ADM
+			/*
+			 *		5.	Import des thématique ADM
+			 */
 			Log::info ( "----- Import des thematiques ADM -----" );
 			$totalThematiquesADM = $this->_importThematiquesADM();
-			Log::info ( "$totalThematiquesADM thematiques ADM importees" );*/
+			Log::info ( "$totalThematiquesADM thematiques ADM importees" );
 			
-			//6. Importation des démarches
+			/*
+			 *		6.	Importation des démarches
+			 */
 			Log::info ( "----- Import des demarches -----" );
 			$arrayNostraPublics = NostraPublic::all ();
 			foreach ( $arrayNostraPublics as $nostraPublic ) {
@@ -154,12 +165,16 @@ class importFromNostraV2 extends Command {
 				Log::info ( "  + " . $nostraPublic->title . " [$count demarches liees]" );
 			}
 			
-			// 6bis. Soft-delete des demarches absentes du flux
+			/*
+			 *		6bis.	Soft-delete des demarches absentes du flux
+			 */
 			Log::info ( "----- Soft-delete des demarches absentes du flux -----" );
 			$count = $this->deleteDemarches();
 			Log::info ( "{$count} demarches soft-deletees" );
 			
-			//7. Importation du détail des démarches
+			/*
+			 *		7.	Importation du détail des démarches
+			 */
 			Log::info ( "----- Détails des demarches -----" );
 			$arrayNostraDemarches = NostraDemarche::whereIn('nostra_id', $this->demarchesProcessed)->get();
 			Log::info ( $arrayNostraDemarches->count().' démarches concernées' );
@@ -173,7 +188,9 @@ class importFromNostraV2 extends Command {
 				}
 			}
 			
-			// Fin de l'import ... tout c'est bien passé --> on commit
+			/*
+			 * Fin de l'import ... tout c'est bien passé --> on commit
+			 */
 			DB::commit();
 		}
 		catch (Exception $e) {
@@ -697,31 +714,9 @@ class importFromNostraV2 extends Command {
 				$oForm->simplified = isset ( $form['simplified'] ) ? ((strtolower ( $form['simplified'] ) == 'oui') ? 1 : 0) : 0;
 				$oForm->nostra_state = $date;
 				$oForm->save ();
-				if ($oForm->nostraDemarches->contains ( $oDemarche->id )) {
-					$oForm->nostraDemarches ()->detach ( $oDemarche );
-				}
-				
-				
-				$nostra_parent=form['parent_id'];
-				$parent=null;
-				if($nostra_parent) {
-					Log::info("Evénement avec un parent : D{$oDemarche->id} F{$oForm->nostra_id}");
-					$parent=NostraForm::first(['nostra_id' => $nostra_parent]);
-					if(!$parent) {
-						// Il faut alors créer le parent avec juste son ID
-						$parent=new NostraForm();
-						$parent->nostra_id = $nostra_parent;
-						$parent->save(); // TODO : Vérifier qu'on peut sauver avec juste ce champ rempli !
-					}
-					
-					// FIXME : Cela donne une erreur, mais pas encore compris pourquoi.
-					// TODO : Une fois trouvé, vérifier que le champ nostra_form_parent_id est bien initialisé
-					$oForm->nostraDemarches ()->attach ( [$oDemarche->id => ['nostra_form_parent_id'=>$parent->id]]);
-				}
-				else {
+				if (! $oForm->nostraDemarches->contains ( $oDemarche->id )) {
 					$oForm->nostraDemarches ()->attach ( $oDemarche );
 				}
-				
 			}
 		}
 		

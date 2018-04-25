@@ -40,6 +40,14 @@ abstract class Component extends TrashableModel {
 	}
 	
 	/**
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function annexes() {
+		return $this->hasMany ( 'Annexe' );
+	}
+
+	/**
 	 * 
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
 	 */

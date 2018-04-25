@@ -73,94 +73,7 @@ class CreatesEformsTables extends Migration {
 			JOIN "eformsRevisions" r ON r.eform_id = rsub.eform_id
 			AND rsub.mx = r.created_at;
 		');
-		
-		self::createAnnexesTables($output);
-				
-		/*
-		 * Ajout dans les actions de la colonne pour les eforms
-		 */
-		$output->writeln("Modification de la table ewbsActions pour les eforms");
-		Schema::table('ewbsActions', function (Blueprint $table) {
-			$table->integer ( 'eform_id' )->unsigned ()->index()->nullable();
-			$table->foreign ( 'eform_id' )->references ( 'id' )->on ( 'eforms' )->onDelete ( 'set null' );
-		});
-		
-		/*
-		 * Formulaires liés aux démarches
-		 * Table de jointure
-		 */
-		$output->writeln("Création de la table demarche_eform");
-		Schema::create ( 'demarche_eform', function (Blueprint $table) {
-			$table->increments ( 'id' )->unsigned ();
-			$table->integer ( 'demarche_id' )->unsigned ();
-			$table->integer ( 'eform_id' )->unsigned ();
-			$table->integer ( 'user_id' )->unsigned ();
-			$table->text ( 'comment' )->nullable ();
-			$table->foreign ( 'demarche_id' )->references ( 'id' )->on ( 'demarches' )->onDelete ( 'cascade' );
-			$table->foreign ( 'eform_id' )->references ( 'id' )->on ( 'eforms' )->onDelete ( 'cascade' );
-			$table->foreign ( 'user_id' )->references ( 'id' )->on ( 'users' )->onDelete ( 'set null' );
-			$table->timestamps ();
-			$table->softDeletes ();
-		});
-		
-		/*
-		 * Vue pour obtenir les eforms liés à une démarche dans leur dernière révision
-		 * (donc sans l'historique des modifications)
-		 */
-		$output->writeln("Création de la vue v_lastRevisionDemarcheEform");
-		DB::statement ('
-			CREATE VIEW v_lastRevisionDemarcheEform AS
-			SELECT
-				r.*,
-				rsub.mx
-			FROM (
-				SELECT demarche_id, eform_id, MAX(created_at) AS mx
-				FROM demarche_eform
-				GROUP BY demarche_id, eform_id
-			) rsub
-			JOIN demarche_eform r ON r.demarche_id = rsub.demarche_id
-			AND rsub.mx = r.created_at
-			AND r.eform_id = rsub.eform_id;'
-		);
-	}
-	
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down() {
-		$output = new ConsoleOutput();
-		
-		$output->writeln("Modification de la table ewbsActions pour les eforms");
-		Schema::table('ewbsActions', function (Blueprint $table) {
-			$table->dropColumn('eform_id');
-		});
-		
-		$output->writeln("Suppression de la vue v_lastRevisionDemarcheEform");
-		DB::statement ( 'DROP VIEW v_lastRevisionDemarcheEform' );
-			
-		$output->writeln("Suppression de la table demarche_eform");
-		Schema::drop ( 'demarche_eform' );
-		
-		self::dropAnnexesTables($output);
-		
-		$output->writeln("Suppression de la vue v_lastRevisionEforms");
-		DB::statement ( 'DROP VIEW v_lastRevisionEforms' );
-		
-		$output->writeln("Suppression de la table eformsRevisions");
-		Schema::drop ( 'eformsRevisions' );
-		
-		$output->writeln("Suppression de la table eforms");
-		Schema::drop ( 'eforms' );
-	}
-	
-	/**
-	 * Création des tables et vues relatives aux annexes de formulaires
-	 * 
-	 * @param ConsoleOutput $output
-	 */
-	public static function createAnnexesTables(ConsoleOutput $output){
+
 		/*
 		 * Cette table représente le catalogue des annexes.
 		 * Quand on parle d'une annexe liée à un formulaire, on utilise la table eform_annexe.
@@ -207,7 +120,7 @@ class CreatesEformsTables extends Migration {
 		$output->writeln("Création de la vue v_lastRevisionAnnexes");
 		DB::statement ('
 			CREATE VIEW v_lastRevisionAnnexes AS
-			SELECT
+			SELECT 
 				r.*,
 				rsub.mx
 			FROM (
@@ -215,18 +128,78 @@ class CreatesEformsTables extends Migration {
 				FROM annexe_eform
 				GROUP BY annexe_id, eform_id
 			) rsub
-			JOIN annexe_eform r ON r.annexe_id = rsub.annexe_id
+			JOIN annexe_eform r ON r.annexe_id = rsub.annexe_id 
+			AND rsub.mx = r.created_at 
+			AND r.eform_id = rsub.eform_id;'
+		);
+
+		/*
+		 * Ajout dans les actions de la colonne pour les eforms
+		 */
+		$output->writeln("Modification de la table ewbsActions pour les eforms");
+		Schema::table('ewbsActions', function (Blueprint $table) {
+			$table->integer ( 'eform_id' )->unsigned ()->index()->nullable();
+			$table->foreign ( 'eform_id' )->references ( 'id' )->on ( 'eforms' )->onDelete ( 'set null' );
+		});
+
+		/*
+		 * Formulaires liés aux démarches
+		 * Table de jointure
+		 */
+		$output->writeln("Création de la table demarche_eform");
+		Schema::create ( 'demarche_eform', function (Blueprint $table) {
+			$table->increments ( 'id' )->unsigned ();
+			$table->integer ( 'demarche_id' )->unsigned ();
+			$table->integer ( 'eform_id' )->unsigned ();
+			$table->integer ( 'user_id' )->unsigned ();
+			$table->text ( 'comment' )->nullable ();
+			$table->foreign ( 'demarche_id' )->references ( 'id' )->on ( 'demarches' )->onDelete ( 'cascade' );
+			$table->foreign ( 'eform_id' )->references ( 'id' )->on ( 'eforms' )->onDelete ( 'cascade' );
+			$table->foreign ( 'user_id' )->references ( 'id' )->on ( 'users' )->onDelete ( 'set null' );
+			$table->timestamps ();
+			$table->softDeletes ();
+		});
+
+		/*
+		 * Vue pour obtenir les eforms liés à une démarche dans leur dernière révision
+		 * (donc sans l'historique des modifications)
+		 */
+		$output->writeln("Création de la vue v_lastRevisionDemarcheEform");
+		DB::statement ('
+			CREATE VIEW v_lastRevisionDemarcheEform AS
+			SELECT
+				r.*,
+				rsub.mx
+			FROM (
+				SELECT demarche_id, eform_id, MAX(created_at) AS mx
+				FROM demarche_eform
+				GROUP BY demarche_id, eform_id
+			) rsub
+			JOIN demarche_eform r ON r.demarche_id = rsub.demarche_id
 			AND rsub.mx = r.created_at
 			AND r.eform_id = rsub.eform_id;'
 		);
 	}
 	
 	/**
-	 * Suppression des tables et vues relatives aux annexes de formulaires
-	 * 
-	 * @param ConsoleOutput $output
+	 * Reverse the migrations.
+	 *
+	 * @return void
 	 */
-	public static function dropAnnexesTables(ConsoleOutput $output){
+	public function down() {
+		$output = new ConsoleOutput();
+
+		$output->writeln("Modification de la table ewbsActions pour les eforms");
+		Schema::table('ewbsActions', function (Blueprint $table) {
+			$table->dropColumn('eform_id');
+		});
+
+		$output->writeln("Suppression de la vue v_lastRevisionDemarcheEform");
+		DB::statement ( 'DROP VIEW v_lastRevisionDemarcheEform' );
+
+		$output->writeln("Suppression de la table demarche_eform");
+		Schema::drop ( 'demarche_eform' );
+
 		$output->writeln("Suppression de la vue v_lastRevisionAnnexes");
 		DB::statement ( 'DROP VIEW v_lastRevisionAnnexes' );
 		
@@ -235,5 +208,14 @@ class CreatesEformsTables extends Migration {
 		
 		$output->writeln("Suppression de la table annexes");
 		Schema::drop ( 'annexes' );
+
+		$output->writeln("Suppression de la vue v_lastRevisionEforms");
+		DB::statement ( 'DROP VIEW v_lastRevisionEforms' );
+
+		$output->writeln("Suppression de la table eformsRevisions");
+		Schema::drop ( 'eformsRevisions' );
+
+		$output->writeln("Suppression de la table eforms");
+		Schema::drop ( 'eforms' );
 	}
 }

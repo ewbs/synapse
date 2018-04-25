@@ -60,6 +60,7 @@ Route::group(['prefix' => 'demarches'], function() {
 			
 			// Pièces liées à une démarche
 			Route::group(['prefix' => 'demarches_pieces'], function() {
+				Route::get ('warning'  ,['as'=>'demarchesPiecesGetWarning'   ,'uses'=>'DemarcheController@piecesGetWarning']);
 				Route::get ('data'     ,['as'=>'demarchesPiecesGetData'      ,'uses'=>'DemarcheController@piecesGetData']);
 				Route::get ('create'   ,['as'=>'demarchesPiecesGetCreate'    ,'uses'=>'DemarcheController@piecesGetCreate']);
 				Route::post('create'   ,['as'=>'demarchesPiecesPostCreate'   ,'uses'=>'DemarcheController@piecesPostCreate'   ,'before'=> 'csrf']);

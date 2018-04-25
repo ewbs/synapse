@@ -17,6 +17,8 @@
  */
 $bindings=[
 	['administration', 'Administration'],
+	['annexe', 'Annexe'],
+	['annexe_eform', 'AnnexeEform'],
 	//['damus_thematique', 'NostraThematique'],
 	['damus_thematiqueabc', 'NostraThematiqueabc'],
 	['damus_thematiqueadm', 'NostraThematiqueadm'],

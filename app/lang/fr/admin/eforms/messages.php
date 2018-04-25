@@ -30,6 +30,12 @@ return [
 		'success' => 'Le formulaire a été restauré.'
 	],
 	
+	'annexes' => [
+		'manage' => [
+			'success' => 'L\'annexe a été sauvegardée. Merci.'
+		],
+	],
+
 	'actions' => [
 		'manage' => [
 				'success' => 'L\'action a été sauvegardée. Merci.'
