@@ -1442,7 +1442,7 @@ class DemarcheController extends TrashableModelController {
 	/**
 	 * Récupérer la liste des pièces liées à une annexe, elle-même liée à un formulaire, lui-même lié à la démarche courante.
 	 * Si certaines de ces pièces et tâches ne sont pas encore directement liées à la démarche courante, permettre de les ajouter.
-	 *
+	 * 
 	 * @param Demarche $demarche
 	 * @return \Illuminate\View\View
 	 */
@@ -1467,11 +1467,11 @@ class DemarcheController extends TrashableModelController {
 		->distinct()
 		->orderBy('demarchesPieces.name')
 		->get(['demarchesPieces.id', 'demarchesPieces.name']);
-
+		
 		if(empty($aNotLinkedPieces)) return Response::make();
 		return View::make('admin/demarches/components/partial-warning', compact ('aNotLinkedPieces'));
 	}
-
+	
 	/**
 	 * *********************************************************************************************************
 	 * Gestion des formulaires
@@ -1508,15 +1508,15 @@ class DemarcheController extends TrashableModelController {
 					$state .= ($annexe_revision->next_state_id ? $states [$annexe_revision->next_state_id]->graphicState () : '?');
 					$state .= '</div>';
 				}
-
+				
 				// Pièce ou tâche liée à l'annexe
 				$related='';
 				if($annexe_revision->piece_id) $related="<div><a href=\"#pieces\" title=\"".Lang::get ( 'admin/demarches/messages.piece.piece' )."\"><i class=\"fa fa-clipboard\"></i>{$annexe_revision->piece_name}</a></div>";
-
+				
 				// Picto éditer si pas de related
 				$edit='';
 				if(!$related && $eform->canManage()) $edit='<a title="'.Lang::get ( 'button.edit' ).'"class="btn btn-default btn-xs servermodal" href="'.route('eformsAnnexesGetEdit',[$eform->id, $annexe_revision->revision_id]).'"><span class="fa fa-pencil"></span></a>';
-
+				
 				$annexes.="<li><strong>{$annexe_revision->annexe_title}</strong>{$edit}{$related}{$state}</li>";
 			}
 			if($annexes)$annexes="<ul>{$annexes}</ul>";

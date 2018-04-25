@@ -73,7 +73,7 @@ class CreatesEformsTables extends Migration {
 			JOIN "eformsRevisions" r ON r.eform_id = rsub.eform_id
 			AND rsub.mx = r.created_at;
 		');
-
+		
 		/*
 		 * Cette table représente le catalogue des annexes.
 		 * Quand on parle d'une annexe liée à un formulaire, on utilise la table eform_annexe.
@@ -132,7 +132,7 @@ class CreatesEformsTables extends Migration {
 			AND rsub.mx = r.created_at 
 			AND r.eform_id = rsub.eform_id;'
 		);
-
+		
 		/*
 		 * Ajout dans les actions de la colonne pour les eforms
 		 */
@@ -141,7 +141,7 @@ class CreatesEformsTables extends Migration {
 			$table->integer ( 'eform_id' )->unsigned ()->index()->nullable();
 			$table->foreign ( 'eform_id' )->references ( 'id' )->on ( 'eforms' )->onDelete ( 'set null' );
 		});
-
+		
 		/*
 		 * Formulaires liés aux démarches
 		 * Table de jointure
@@ -159,7 +159,7 @@ class CreatesEformsTables extends Migration {
 			$table->timestamps ();
 			$table->softDeletes ();
 		});
-
+		
 		/*
 		 * Vue pour obtenir les eforms liés à une démarche dans leur dernière révision
 		 * (donc sans l'historique des modifications)
@@ -188,18 +188,18 @@ class CreatesEformsTables extends Migration {
 	 */
 	public function down() {
 		$output = new ConsoleOutput();
-
+		
 		$output->writeln("Modification de la table ewbsActions pour les eforms");
 		Schema::table('ewbsActions', function (Blueprint $table) {
 			$table->dropColumn('eform_id');
 		});
-
+		
 		$output->writeln("Suppression de la vue v_lastRevisionDemarcheEform");
 		DB::statement ( 'DROP VIEW v_lastRevisionDemarcheEform' );
-
+			
 		$output->writeln("Suppression de la table demarche_eform");
 		Schema::drop ( 'demarche_eform' );
-
+		
 		$output->writeln("Suppression de la vue v_lastRevisionAnnexes");
 		DB::statement ( 'DROP VIEW v_lastRevisionAnnexes' );
 		
@@ -208,13 +208,13 @@ class CreatesEformsTables extends Migration {
 		
 		$output->writeln("Suppression de la table annexes");
 		Schema::drop ( 'annexes' );
-
+		
 		$output->writeln("Suppression de la vue v_lastRevisionEforms");
 		DB::statement ( 'DROP VIEW v_lastRevisionEforms' );
-
+		
 		$output->writeln("Suppression de la table eformsRevisions");
 		Schema::drop ( 'eformsRevisions' );
-
+		
 		$output->writeln("Suppression de la table eforms");
 		Schema::drop ( 'eforms' );
 	}

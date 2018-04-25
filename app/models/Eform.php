@@ -168,7 +168,7 @@ class Eform extends RevisableModel {
 		->whereRaw('v_lastrevisionannexes.deleted_at '.($trashed?'IS NOT NULL':'IS NULL')) //Note : la méthode 'whereNull' génère une erreur de syntaxe SQL (le 'AND' n'est pas positionné, bug laravel ?) => je le fais en RAW...
 		->where('eform_id', "=", $this->id)
 		->orderBy('annexe_title');
-
+		
 		$columns=[
 			'v_lastrevisionannexes.id AS revision_id',
 			'annexes.id AS annexe_id',
@@ -183,10 +183,10 @@ class Eform extends RevisableModel {
 		];
 		if($trashed)
 			$column[]='v_lastrevisionannexes.deleted_at';
-
+		
 		return $qb->get ($columns);
 	}
-
+	
 	/**
 	 * Spécifier un commentaire qui sera sauvé dans la future révision liée au formulaire
 	 * @param string $value
@@ -345,7 +345,7 @@ class Eform extends RevisableModel {
 	public function annexes() {
 		return $this->hasMany ( 'annexes' );
 	}
-
+	
 	/**
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany

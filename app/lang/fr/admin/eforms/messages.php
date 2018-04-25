@@ -35,7 +35,7 @@ return [
 			'success' => 'L\'annexe a été sauvegardée. Merci.'
 		],
 	],
-
+		
 	'actions' => [
 		'manage' => [
 				'success' => 'L\'action a été sauvegardée. Merci.'
