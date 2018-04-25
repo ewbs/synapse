@@ -10,7 +10,7 @@
 					<h4>Informations générales</h4>
 				</div>
 				<div class="content">
-				
+
 					<!-- administrations impliquées -->
 					<?php $aSelectedAdministrations = Input::old('administrations', isset($aSelectedAdministrations) ? $aSelectedAdministrations : array()); ?>
 					<div class="form-group">
@@ -83,7 +83,7 @@
 					</div>
 					@endif
 					<!-- ./ utilisation du formulaire electronique -->
-					
+
 					<!-- commentaire -->
 					<div class="form-group {{{ $errors->has('comment') ? 'has-error' : '' }}}">
 						<label class="col-md-2 control-label" for="name">Commentaire</label>
@@ -96,7 +96,7 @@
 					<!-- ./ commentaire -->
 				</div>
 			</div>
-			
+
 			<!-- Documentation -->
 			<div class="block-flat">
 				<div class="header">
@@ -214,11 +214,11 @@
 				<div class="content">
 					@warning('<br />Par défaut les gains sont automatiquement calculés sur base des sommes des gains des différentes pièces et tâches liées à la démarche.<br />Si vous souhaitez modifier manuellement ces montants, ils ne seront donc plus automatiquement calculés suite aux modifications effectuées au niveau des pièces et tâches de la démarche.<br /><a id="unlockGains" class="btn btn-default" href="#">Modifier manuellement ces montants</a><a id="lockGains" class="btn btn-default" style="display: none" href="#">Remettre les montants initiaux</a>')
 					<?php
-					$gains = [ 
+					$gains = [
 					'gain_potential_administration' => 'Gain potentiel administration',
 					'gain_potential_citizen' => 'Gain potentiel usager',
 					'gain_real_administration' => 'Gain effectif administration',
-					'gain_real_citizen' => 'Gain effectif usager' 
+					'gain_real_citizen' => 'Gain effectif usager'
 					];
 					?>
 					@foreach($gains as $name=>$label)
@@ -248,7 +248,7 @@
 			@include('admin.demarches.blocs.infos_nostra',['manage'=>true])
 		</div>
 	</div>
-	
+
 	<div class="row">
 		<div class="block-flat">
 			<div class="content no-padding">

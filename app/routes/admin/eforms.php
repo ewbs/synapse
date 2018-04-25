@@ -90,7 +90,9 @@ Route::group(['prefix' => 'eforms'], function() {
 	Route::group(['prefix' => 'undocumented'], function() {
 		Route::get (''            ,['as'=>'eformsUndocumentedGetIndex'   ,'uses'=>'EformController@undocumentedGetIndex']);
 		Route::get ('data'        ,['as'=>'eformsUndocumentedGetData'    ,'uses'=>'EformController@undocumentedGetData']);
-		
+		Route::get ('integrer'        ,['as'=>'eformsUndocumentedGetIntegrer'    ,'uses'=>'EformController@undocumentedGetIntegrer']);
+		Route::post ('integrer'        ,['as'=>'eformsUndocumentedPostIntegrer'    ,'uses'=>'EformController@undocumentedPostIntegrer']);
+
 		// Détail d'un NostraForm
 		Route::group(['prefix' => '{damus_form}'], function() {
 			Route::get ('view'     ,['as'=>'eformsUndocumentedGetView'   ,'uses'=>'EformController@undocumentedGetView']);

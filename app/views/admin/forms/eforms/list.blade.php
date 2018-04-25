@@ -61,6 +61,7 @@
 									</tbody>
 								</table>
 								@elseif ($context == 'undocumented')
+								<a class="btn btn-primary" href="{{route('eformsUndocumentedGetIntegrer')}}">Intégrer tous les formulaires à Synapse</a>
 								<table class="table table-hover datatable" data-ajaxurl="{{ $model->routeGetDataUndocumented() }}" data-bFilter="true" data-bSort="true" data-bPaginate="true">
 									<thead>
 										<tr>

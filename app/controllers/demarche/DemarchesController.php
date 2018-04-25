@@ -1522,13 +1522,13 @@ class DemarcheController extends TrashableModelController {
 			if($annexes)$annexes="<ul>{$annexes}</ul>";
 			if ($minimal) {
 				$rows[] = [
-					$eform->name(),
+					'<a href="components">'.$eform->name().'</a>',
 					$annexes,
 				];
 			}
 			else {
 				$rows[] = [
-					$eform->name(),
+					'<a href="'.route('eformsGetView', $eform->id).'">'.$eform->name().'</a>',
 					$annexes,
 					$demarcheEform->nostra_id?'#'.$demarcheEform->nostra_id:'',
 					DateHelper::sortabledatetime($demarcheEform->created_at) . '<br/>' . $demarcheEform->user->username,

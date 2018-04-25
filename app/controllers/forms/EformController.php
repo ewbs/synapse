@@ -269,6 +269,37 @@ class EformController extends TrashableModelController {
 			->remove_column('id')
 			->make ();
 	}
+
+	/**
+	 * Affiche la vue qui permet de valider l'intégrations de tous les formulaires dans synapse (ceux qui ne le sont pas encore)
+	 * @return \Illuminate\View\View
+	 */
+	public function undocumentedGetIntegrer() {
+		return View::make ( 'admin/forms/eforms/undocumented-integrer');
+	}
+
+	/**
+	 * Boucle sur les formulaires Nostra qui ne sont pas dans Synapse
+	 * Ceux-ci sont ensuite intégrés dans Synapse.
+	 * @return \Illuminate\Http\RedirectResponse
+	 * @throws Exception
+	 */
+	public function undocumentedPostIntegrer() {
+		$nostraForms = NostraForm::whereNotIn('id', function ($query) {
+			$query->select(DB::raw('COALESCE(nostra_form_id,0)'))->from('eforms');
+		})->get();
+		$i=0;
+		foreach($nostraForms as $nostraForm) {
+			if($i <5){
+				$eform = new Eform();
+				$eform->nostra_form_id = $nostraForm->id;
+				$eform->save();
+				$i++;
+			}
+		}
+		return Redirect::route('eformsGetIndex')->with ( 'success', $i.' formulaires ont été intégrés !' );;
+
+	}
 	
 	/**
 	 * Visualisation d'un formulaire nostra non documenté

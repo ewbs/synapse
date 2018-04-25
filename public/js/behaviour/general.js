@@ -664,7 +664,9 @@ var App = function() {
 				/* Slider */
 				if (config.slider) {
 					var bslider=top.find('.bslider');
-					if(bslider.length>0) bslider.slider();
+					if(bslider.length>0) bslider.slider({
+						tooltip : 'always'
+					});
 				}
 				
 				/* Input & Radio Buttons */
