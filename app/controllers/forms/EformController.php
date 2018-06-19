@@ -315,12 +315,10 @@ class EformController extends TrashableModelController {
 		})->get();
 		$i=0;
 		foreach($nostraForms as $nostraForm) {
-			if($i <5){
-				$eform = new Eform();
-				$eform->nostra_form_id = $nostraForm->id;
-				$eform->save();
-				$i++;
-			}
+			$eform = new Eform();
+			$eform->nostra_form_id = $nostraForm->id;
+			$eform->save();
+			$i++;
 		}
 		return Redirect::route('eformsGetIndex')->with ( 'success', $i.' formulaires ont été intégrés !' );;
 
