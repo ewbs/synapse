@@ -1,0 +1,11 @@
+<li<?php echo (array_key_exists('active', $item)) ? ' class="active"' : ''; ?>>
+	<a href="<?php echo array_key_exists('route', $item) ? route($item['route']) : '#'; ?>">
+		<?php if(array_key_exists('icon', $item)): ?><i class="fa fa-<?php echo $item['icon']; ?>"></i><?php endif; ?>
+		<span><?php echo e($item['label']); ?></span>
+	</a>
+	<?php if(array_key_exists('submenu', $item)): ?>
+	<ul>
+		<?php echo $__env->renderEach('site.layouts.partial.navigation-menu', $item['submenu'], 'item'); ?>
+	</ul>
+	<?php endif; ?>
+</li>

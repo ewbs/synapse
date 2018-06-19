@@ -1,0 +1,13 @@
+/*Nano Scroller*/
+.nano > .pane {
+  background: grey;
+  width: 10px;
+}
+.nano > .pane > .slider {
+  width: 100%;
+}
+.jqstooltip {
+  padding: 3px 10px 5px 5px;
+  min-height: 25px;
+  min-width: 30px;
+}

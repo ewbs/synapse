@@ -1,0 +1,301 @@
+<?php 
+/**
+ * @var Idea $modelInstance
+ */
+$ideaState = $modelInstance->getLastStateModification ()->ideaState;
+?>
+
+
+<?php $__env->startSection('title'); ?><span class="text-primary"><?php echo DateHelper::year($modelInstance->created_at); ?>-<?php echo $modelInstance->id; ?></span> <?php echo $modelInstance->name; ?> <?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
+<div class="row">
+	<div class="col-md-4">
+		<div class="block-flat">
+			<div class="header">
+				<h4>Description</h4>
+			</div>
+			<div class="content">
+				<p class="text-justify read-more" data-readmore-link-text="Lire la suite">
+					<?php echo $modelInstance->description; ?>
+
+				</p>
+			</div>
+		</div>
+		
+		<?php if(strlen($modelInstance->reference)): ?>
+			<div class="block-flat">
+				<div class="header">
+					<h4>Référence externe</h4>
+				</div>
+				<div class="content">
+					<strong><?php echo $modelInstance->reference; ?></strong>
+				</div>
+			</div>
+		<?php endif; ?>
+		
+		<div class="block-flat">
+			<div class="header">
+				<h4>Administrations impliquées</h4>
+			</div>
+			<div class="content">
+				<?php foreach( $modelInstance->administrations as $adm ): ?>
+					<span class="label label-default"><?php echo $adm->name; ?></span>
+				<?php endforeach; ?>
+			</div>
+		</div>
+		
+		<div class="block-flat">
+			<div class="header">
+				<h4>Public(s) cible</h4>
+			</div>
+			<div class="content">
+				<?php foreach( $modelInstance->getNostraPublics() as $n ): ?>
+					<span class="label label-default"><?php echo $n->title; ?></span>
+				<?php endforeach; ?>
+				<?php if(strlen ( $modelInstance->freeencoding_nostra_publics )): ?>
+					<span class="label label-default"><span class="fa fa-flash" title="Entrée libre"></span><?php echo $modelInstance->freeencoding_nostra_publics; ?></span>
+				<?php endif; ?>
+				<hr/>
+				<h5>Thématiques usager</h5>
+				<?php if( count($modelInstance->getNostraThematiquesabc()) ): ?>
+					<ul>
+					<?php foreach($modelInstance->getNostraThematiquesabc() as $item): ?>
+						<li><?php echo $item->title; ?></li>
+					<?php endforeach; ?>
+					</ul>
+				<?php endif; ?>
+				<h5>Thématiques administratives</h5>
+				<?php if( count($modelInstance->getNostraThematiquesadm()) ): ?>
+					<ul>
+					<?php foreach($modelInstance->getNostraThematiquesadm() as $item): ?>
+						<li><?php echo $item->title; ?></li>
+					<?php endforeach; ?>
+					</ul>
+				<?php endif; ?>
+				<h5>Evenements déclencheurs</h5>
+				<?php if( count($modelInstance->getNostraEvenements()) ): ?>
+					<ul>
+					<?php foreach($modelInstance->getNostraEvenements() as $item): ?>
+						<li><?php echo $item->title; ?></li>
+					<?php endforeach; ?>
+					</ul>
+				<?php endif; ?>
+			</div>
+		</div>
+		
+		<div class="block-flat">
+			<div class="header">
+				<h4>Ministre(s) compétent(s)</h4>
+			</div>
+			<div class="content">
+				<?php foreach( $modelInstance->ministers as $minister ): ?>
+					<?php if($minister->canManage()): ?>
+					<a href="<?php echo $minister->routeGetView(); ?>"><span class="label label-default"><?php echo $minister->name(); ?></span></a>
+					<?php else: ?>
+					<span class="label label-default"><?php echo $minister->name(); ?></span>
+					<?php endif; ?>
+				<?php endforeach; ?>
+			</div>
+		</div>
+		
+		<div class="block-flat">
+			<div class="header">
+				<h4>Source du document</h4>
+			</div>
+			<div class="content">
+				<p>
+					<strong><em><?php echo e($modelInstance->doc_source_title); ?></em></strong><br>
+					Page <?php echo e($modelInstance->doc_source_page); ?><br/>
+					<a target="_blank href="<?php echo e($modelInstance->doc_source_link); ?>"><?php echo e($modelInstance->doc_source_link); ?></a>
+				</p>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-md-4">
+		<div class="block-flat">
+			<div class="header">
+				<h4>Etat</h4>
+			</div>
+			<div class="content">
+				<?php if($modelInstance->prioritary): ?> <span class="label label-primary">Prioritaire</span><?php endif; ?>
+				<?php if($modelInstance->transversal): ?> <span class="label label-info">Générique</span><?php endif; ?>
+				<span class="label label-primary"><?php echo Lang::get('admin/ideas/states.'.$ideaState->name); ?></span>
+			</div>
+		</div>
+		
+		<div class="block-flat">
+			<div class="header">
+				<h4>Taxonomie</h4>
+			</div>
+			<div class="content">
+				<?php if(count($modelInstance->tags)): ?>
+					<?php foreach($modelInstance->tags as $tag): ?>
+						<span class="badge badge-default"><?php echo $tag->name; ?></span>
+					<?php endforeach; ?>
+				<?php else: ?>
+					Aucun tag
+				<?php endif; ?>
+			</div>
+		</div>
+		
+		<div class="block-flat">
+			<div class="header">
+				<h4><span class="fa fa-briefcase"></span> Démarches liées</h4>
+			</div>
+			<?php $aDemarches = $modelInstance->getDemarches(); ?>
+			<?php if( ! count($aDemarches) ): ?>
+	<div class="alert alert-warning alert-white rounded">
+		<div class="icon">
+			<i class="fa fa-exclamation-triangle"></i>
+		</div>
+		<strong>Attention! </strong><?php echo ('<br/>Ce projet n\'est liée à aucune démarche.'); ?>
+	</div>
+			<?php else: ?>
+				<ul class="list-group">
+				<?php foreach($aDemarches as $demarche): ?>
+					<li class="list-group-item">
+						<strong><?php echo DateHelper::year($demarche->created_at) . '-' . str_pad ( $demarche->id, 4, "0", STR_PAD_LEFT ); ?></strong>
+						<a href="<?php echo route('demarchesGetView', $demarche->id); ?>"><?php echo $demarche->nostraDemarche->title; ?></a>
+					</li>
+				<?php endforeach; ?>
+				</ul>
+			<?php endif; ?>
+		</div>
+		
+		<div class="block-flat">
+			<div class="header">
+				<h4><span class="fa fa-magic"></span> Actions</h4>
+			</div>
+			<div class="content">
+			
+			<?php $actions=EwbsAction::each()->forIdea($modelInstance)->get(); ?>
+			<?php if($actions): ?>
+				<h4>Liées au projet de simplif'</h4>
+				<div class="table-responsive actions">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>Actions</th>
+								<th class="col-md-1">Etat</th>
+							</tr>
+						</thead>
+						<tbody>
+						<?php foreach($actions as $item): ?>
+								<tr>
+									<td><strong><?php echo e($item->name); ?></strong><br/><em><?php echo e($item->description); ?></em></td>
+									<td><?php echo EwbsActionRevision::graphicState($item->state); ?></td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				</div>
+			<?php endif; ?>
+			
+			<?php foreach($modelInstance->nostraDemarches as $nd): ?>
+				<h4><span class="fa fa-briefcase"></span> Via la démarche "<?php echo e($nd->title); ?>"</h4>
+				<?php $demarche=$nd->demarche; ?>
+				<?php if($demarche): ?>
+					<?php $actions=EwbsAction::each()->forDemarche($demarche)->get(); ?>
+					<?php if($actions): ?>
+					<div class="table-responsive actions">
+						<table class="table table-hover">
+							<thead>
+								<tr>
+									<th>Actions</th>
+									<th class="col-md-1">Etat</th>
+								</tr>
+							</thead>
+							<tbody>
+							<?php foreach($actions as $item): ?>
+									<tr>
+										<td><strong><?php echo e($item->name); ?></strong><br/><em><?php echo e($item->description); ?></em></td>
+										<td><?php echo EwbsActionRevision::graphicState($item->state); ?></td>
+									</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+					<?php endif; ?>
+				<?php endif; ?>
+				<hr/>
+			<?php endforeach; ?>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-md-4">
+		<div class="block-flat">
+			<div class="header">
+				<h4><span class="fa fa-comment-o"></span> Commentaires</h4>
+			</div>
+			<?php if($modelInstance->canManage()): ?>
+				<div class="form-group">
+					<textarea class="form-control" id="comments-content" placeholder="Ajouter un commentaire ..."></textarea>
+				</div>
+				<div class="form-group">
+					<button type="submit" id="comments-submit" class="btn btn-xs btn-primary pull-right">Ajouter mon commentaire</button>
+				</div>
+				<div class="clear"></div>
+			<?php endif; ?>
+			<div class="content">
+				<input type="hidden" name="_token" id="_token" value="<?php echo e(csrf_token()); ?>" />
+				<?php /*<ul id="comments-list" class="timeline" data-idea-id="<?php echo $modelInstance->id; ?>"></ul>*/ ?>
+				<div class="chat-wi">
+					<div class="chat-content content" id="comments-list" data-idea-id="<?php echo $modelInstance->id; ?>"></div>
+				</div>
+				<p id="comments-none">Aucun commentaire pour le moment</p>
+			</div>
+		</div>
+		<?php echo $__env->make("admin.ideas.partial-comments", array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+		
+		<div class="block-flat">
+			<div class="header">
+				<h4>Informations complémentaires</h4>
+			</div>
+			<div class="content">
+				<p><span class="fa fa-user"></span> Créé par <strong><?php echo $modelInstance->user->username; ?></strong> (<?php echo HTML::mailto($modelInstance->user->email); ?>)</p>
+				<p><span class="fa fa-calendar"></span> Le <?php echo DateHelper::datetime($modelInstance->created_at); ?></p>
+				<?php if($modelInstance->ewbs_member_id): ?><p><span class="fa fa-users"></span> Relai eWBS <strong><?php echo $modelInstance->ewbsMember->firstname; ?> <?php echo $modelInstance->ewbsMember->lastname; ?></strong></p><?php endif; ?>
+				<?php if($modelInstance->ext_contact): ?><p><span class="fa fa-users"></span> Contact <strong><?php echo $modelInstance->ext_contact; ?></strong></p><?php endif; ?>
+			</div>
+		</div>
+	</div>
+</div>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('scripts'); ?>
+<script type="text/javascript">
+	<?php /* TODO : Mutualiser ceci dans un .js */ ?>
+	$(document).ready( function () {
+		$(".read-more").each ( function () {
+			var maxWords = 60;
+			var maxLength = 300;
+			var linkText = $(this).data("readmore-link-text");
+			var completeText = $(this).html();
+			var $container = $(this);
+
+			//trim le texte à la longueur max
+			var shortText = completeText.substr(0, maxLength);
+			//re-trim si on est au milieu d'un mot
+			shortText = shortText.substr(0, Math.max(shortText.length, shortText.lastIndexOf(" ")));
+			if (shortText.length < completeText.length) {
+				shortText += " ...";
+				$container.html(shortText);
+				$('<a href="#"><span class="fa fa-caret-down"></span> ' + linkText + '</a>')
+					.insertAfter($container)
+					.click( function () {
+						$container.html(completeText);
+						$(this).remove();
+					});
+			}
+		});
+	});
+</script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('.table-responsive.actions table').dataTable();
+	});
+</script>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('site.layouts.container-fluid', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

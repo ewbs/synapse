@@ -1,0 +1,92 @@
+<?php
+/**
+ * @var boolean $trash
+ * @var string $context spécifie le tab à utiliser : soit les eforms, soit les nostra_forms
+ * @var int $countDocumented
+ * @var int $countUndocumented
+ */
+?>
+
+<?php $__env->startSection('title'); ?><?php echo Lang::get('admin/eforms/messages.title'); ?> <?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
+<div class="tab-container">
+	<?php if(!$trash): ?>
+	<ul class="nav nav-tabs">
+		<li <?php echo ($context == 'documented'   ? 'class="active"' : ''); ?>><a href="<?php echo route('eformsGetIndex'); ?>"><span class="badge badge-primary"><?php echo $countDocumented; ?></span> Formulaires intégrés</a></li>
+		<li <?php echo ($context == 'undocumented' ? 'class="active"' : ''); ?>><a href="<?php echo route('eformsUndocumentedGetIndex'); ?>"><span class="badge badge-primary"><?php echo $countUndocumented; ?></span> Formulaires à intégrer</a></li>
+	</ul>
+	<?php endif; ?>
+	<div<?php echo $trash?'':' class="tab-content"'; ?>>
+		<div class="tab-pane cont active">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="block-flat">
+						<div class="header">
+							<div class="pull-right">
+								<?php if($trash): ?>
+								<a class="btn btn-small btn-default" href="<?php echo $model->routeGetIndex(); ?>">Retour à la liste</a>
+								<?php endif; ?>
+							</div>
+							<?php if($context == 'documented'): ?>
+								<?php if(!$trash && $loggedUser->can('formslibrary_manage')): ?>
+								<div class="pull-right"><a href="<?php echo $model->routeGetCreate(); ?>" class="btn btn-small btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Ajouter un formulaire</a></div>
+								<?php endif; ?>
+								<h3>Liste des formulaires <?php if($trash): ?> supprimés <?php endif; ?></h3>
+							<?php elseif($context == 'undocumented'): ?>
+								<h3>Liste des formulaires à documenter</h3>
+							<?php endif; ?>
+						</div>
+						<div class="content">
+							<div class="table-responsive">
+								<?php if($context == 'documented'): ?>
+								<table class="table table-hover datatable" data-ajaxurl="<?php echo $trash?$model->routeGetDataTrash():$model->routeGetData(); ?>" data-bFilter="true" data-bSort="true" data-bPaginate="true">
+									<thead>
+									
+										<tr>
+											<?php if($trash): ?>
+											<th class="col-md-2">Supprimé le</th>
+											<?php endif; ?>
+											<th class="col-md-1">ID Nostra</th>
+											<th class="col-md-1">ID slot</th>
+											<th>Nom</th>
+											<?php /*<th class="col-md-1">Annexes</th>*/ ?>
+											<th class="col-md-2">Démarches</th>
+											<th class="col-md-1">Révision</th>
+											<?php if($trash): ?>
+												<th class="col-md-1">Actions</th>
+											<?php endif; ?>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+								<?php elseif($context == 'undocumented'): ?>
+								<a class="btn btn-primary" href="<?php echo route('eformsUndocumentedGetIntegrer'); ?>">Intégrer tous les formulaires à Synapse</a>
+								<table class="table table-hover datatable" data-ajaxurl="<?php echo $model->routeGetDataUndocumented(); ?>" data-bFilter="true" data-bSort="true" data-bPaginate="true">
+									<thead>
+										<tr>
+											<th class="col-md-1">ID Nostra</th>
+											<th class="col-md-1">ID slot</th>
+											<th>Nom</th>
+											<th class="col-md-1">Langue</th>
+											<th class="col-md-1">Ajouté le</th>
+											<?php if($trash): ?>
+												<th class="col-md-1">Actions</th>
+											<?php endif; ?>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+								<?php endif; ?>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('site.layouts.container-fluid', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

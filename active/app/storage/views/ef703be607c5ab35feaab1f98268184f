@@ -1,0 +1,33 @@
+<?php $__env->startSection('title'); ?>Jobs <?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
+<div class="row">
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="header">
+				<h3>Liste des jobs en attente</h3>
+			</div>
+			<div class="content">
+				<div class="table-responsive">
+					<table class="table table-hover datatable" data-ajaxurl="<?php echo route('jobsGetData'); ?>" data-bFilter="true" data-bSort="true" data-bPaginate="true">
+						<thead>
+							<tr>
+								<th class="col-md-1">#</th>
+								<th class="col-md-2">Créé le</th>
+								<th class="col-md-1">Etat</th>
+								<th class="col-md-1">Essais</th>
+								<th class="col-md-1">Queue</th>
+								<th>Job</th>
+								<th class="col-md-1">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('site.layouts.container-fluid', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

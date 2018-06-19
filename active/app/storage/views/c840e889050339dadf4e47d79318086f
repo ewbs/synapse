@@ -1,0 +1,8 @@
+<li><a href="<?php echo route('damusGetDetailThematiqueadm', $thematique->id); ?>"><?php echo $thematique->title; ?></a></li>
+<?php if( count ( $thematique->children ) > 0 ): ?>
+	<ul>
+		<?php foreach( $thematique->children as $thematique ): ?> 
+			<?php echo $__env->make('admin.damus.partials.thematiqueadm', $thematique, array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+		<?php endforeach; ?>
+	</ul>
+<?php endif; ?>

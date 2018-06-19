@@ -1,0 +1,55 @@
+<?php 
+/**
+ * @var Minister $modelInstance
+ */
+?>
+
+<?php $__env->startSection('title'); ?><?php echo ($modelInstance ? 'Edition' : 'Création'); ?> d'un ministre <?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
+<div class="row">
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="content">
+				<form class="form-horizontal" method="post" autocomplete="off" action="<?php echo $modelInstance ? $modelInstance->routePostEdit() :$model->routePostCreate(); ?>">
+					<input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>" />
+					
+					<!-- Prénom -->
+					<div
+						class="form-group <?php echo e($errors->has('firstname') ? 'has-error' : ''); ?>">
+						<label class="col-md-2 control-label" for="firstname">Prénom</label>
+						<div class="col-md-10">
+							<input class="form-control" type="text" name="firstname" id="firstname" value="<?php echo e(Input::old('firstname', $modelInstance ? $modelInstance->firstname : null)); ?>"/>
+							<?php echo $errors->first('firstname', '<span class="help-inline">:message</span>'); ?>
+
+						</div>
+					</div>
+					<!-- ./ Prénom -->
+					
+					<!-- Nom -->
+					<div
+						class="form-group <?php echo e($errors->has('lastname') ? 'has-error' : ''); ?>">
+						<label class="col-md-2 control-label" for="astname">Nom</label>
+						<div class="col-md-10">
+							<input class="form-control" type="text" name="lastname" id="lastname" value="<?php echo e(Input::old('lastname', $modelInstance ? $modelInstance->lastname : null)); ?>"/>
+							<?php echo $errors->first('lastname', '<span class="help-inline">:message</span>'); ?>
+
+						</div>
+					</div>
+					<!-- ./ Nom -->
+					
+					<!-- Actions -->
+					<div class="form-group">
+						<div class="col-md-offset-2 col-md-10">
+							<a class="btn btn-cancel" href="<?php echo $modelInstance ? $modelInstance->routeGetView() : $model->routeGetIndex(); ?>"><?php echo Lang::get('button.cancel'); ?></a>
+							<button type="submit" class="btn btn-primary"><?php echo Lang::get('button.save'); ?></button>
+						</div>
+					</div>
+					<!-- ./ form actions -->
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('site.layouts.container-fluid', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

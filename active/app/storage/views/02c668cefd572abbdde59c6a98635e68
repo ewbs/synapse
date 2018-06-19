@@ -1,0 +1,45 @@
+<?php $__env->startSection('title'); ?>Projets de simplification <?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="block-flat">
+				<div class="header">
+					<?php if($trash): ?>
+					<div class="pull-right"><a href="<?php echo $model->routeGetIndex(); ?>" class="btn btn-small btn-default">Retour à la liste</a></div>
+					<?php else: ?>
+					<div class="pull-right"><a href="<?php echo route('ideasGetExport'); ?>" class="btn btn-small btn-default"><i class="glyphicon glyphicon-download"></i> Exporter au format XLS</a></div>
+						<?php if($loggedUser->can('ideas_encode')): ?>
+						<div class="pull-right"><a href="<?php echo $model->routeGetCreate(); ?>" class="btn btn-small btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Ajouter un projet</a></div>
+						<?php endif; ?>
+					<?php endif; ?>
+					<h3>Liste des projets de simplification <?php if($trash): ?> supprimés <?php endif; ?></h3>
+				</div>
+				<div class="content">
+					<div class="table-responsive">
+						<table class="table table-hover datatable" data-ajaxurl="<?php echo $trash?$model->routeGetDataTrash():$model->routeGetData(); ?>" data-bFilter="true" data-bSort="true" data-bPaginate="true">
+							<thead>
+								<tr>
+									<?php if($trash): ?>
+									<th class="col-md-2">Supprimé le</th>
+									<?php endif; ?>
+									<th class="col-md-1">#</th>
+									<th>Nom</th>
+									<th>Marqueurs</th>
+									<th class="col-md-1">Etat</th>
+									<th class="col-md-2">DG(s)</th>
+									<th class="col-md-2">Public(s) Cible(s)</th>
+									<?php if($trash): ?>
+										<th class="col-md-1">Actions</th>
+									<?php endif; ?>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('site.layouts.container-fluid', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

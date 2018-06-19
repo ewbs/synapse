@@ -1,0 +1,113 @@
+<?php
+/*
+ * @var ManageableModel $modelInstance
+ * @var boolean $manage
+ */
+if(!isset($manage)) $manage=false;
+if(!isset($minimal)) $minimal=false;
+?>
+
+<div class="block-flat">
+    <div class="header">
+        <h4><span class="fa fa-wpforms"></span> Formulaires</h4>
+    </div>
+    <div class="content">
+        <div class="table-responsive">
+            <table id="eforms-table" class="table table-hover datatable" data-ajaxurl="<?php echo route('demarchesEformsGetData', $modelInstance->id); ?>?manage=<?php echo $manage?1:0; ?>&minimal=<?php echo $minimal?1:0; ?>" data-bFilter="true" data-bSort="true" data-bPaginate="true">
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <!--<th>Annexes</th>-->
+                    <?php if(!$minimal): ?>
+                    	<th>Id Nostra</th>
+                        <th>Révision</th>
+                        <th></th>
+                    <?php endif; ?>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <?php if($manage): ?>
+            <div class="form-group">
+                <a href="<?php echo route('demarchesEformsGetCreate', $modelInstance->id); ?>" class="btn btn-sm btn-primary servermodal" data-reload-datatable="#eforms-table"><i class="fa fa-plus"></i> Ajouter un formulaire</a>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+
+<div class="block-flat">
+    <div class="header">
+        <h4><span class="fa fa-clipboard"></span> Pièces & tâches</h4>
+    </div>
+    <div class="content">
+        <div class="table-responsive">
+            <table id="pieces-table" class="table table-hover datatable" data-ajaxurl="<?php echo route('demarchesPiecesGetData', $modelInstance->id); ?>?manage=<?php echo $manage?1:0; ?>&minimal=<?php echo $minimal?1:0; ?>" data-bFilter="true" data-bSort="true" data-bPaginate="true">
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <?php if(!$minimal): ?>
+                        <th>Coût admin</th>
+                        <th>Coût usager</th>
+                    <?php endif; ?>
+                    <th>Volume</th>
+                    <?php if(!$minimal): ?>
+                        <th>Fréquence</th>
+                    <?php endif; ?>
+                    <th>Gain pot. admin</th>
+                    <?php if(!$minimal): ?>
+                        <th>Gain eff. admin</th>
+                    <?php endif; ?>
+                    <th>Gain pot. usager</th>
+                    <?php if(!$minimal): ?>
+                        <th>Gain eff. usager</th>
+                        <th>Révision</th>
+                        <th></th>
+                    <?php endif; ?>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <?php if($manage): ?>
+            <div class="form-group">
+                <a href="<?php echo route('demarchesPiecesGetCreate', $modelInstance->id); ?>" class="btn btn-sm btn-primary servermodal" data-reload-datatable="#pieces-table"><i class="fa fa-plus"></i> Ajouter une pièce</a>
+            </div>
+        <?php endif; ?>
+        <hr/>
+        <div class="table-responsive">
+            <table id="tasks-table" class="table table-hover datatable" data-ajaxurl="<?php echo route('demarchesTasksGetData', $modelInstance->id); ?>?manage=<?php echo $manage?1:0; ?>&minimal=<?php echo $minimal?1:0; ?>" data-bFilter="true" data-bSort="true" data-bPaginate="true">
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <?php if(!$minimal): ?>
+                        <th>Coût admin</th>
+                        <th>Coût usager</th>
+                    <?php endif; ?>
+                    <th>Volume</th>
+                    <?php if(!$minimal): ?>
+                        <th>Fréquence</th>
+                    <?php endif; ?>
+                    <th>Gain pot. admin</th>
+                    <?php if(!$minimal): ?>
+                        <th>Gain eff. admin</th>
+                    <?php endif; ?>
+                    <th>Gain pot. usager</th>
+                    <?php if(!$minimal): ?>
+                        <th>Gain eff. usager</th>
+                        <th>Révision</th>
+                        <th></th>
+                    <?php endif; ?>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <?php if($manage): ?>
+            <div class="form-group">
+                <a href="<?php echo route('demarchesTasksGetCreate', $modelInstance->id); ?>" class="btn btn-sm btn-primary servermodal" data-reload-datatable="#tasks-table"><i class="fa fa-plus"></i> Ajouter une tâche</a>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>

@@ -1,0 +1,88 @@
+<?php
+/**
+ * @var EwbsAction $parent
+ * @var EwbsAction $action
+ */
+$edit=($action && $action->id);
+$revision=$edit ? $action->getLastRevision() : null;
+
+$state=Input::old('state', $revision ? $revision->state : EwbsActionRevision::$STATE_TODO);
+$priority=Input::old('priority', $revision ? $revision->priority : EwbsActionRevision::$PRIORITY_NORMAL);
+?>
+<div class="modal fade noAuto colored-header" id="servermodal" role="dialog" aria-labelledby="servermodal-title">
+	<div class="modal-dialog modal-md" role="document">
+		<div class="modal-content">
+			<form class="form-horizontal" method="post" autocomplete="off" action="<?php echo $edit ? route('ewbsactionsSubPostEdit', [$parent->id, $action->id]) :route('ewbsactionsSubPostCreate', $parent->id); ?>">
+				<input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>" />
+				<div class="modal-header">
+					<button class="close" aria-label="Fermer" type="button" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+					<h3 class="modal-title" id="servermodal-title">
+						<?php echo ($edit ? 'Edition' : 'Création'); ?> d'une action
+						<span></span>
+					</h3>
+				</div>
+				<div class="modal-body">
+					<!-- Nom -->
+					<div class="form-group <?php echo e($errors->has('name') ? 'has-error' : ''); ?>">
+						<label class="col-md-2 control-label" for="name">Nom</label>
+						<div class="col-md-10">
+							<input class="form-control" type="text" name="name" value="<?php echo e(Input::old('name', $edit ? $action->name : null)); ?>" placeholder="Nom" />
+							<?php echo $errors->first('name', '<span class="help-inline">:message</span>'); ?>
+
+						</div>
+					</div>
+					<!-- ./ Nom -->
+					
+					<!-- Description -->
+					<div class="form-group <?php echo e($errors->has('description') ? 'has-error' : ''); ?>">
+						<label class="col-md-2 control-label" for="description">Description</label>
+						<div class="col-md-10">
+							<textarea class="form-control" name="description" placeholder="Description" rows="6"><?php echo e(Input::old('description', $revision ? $revision->description : null)); ?></textarea>
+							<?php echo $errors->first('description', '<span class="help-inline">:message</span>'); ?>
+
+						</div>
+					</div>
+					<!-- ./ Description -->
+					
+					<!-- State -->
+					<?php if($edit): ?>
+					<div class="form-group <?php echo e($errors->has('state') ? 'has-error' : ''); ?>">
+						<label class="col-md-2 control-label" for="state">Etat</label>
+						<div class="col-md-10">
+							<select class="form-control" name="state">
+								<?php foreach(EwbsActionRevision::states() as $s): ?>
+								<option value="<?php echo $s; ?>"<?php echo $s==$state ? ' selected': ''; ?>><?php echo Lang::get( "admin/ewbsactions/messages.state.{$s}"); ?></option>
+								<?php endforeach; ?>
+							</select>
+							<?php echo $errors->first('state', '<span class="help-inline">:message</span>'); ?>
+
+						</div>
+					</div>
+					<?php else: ?>
+					<input type="hidden" name="state" value="<?php echo EwbsActionRevision::$STATE_TODO; ?>"/>
+					<?php endif; ?>
+					<!-- ./ State -->
+					
+					<!-- Priority -->
+					<div class="form-group <?php echo e($errors->has('priority') ? 'has-error' : ''); ?>">
+						<label class="col-md-2 control-label" for="priority">Priorité</label>
+						<div class="col-md-10">
+							<select class="form-control" name="priority"<?php echo $loggedUser->can('ewbsaction_prioritize')?' ':' disabled'; ?>>
+							<?php foreach(EwbsActionRevision::priorities() as $p): ?>
+								<option value="<?php echo $p; ?>"<?php echo $p==$priority ? ' selected': ''; ?>><?php echo Lang::get( "admin/ewbsactions/messages.priority.{$p}"); ?></option>
+							<?php endforeach; ?>
+							</select>
+							<?php echo $errors->first('priority', '<span class="help-inline">:message</span>'); ?>
+
+						</div>
+					</div>
+					<!-- ./ Priority -->
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-default" type="button" data-dismiss="modal"><?php echo Lang::get('button.cancel'); ?></button>
+					<button type="submit" name="action" value="save" class="btn btn-primary"><?php echo Lang::get('button.save'); ?></button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

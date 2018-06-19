@@ -1,0 +1,33 @@
+<?php
+/**
+ * Historique d'une action affichée en timeline
+*
+* @var EwbsAction $modelInstance
+*/
+?>
+<ul class="timeline">
+	<?php foreach($modelInstance->getHistory() as $history): ?>
+	<li>
+		<i class="fa fa-cogs <?php echo $history->state; ?>"></i> <span class="date"><?php echo $history->created_at->format ( 'j M' ); ?><br/><?php echo $history->created_at->format ( 'H:i' ); ?></span>
+		<div class="content">
+			<p>
+				<?php if($history->username): ?>
+				<?php echo Gravatarer::make( ['email' => $history->usermail, 'size' => 30, 'secured' => true] )->html( ['class' => 'avatar pull-right'] ); ?>
+
+				<strong><?php echo $history->username; ?></strong>
+				<?php else: ?>
+				<?php echo HTML::image('images/logo.png', 'Synapse', ['class' => 'pull-right', 'style' => 'width:30px; height:30px;']); ?>
+
+				<strong><em>La matrice</em></strong>
+				<?php endif; ?>
+				a modifié l'action à l'état en <strong><?php echo Lang::get( "admin/ewbsactions/messages.state.".$history->state); ?></strong>
+				<?php if($history->username): ?> assignée à <strong><?php echo $history->responsible_username; ?></strong><?php endif; ?>
+				 et de priorité <?php echo EwbsActionRevision::graphicPriority($history->priority); ?>
+
+			</p>
+			<hr/>
+			<p class="comment-content"><?php echo nl2br($history->description); ?></p>
+		</div>
+	</li>
+	<?php endforeach; ?>
+</ul>

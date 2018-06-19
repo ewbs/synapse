@@ -1,0 +1,33 @@
+<?php
+/*
+ * @var ManageableModel $modelInstance
+ * @var boolean $manage
+ */
+if(!isset($manage)) $manage=false;
+?>
+
+<div class="block-flat">
+    <div class="header">
+        <h4><span class="fa fa-lightbulb-o"></span> Projets liés</h4>
+    </div>
+    <div class="content">
+        <?php if(count($aIdeas)==0): ?>
+	<div class="alert alert-warning alert-white rounded">
+		<div class="icon">
+			<i class="fa fa-exclamation-triangle"></i>
+		</div>
+		<strong>Attention! </strong><?php echo ('Cette démarche n\'est liée à aucun projet de simplif\'. Il est recommandé d\'en créer au moins un pour assurer le suivi et le reporting.'); ?>
+	</div>
+        <?php else: ?>
+            <ul class="list-group">
+                <?php foreach($aIdeas as $idea): ?>
+                    <li class="list-group-item">
+                        <strong><?php echo DateHelper::year($idea->created_at) . '-' . str_pad ( $idea->id, 4, "0", STR_PAD_LEFT ); ?></strong>
+                        <a href="<?php echo route('ideasGetView', $idea->id); ?>"><?php echo $idea->name; ?></a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+        <a class="btn btn-primary servermodal" href="<?php echo route('demarchesIdeasGetLink', $modelInstance->id); ?>">Lier la démarche à un projet</a>
+    </div>
+</div>

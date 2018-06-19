@@ -1,0 +1,101 @@
+<?php $__env->startSection('title'); ?>Export des projets au format Excel <?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
+<div class="row">
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="header">
+				<h3>Export des projets au format Excel</h3>
+			</div>
+			<div class="content">
+				<?php /* Ideas Form */ ?>
+				<form id="export-ideas-form" class="form-horizontal" method="post" action="" autocomplete="off">
+					<!-- CSRF Token -->
+					<input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>" />
+					<!-- ./ csrf token -->
+					
+					<div class="col-md-10 col-md-offset-2">
+						<p>Vous pouvez personnaliser votre fichier d'export grâce à ces filtres.<br /></p>
+					</div>
+					
+					<!-- Public cible -->
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="nostra_publics">Public(s) cible</label>
+						<div class="col-md-10">
+							<select class="select2 nostra" multiple name="nostra_publics[]" id="nostra_publics">
+								<?php foreach($arrayNostraPublics as $public): ?>
+								<option value="<?php echo $public->id; ?>"><?php echo e($public->title); ?></option>
+								<?php endforeach; ?>
+							</select>
+						</div>
+					</div>
+					<!-- ./ publics cibles -->
+					
+					<!-- administrations impliquées -->
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="administrations">Administration(s) impliquée(s)</label>
+						<div class="col-md-10">
+							<select class="select2" multiple name="administrations[]" id="administrations">
+								<?php foreach($arrayOfRegions as $region): ?>
+								<optgroup label="<?php echo $region->name; ?>">
+									<?php foreach($region->administrations as $administration): ?>
+									<option value="<?php echo $administration->id; ?>"><?php echo e($administration->name); ?></option>
+									<?php endforeach; ?>
+								</optgroup>
+								<?php endforeach; ?>
+							</select>
+						</div>
+					</div>
+					<!-- ./ administrations impliquées -->
+					
+					<!-- ministre compétent -->
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="ministers">Ministre(s) compétent(s)</label>
+						<div class="col-md-10">
+							<select class="select2" multiple name="ministers[]" id="ministers">
+								<?php foreach($arrayOfGovernements as $governement): ?>
+								<optgroup label="<?php echo $governement->name; ?>">
+									<?php foreach($governement->ministers as $minister): ?>
+									<option value="<?php echo $minister->id; ?>"><?php echo $minister->name(); ?></option>
+									<?php endforeach; ?>
+								</optgroup>
+								<?php endforeach; ?>
+							</select>
+						</div>
+					</div>
+					<!-- ./ ministre compétent -->
+					
+					<!-- switches -->
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="">Uniquement les projets prioritaire ?</label>
+						<div class="col-md-10">
+							<div class="switch">
+								<input type="checkbox" name="prioritary" value="1" />
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="">Inclure les projets génériques ?</label>
+						<div class="col-md-10">
+							<div class="switch">
+								<input type="checkbox" name="transversal" value="1" />
+							</div>
+						</div>
+					</div>
+					<!-- ./ switches -->
+					
+					<!-- Actions -->
+					<div class="form-group">
+						<div class="col-md-offset-2 col-md-10">
+							<a class="btn btn-cancel" href="<?php echo $model->routeGetIndex(); ?>"><?php echo Lang::get('button.cancel'); ?></a>
+							<button type="submit" class="btn btn-primary">Télécharger un export au format xls</button>
+						</div>
+					</div>
+					<!-- ./ form actions -->
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('site.layouts.container-fluid', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

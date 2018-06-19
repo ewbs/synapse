@@ -1,0 +1,104 @@
+[2018-05-08 11:47:01] local-fsc.ERROR: 500 - There are no commands defined in the "migration" namespace.
+
+Did you mean one of these?
+    migrate
+    migrate:rollback @ /
+InvalidArgumentException: There are no commands defined in the "migration" namespace.
+
+Did you mean one of these?
+    migrate
+    migrate:rollback in /var/www/synapse/vendor/symfony/console/Application.php:475
+Stack trace:
+#0 /var/www/synapse/vendor/symfony/console/Application.php(509): Symfony\Component\Console\Application->findNamespace('migration')
+#1 /var/www/synapse/vendor/symfony/console/Application.php(187): Symfony\Component\Console\Application->find('migration:rollb...')
+#2 /var/www/synapse/vendor/symfony/console/Application.php(114): Symfony\Component\Console\Application->doRun(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#3 /var/www/synapse/artisan(59): Symfony\Component\Console\Application->run()
+#4 {main} [] []
+[2018-05-08 11:47:08] local-fsc.ERROR: 500 - SQLSTATE[42703]: Undefined column: 7 ERROR:  column "dematerialisation_date" of relation "eforms" does not exist (SQL: alter table "eforms" drop column "dematerialisation_date") @ /
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "dematerialisation_date" of relation "eforms" does not exist in /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Connection.php:369
+Stack trace:
+#0 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Connection.php(369): PDOStatement->execute(Array)
+#1 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Connection.php(623): Illuminate\Database\Connection->Illuminate\Database\{closure}(Object(Illuminate\Database\PostgresConnection), 'alter table "ef...', Array)
+#2 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Connection.php(587): Illuminate\Database\Connection->runQueryCallback('alter table "ef...', Array, Object(Closure))
+#3 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Connection.php(370): Illuminate\Database\Connection->run('alter table "ef...', Array, Object(Closure))
+#4 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Schema/Blueprint.php(63): Illuminate\Database\Connection->statement('alter table "ef...')
+#5 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php(169): Illuminate\Database\Schema\Blueprint->build(Object(Illuminate\Database\PostgresConnection), Object(Illuminate\Database\Schema\Grammars\PostgresGrammar))
+#6 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php(94): Illuminate\Database\Schema\Builder->build(Object(Illuminate\Database\Schema\Blueprint))
+#7 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(211): Illuminate\Database\Schema\Builder->table('eforms', Object(Closure))
+#8 /var/www/synapse/app/database/migrations/2018_05_02_155746_add_7columns_table.php(68): Illuminate\Support\Facades\Facade::__callStatic('table', Array)
+#9 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(199): Add7columnsTable->down()
+#10 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(172): Illuminate\Database\Migrations\Migrator->runDown(Object(stdClass), false)
+#11 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/RollbackCommand.php(59): Illuminate\Database\Migrations\Migrator->rollback(false)
+#12 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Console/Command.php(112): Illuminate\Database\Console\Migrations\RollbackCommand->fire()
+#13 /var/www/synapse/vendor/symfony/console/Command/Command.php(239): Illuminate\Console\Command->execute(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#14 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Console/Command.php(100): Symfony\Component\Console\Command\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#15 /var/www/synapse/vendor/symfony/console/Application.php(840): Illuminate\Console\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#16 /var/www/synapse/vendor/symfony/console/Application.php(190): Symfony\Component\Console\Application->doRunCommand(Object(Illuminate\Database\Console\Migrations\RollbackCommand), Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#17 /var/www/synapse/vendor/symfony/console/Application.php(114): Symfony\Component\Console\Application->doRun(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#18 /var/www/synapse/artisan(59): Symfony\Component\Console\Application->run()
+#19 {main}
+
+Next Illuminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "dematerialisation_date" of relation "eforms" does not exist (SQL: alter table "eforms" drop column "dematerialisation_date") in /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Connection.php:631
+Stack trace:
+#0 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Connection.php(587): Illuminate\Database\Connection->runQueryCallback('alter table "ef...', Array, Object(Closure))
+#1 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Connection.php(370): Illuminate\Database\Connection->run('alter table "ef...', Array, Object(Closure))
+#2 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Schema/Blueprint.php(63): Illuminate\Database\Connection->statement('alter table "ef...')
+#3 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php(169): Illuminate\Database\Schema\Blueprint->build(Object(Illuminate\Database\PostgresConnection), Object(Illuminate\Database\Schema\Grammars\PostgresGrammar))
+#4 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php(94): Illuminate\Database\Schema\Builder->build(Object(Illuminate\Database\Schema\Blueprint))
+#5 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(211): Illuminate\Database\Schema\Builder->table('eforms', Object(Closure))
+#6 /var/www/synapse/app/database/migrations/2018_05_02_155746_add_7columns_table.php(68): Illuminate\Support\Facades\Facade::__callStatic('table', Array)
+#7 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(199): Add7columnsTable->down()
+#8 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(172): Illuminate\Database\Migrations\Migrator->runDown(Object(stdClass), false)
+#9 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/RollbackCommand.php(59): Illuminate\Database\Migrations\Migrator->rollback(false)
+#10 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Console/Command.php(112): Illuminate\Database\Console\Migrations\RollbackCommand->fire()
+#11 /var/www/synapse/vendor/symfony/console/Command/Command.php(239): Illuminate\Console\Command->execute(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#12 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Console/Command.php(100): Symfony\Component\Console\Command\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#13 /var/www/synapse/vendor/symfony/console/Application.php(840): Illuminate\Console\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#14 /var/www/synapse/vendor/symfony/console/Application.php(190): Symfony\Component\Console\Application->doRunCommand(Object(Illuminate\Database\Console\Migrations\RollbackCommand), Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#15 /var/www/synapse/vendor/symfony/console/Application.php(114): Symfony\Component\Console\Application->doRun(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#16 /var/www/synapse/artisan(59): Symfony\Component\Console\Application->run()
+#17 {main} [] []
+[2018-05-08 11:47:44] local-fsc.ERROR: 500 - SQLSTATE[42703]: Undefined column: 7 ERROR:  column "disponible_en_ligne" of relation "eforms" does not exist (SQL: alter table "eforms" drop column "disponible_en_ligne") @ /
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "disponible_en_ligne" of relation "eforms" does not exist in /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Connection.php:369
+Stack trace:
+#0 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Connection.php(369): PDOStatement->execute(Array)
+#1 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Connection.php(623): Illuminate\Database\Connection->Illuminate\Database\{closure}(Object(Illuminate\Database\PostgresConnection), 'alter table "ef...', Array)
+#2 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Connection.php(587): Illuminate\Database\Connection->runQueryCallback('alter table "ef...', Array, Object(Closure))
+#3 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Connection.php(370): Illuminate\Database\Connection->run('alter table "ef...', Array, Object(Closure))
+#4 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Schema/Blueprint.php(63): Illuminate\Database\Connection->statement('alter table "ef...')
+#5 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php(169): Illuminate\Database\Schema\Blueprint->build(Object(Illuminate\Database\PostgresConnection), Object(Illuminate\Database\Schema\Grammars\PostgresGrammar))
+#6 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php(94): Illuminate\Database\Schema\Builder->build(Object(Illuminate\Database\Schema\Blueprint))
+#7 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(211): Illuminate\Database\Schema\Builder->table('eforms', Object(Closure))
+#8 /var/www/synapse/app/database/migrations/2018_05_02_155746_add_7columns_table.php(67): Illuminate\Support\Facades\Facade::__callStatic('table', Array)
+#9 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(199): Add7columnsTable->down()
+#10 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(172): Illuminate\Database\Migrations\Migrator->runDown(Object(stdClass), false)
+#11 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/RollbackCommand.php(59): Illuminate\Database\Migrations\Migrator->rollback(false)
+#12 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Console/Command.php(112): Illuminate\Database\Console\Migrations\RollbackCommand->fire()
+#13 /var/www/synapse/vendor/symfony/console/Command/Command.php(239): Illuminate\Console\Command->execute(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#14 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Console/Command.php(100): Symfony\Component\Console\Command\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#15 /var/www/synapse/vendor/symfony/console/Application.php(840): Illuminate\Console\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#16 /var/www/synapse/vendor/symfony/console/Application.php(190): Symfony\Component\Console\Application->doRunCommand(Object(Illuminate\Database\Console\Migrations\RollbackCommand), Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#17 /var/www/synapse/vendor/symfony/console/Application.php(114): Symfony\Component\Console\Application->doRun(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#18 /var/www/synapse/artisan(59): Symfony\Component\Console\Application->run()
+#19 {main}
+
+Next Illuminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "disponible_en_ligne" of relation "eforms" does not exist (SQL: alter table "eforms" drop column "disponible_en_ligne") in /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Connection.php:631
+Stack trace:
+#0 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Connection.php(587): Illuminate\Database\Connection->runQueryCallback('alter table "ef...', Array, Object(Closure))
+#1 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Connection.php(370): Illuminate\Database\Connection->run('alter table "ef...', Array, Object(Closure))
+#2 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Schema/Blueprint.php(63): Illuminate\Database\Connection->statement('alter table "ef...')
+#3 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php(169): Illuminate\Database\Schema\Blueprint->build(Object(Illuminate\Database\PostgresConnection), Object(Illuminate\Database\Schema\Grammars\PostgresGrammar))
+#4 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php(94): Illuminate\Database\Schema\Builder->build(Object(Illuminate\Database\Schema\Blueprint))
+#5 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(211): Illuminate\Database\Schema\Builder->table('eforms', Object(Closure))
+#6 /var/www/synapse/app/database/migrations/2018_05_02_155746_add_7columns_table.php(67): Illuminate\Support\Facades\Facade::__callStatic('table', Array)
+#7 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(199): Add7columnsTable->down()
+#8 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php(172): Illuminate\Database\Migrations\Migrator->runDown(Object(stdClass), false)
+#9 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/RollbackCommand.php(59): Illuminate\Database\Migrations\Migrator->rollback(false)
+#10 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Console/Command.php(112): Illuminate\Database\Console\Migrations\RollbackCommand->fire()
+#11 /var/www/synapse/vendor/symfony/console/Command/Command.php(239): Illuminate\Console\Command->execute(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#12 /var/www/synapse/vendor/laravel/framework/src/Illuminate/Console/Command.php(100): Symfony\Component\Console\Command\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#13 /var/www/synapse/vendor/symfony/console/Application.php(840): Illuminate\Console\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#14 /var/www/synapse/vendor/symfony/console/Application.php(190): Symfony\Component\Console\Application->doRunCommand(Object(Illuminate\Database\Console\Migrations\RollbackCommand), Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#15 /var/www/synapse/vendor/symfony/console/Application.php(114): Symfony\Component\Console\Application->doRun(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#16 /var/www/synapse/artisan(59): Symfony\Component\Console\Application->run()
+#17 {main} [] []

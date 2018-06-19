@@ -1,0 +1,100 @@
+{
+    "name": "ewbs/Synapse",
+    "description": "Suivi des projets et actions de simplif en Wallonie et Fédération Wallonie-Bruxelles",
+    "keywords": ["laravel", "ewbs", "synapse", "simplif"],
+    "license": "GNU/GPL",
+    "authors": [
+        {
+            "name": "Julian Davreux",
+            "homepage": "http://www.ensemblesimplifions.be"
+        },
+        {
+            "name": "Michel Grenson",
+            "homepage": "http://www.michelgrenson.eu"
+        },
+        {
+            "name": "Andrew Elkins",
+            "homepage": "http://www.andrewelkins.com"
+        }
+    ],
+    "repositories":{
+        "laravel-async-queue":{
+            "type": "package",
+            "package": {
+                "name": "ewbs/laravel-async-queue",
+                "description": "Async queue with more possibilities",
+                "version": "0.3",
+                "source": {
+                    "url": "https://github.com/ewbs/laravel-async-queue.git",
+                    "type": "git",
+                    "reference": "0.3"
+                },
+                "require": {
+                    "php": ">=5.3.0",
+                    "illuminate/support": "4.x|5.0.x",
+                    "illuminate/console": "4.x|5.0.x"
+                },
+                "autoload": {
+                    "classmap": [
+                        "src/migrations"
+                    ],
+                    "psr-4": {
+                        "Barryvdh\\Queue\\": "src/"
+                    }
+                },
+                "extra": {
+                    "branch-alias": {
+                        "dev-master": "0.3-dev"
+                    }
+                }
+            }
+        }
+    },
+    "require": {
+        "laravel/framework": "~4.2",
+        "zizaco/confide": "~4.0",
+        "zizaco/entrust": "1.2.*",
+        "bllim/datatables": "~1.3",
+        "phpoffice/phpexcel": "dev-master",
+        "barryvdh/laravel-debugbar": "~1.8",
+        "ewbs/laravel-async-queue": "0.3",
+        "artdarek/gravatarer": "dev-master",
+        "guzzlehttp/guzzle": "~5.0"
+    },
+    "require-dev": {
+        "way/generators": "~2.6",
+        "phpunit/phpunit": "~4.0",
+        "mockery/mockery": "~0.9",
+        "summerstreet/woodling": "~0.1.6",
+        "barryvdh/laravel-ide-helper": "~1.11",
+        "laravel/homestead": "dev-master"
+    },
+    "autoload": {
+        "classmap": [
+            "app/commands",
+            "app/controllers",
+            "app/library",
+            "app/models",
+            "app/database/migrations",
+            "app/database/seeds",
+            "app/tests/library"
+        ],
+        "psr-0": {
+            "Acme": "app/"
+        }
+    },
+    "scripts": {
+        "pre-update-cmd": [
+            "php artisan clear-compiled"
+        ],
+        "post-install-cmd": [
+            "php artisan optimize"
+        ],
+        "post-update-cmd": [
+            "php artisan optimize"
+        ]
+    },
+    "config": {
+        "preferred-install": "dist"
+    }
+}

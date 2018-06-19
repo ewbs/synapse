@@ -1,0 +1,74 @@
+<?php $__env->startSection('title'); ?>Intégration du formulaire <em><span class="text-primary"><?php echo ManageableModel::formatId($nostraForm->nostra_id); ?></span> <?php echo $nostraForm->title; ?></em> <?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
+<div class="row">
+	<div class="col-md-4">
+		<div class="block-flat">
+			<div class="header"><h3>Données Nostra</h3></div>
+			<div class="content">
+				<p>
+					<strong>Id slot : </strong><?php echo ManageableModel::formatId($nostraForm->form_id); ?><br/>
+					<strong>Langue : </strong><?php echo $nostraForm->language; ?><br/>
+					<strong>Priorité : </strong><?php echo $nostraForm->priority; ?><br/>
+					<strong>Format : </strong><?php echo $nostraForm->format; ?><br/>
+					<strong>Url : </strong><a href="<?php echo $nostraForm->url; ?>" target="_blank"><?php echo $nostraForm->url; ?></a><br/>
+					<strong>Formulaire intelligent : </strong><?php if($nostraForm->smart >0): ?> oui <?php else: ?> non <?php endif; ?><br/>
+					<strong>Signable électroniquement : </strong><?php if($nostraForm->esign >0): ?> oui <?php else: ?> non <?php endif; ?><br/>
+					<strong>Simplifié : </strong><?php if($nostraForm->simplified > 0): ?> oui <?php else: ?> non <?php endif; ?>
+				</p>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-8">
+		<div class="block-flat">
+			<div class="header"><h3>Sélectionnez le formulaire existant à fusionner, ou créez-en un nouveau</h3></div>
+			<div class="content">
+				<form class="form-horizontal" method="post" autocomplete="off" action="<?php echo $nostraForm->routePostCreate($nostraForm->id); ?>">
+					<input type="hidden" name="_token" id="_token" value="<?php echo e(csrf_token()); ?>" />
+					<?php if(count($possibleExistingForms)): ?>
+						<strong class="text-danger">
+						<?php if(count($possibleExistingForms) > 1): ?>
+							Les formulaires suivants ressemblent à ce formulaire Nostra :
+						<?php else: ?>
+							Le formulaire suivant ressemble à ce formulaire Nostra :
+						<?php endif; ?>
+						</strong>
+						<div class="form-group">
+							<?php foreach($possibleExistingForms as $form): ?>
+								<div class="radio">
+									<label><strong>
+										<input type="radio" name="eform" class="icheck" value="<?php echo $form->id; ?>"> <?php echo $form->title; ?></strong>
+									</label>
+								</div>
+							<?php endforeach; ?>
+						</div>
+						<hr/>
+					<?php endif; ?>
+					<div class="form-group">
+						<?php foreach($eForms as $form): ?>
+							<div class="radio">
+								<label>
+									<input type="radio" name="eform" class="icheck" value="<?php echo $form->id; ?>"> <?php echo $form->title; ?>
+
+								</label>
+							</div>
+						<?php endforeach; ?>
+					</div>
+					<hr/>
+					<div class="form-group">
+						<div class="radio">
+							<label>
+								<input type="radio" name="eform" class="icheck" value="-1" checked> Créer un nouveau formulaire dans Synapse
+							</label>
+						</div>
+					</div>
+					<div class="form-group">
+						<a class="btn btn-cancel" href="<?php echo e($nostraForm->routeGetIndex()); ?>"><?php echo Lang::get('button.cancel'); ?></a>
+						<button type="submit" class="btn btn-primary"><?php echo Lang::get('button.save'); ?></button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('site.layouts.container-fluid', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

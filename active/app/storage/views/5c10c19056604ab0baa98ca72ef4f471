@@ -1,0 +1,116 @@
+<?php
+	/**
+	 * 
+	 * @var Demarche $modelInstance
+	 */
+
+	/**
+	 * A partir des nostra_forms et eforms liés à ce DemarcheEform, trouver les liaisons manquantes entre nostra et synapse.
+	 * nb : Je sens que cela va devoir vite changer, je garde donc cette logique pr l'instant dans la vue par facilité.
+	 */
+	$nostra_forms=$modelInstance->nostraDemarche->nostraForms()->orderBy('nostra_forms.title')->get();
+	$nostra_forms_ids=[];
+	foreach($nostra_forms as $form) $nostra_forms_ids[]='#'.$form->nostra_id;
+	
+	$eforms=DemarcheEform::lastRevision()->joinEforms()->forDemarche($modelInstance)->get();
+	$eforms_ids=[];
+	foreach($eforms as $form) if($form->nostra_id) $eforms_ids[]='#'.$form->nostra_id;
+	$moreFormsInSynapse=array_diff($eforms_ids, $nostra_forms_ids);
+	$moreFormsInNostra=array_diff($nostra_forms_ids, $eforms_ids);
+?>
+<div class="block-flat">
+	<div class="header">
+		<h4>
+			<span class="fa fa-connectdevelop"></span> Infos Nostra
+		</h4>
+	</div>
+	<div class="content">
+		<ul class="list-group">
+			<li class="list-group-item">
+				<p><strong>Id Nostra : </strong><?php echo ManageableModel::formatId($modelInstance->nostraDemarche->nostra_id); ?></p>
+				<p>
+					<strong>Publics cibles : </strong> <?php echo implode(', ',$modelInstance->nostraDemarche->getNostraPublicsNames()); ?>
+
+				</p>
+				<p>
+					<strong>Thématiques usager : </strong> <?php echo implode(', ',$modelInstance->nostraDemarche->getNostraThematiquesabcNames()); ?>
+
+				</p>
+				<p>
+					<strong>Thématiques administration : </strong> <?php echo implode(', ',$modelInstance->nostraDemarche->getNostraThematiquesadmNames()); ?>
+
+				</p>
+				<p>
+					<strong>Evénements déclencheurs : </strong> <?php echo implode(', ',$modelInstance->nostraDemarche->getNostraEvenementsNames()); ?>
+
+				</p>
+			</li>
+			<li class="list-group-item"><strong>Formulaires :</strong>
+				<?php if( !$nostra_forms->isEmpty() ): ?>
+				<ul>
+					<?php foreach($nostra_forms as $form): ?>
+					<li>
+						<?php if(strlen($form->url)): ?><a href="<?php echo $form->url; ?>" target="_blank"><?php echo $form->title; ?>, <?php echo $form->formatedId(); ?> <span class="fa fa-external-link"></span></a>
+						<?php else: ?> <?php echo $form->title; ?>, <?php echo $form->formatedId(); ?>
+
+						<?php endif; ?>
+					</li>
+					<?php endforeach; ?>
+				</ul>
+				<?php else: ?> Aucun
+				<?php endif; ?>
+				<?php if(isset($modelInstance) && ($moreFormsInSynapse||$moreFormsInNostra)): ?>
+				<div class="alert alert-danger alert-white rounded">
+					<div class="icon"><i class="fa fa-exclamation-triangle"></i></div>
+					<div><strong>Attention! </strong>Il y a une incohérence entre les formulaires renseignés dans Nostra et dans Synapse :</div>
+					<ul>
+					<?php if($moreFormsInSynapse): ?>
+					<li>Présent dans Synapse et pas dans Nostra :<br/><?php echo implode(', ', $moreFormsInSynapse); ?></li>
+					<?php endif; ?>
+					<?php if($moreFormsInNostra): ?>
+					<li>Présent dans Nostra et pas dans Synapse :<br/><?php echo implode(', ', $moreFormsInNostra); ?> <br>
+						<a href="<?php echo route('demarchesIntegrateFormsNostraToSynapse',$modelInstance->id); ?>" class="servermodal btn btn-primary">Intégrer dans synapse</a>
+					</li>
+					<?php endif; ?>
+					</ul>
+				</div>
+				<?php endif; ?>
+			</li>
+			
+			<li class="list-group-item"><strong>Documents :</strong>
+				<?php if(count($modelInstance->nostraDemarche->nostraDocuments)): ?>
+				<ul>
+					<?php foreach($modelInstance->nostraDemarche->nostraDocuments as $doc): ?>
+					<li>
+						<?php if(strlen($doc->url)): ?>
+						<a href="<?php echo $doc->url; ?>" target="_blank"><?php echo $doc->title; ?><span class="fa fa-external-link"></span></a>
+						<?php else: ?> <?php echo $doc->title; ?>
+
+						<?php endif; ?>
+					</li>
+					<?php endforeach; ?>
+				</ul>
+				<?php else: ?> Aucun
+				<?php endif; ?>
+			</li>
+			<li class="list-group-item"><strong>Simplifié : </strong><?php if($modelInstance->nostraDemarche->simplified > 0): ?> oui <?php else: ?> non <?php endif; ?></li>
+			<li class="list-group-item"><strong>Version allemande : </strong><?php if($modelInstance->nostraDemarche->german_version > 0): ?> oui <?php else: ?> non <?php endif; ?></li>
+			<li class="list-group-item"><strong>Type : </strong>
+				<?php if($modelInstance->nostraDemarche->type == 'droit'): ?> <span class="label label-primary">Droit</span> - Obligation - Information
+				<?php elseif($modelInstance->nostraDemarche->type == 'obligation'): ?> Droit - <span class="label label-primary">Obligation</span> - Information
+				<?php else: ?> Droit - Obligation - <span class="label label-primary">Information</span>
+				<?php endif; ?>
+			</li>
+		</ul>
+		<p>
+			<a class="btn btn-info servermodal" href="<?php echo route('damusNostraGetDemarche',$modelInstance->nostraDemarche->nostra_id); ?>">
+				<span class="fa fa-question-circle"></span> Voir la démarche en détail
+			</a>
+			<?php if($modelInstance->canManage()): ?>
+			<a class="btn btn-warning" href="<?php echo route('damusGetRequestDemarche',$modelInstance->nostraDemarche->demarche->id); ?>">
+				<i class="fa fa-bug" aria-hidden="true"></i>Signaler une erreur
+			</a>
+			<?php endif; ?>
+		</p>
+	</div>
+</div>

@@ -1,0 +1,28 @@
+<?php
+/*
+ * @var Annexes $modelInstance
+ */
+?>
+<div class="col-md-4">
+	<div class="block-flat">
+		<div class="header">
+			<h3><span class="fa fa-briefcase"></span> Démarches liées</h3>
+		</div>
+		<div class="content">
+			<p>
+			<?php if( count($modelInstance->demarcheEforms) ): ?>
+				<ul>
+					<?php foreach($modelInstance->demarcheEforms as $demarche_eform): ?>
+					<?php $demarche=$demarche_eform->demarche;?>
+					<li>
+						<a href="<?php echo route('demarchesGetView', $demarche->id); ?>"><?php echo $demarche->name(); ?></a> 
+					</li> 
+					<?php endforeach; ?>
+				</ul> 
+			<?php else: ?> 
+			Aucune
+			<?php endif; ?>
+			</p>
+		</div>
+	</div>
+</div>

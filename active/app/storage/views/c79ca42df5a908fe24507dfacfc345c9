@@ -1,0 +1,30 @@
+<?php
+/*
+ * @var Eform $modelInstance
+ * @var EwbsAction $action
+ */
+?>
+<?php /* Modale confirmation intégrer tous les eform undocumented */ ?>
+<div class="modal fade noAuto colored-header" id="servermodal" tabindex="-1" role="dialog" aria-labelledby="servermodal-title">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <form class="form-horizontal" method="post" autocomplete="off" action="<?php echo route('eformsUndocumentedPostIntegrer'); ?>">
+                <input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>" />
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h3 class="modal-title" id="modalCompleteTitle">Intégration des formulaires dans Synapse<span></span></h3>
+                </div>
+                <div class="modal-body" id="modalCompleteBody">
+                    Vous etes sur le points d'intérgrer tous les formulaires simulaténément. <br/>
+                    Cette action est irréverssible.
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" type="button" data-dismiss="modal"><?php echo Lang::get('button.cancel'); ?></button>
+                    <button type="submit" name="action" value="save" class="btn btn-primary" data-dismiss="modal">Confirmer cette action</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

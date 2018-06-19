@@ -1,0 +1,70 @@
+<?php $__env->startSection('title'); ?>Damus (Contenu tiré de Nostra) <?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
+<div class="tab-container">
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="#damus-pub" data-toggle="tab"><span class="badge badge-primary"><?php echo $damusPublicsCount; ?></span> Publics cibles</a></li>
+		<li><a href="#damus-abc" data-toggle="tab"><span class="badge badge-primary"><?php echo $damusThematiquesABCCount; ?></span> Thématiques ABC</a></li>
+		<li><a href="#damus-evt" data-toggle="tab"><span class="badge badge-primary"><?php echo $damusEvenementsCount; ?></span> Evenements déclencheurs</a></li>
+		<li><a href="#damus-adm" data-toggle="tab"><span class="badge badge-primary"><?php echo $damusThematiquesADMCount; ?></span> Thématiques Administratives</a></li>
+		<li><a href="#damus-dem" data-toggle="tab"><span class="badge badge-primary"><?php echo $damusDemarchesCount; ?></span> Démarches</a></li>
+	</ul>
+	<div class="tab-content">
+		<div id="damus-pub" class="tab-pane cont active">
+			<?php if( count($damusRootPublics) > 0 ): ?>
+				<ul>
+					<?php foreach($damusRootPublics as $public): ?>
+						<?php echo $__env->make('admin.damus.partials.public', $public, array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+					<?php endforeach; ?>
+				</ul>
+			<?php else: ?>
+				Aucun public cible
+			<?php endif; ?>
+		</div>
+		<div id="damus-abc" class="tab-pane cont">
+			<?php if( count($damusRootThematiquesABC) > 0 ): ?>
+				<ul>
+					<?php foreach($damusRootThematiquesABC as $thematique): ?>
+						<?php echo $__env->make('admin.damus.partials.thematique', $thematique, array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+					<?php endforeach; ?>
+				</ul>
+			<?php else: ?>
+				Aucune thématique ABC
+			<?php endif; ?>
+		</div>
+		<div id="damus-evt" class="tab-pane cont">
+			<?php if( count($damusEvenements) > 0 ): ?>
+				<ul>
+					<?php foreach($damusEvenements as $evenement): ?>
+						<?php echo $__env->make('admin.damus.partials.evenement', $evenement, array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+					<?php endforeach; ?>
+				</ul>
+			<?php else: ?>
+				Aucun événement déclencheur
+			<?php endif; ?>
+		</div>
+		<div id="damus-adm" class="tab-pane cont">
+			<?php if( count($damusRootThematiquesADM) > 0 ): ?>
+				<ul>
+					<?php foreach($damusRootThematiquesADM as $thematique): ?>
+						<?php echo $__env->make('admin.damus.partials.thematiqueadm', $thematique, array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+					<?php endforeach; ?>
+				</ul>
+			<?php else: ?>
+				Aucune thématique ADM
+			<?php endif; ?>
+		</div>
+		<div id="damus-dem" class="tab-pane cont">
+			<?php if( count($damusDemarches) > 0 ): ?>
+				<ul>
+					<?php foreach($damusDemarches as $demarche): ?>
+						<?php echo $__env->make('admin.damus.partials.demarche', $demarche, array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+					<?php endforeach; ?>
+				</ul>
+			<?php else: ?>
+				Aucune démarche
+			<?php endif; ?>
+		</div>
+	</div>
+</div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('site.layouts.container-fluid', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

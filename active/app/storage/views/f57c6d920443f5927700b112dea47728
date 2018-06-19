@@ -1,0 +1,43 @@
+<?php
+/* Affichage des fonctionnalités disponibles pour l'instance du modèle courant
+ * @var ModelInstance $modelInstance
+ * @var array $features
+ */
+	$currentUrl=Request::fullUrl();
+?>
+
+<div class="btn-group" role="group">
+	<a href="<?php echo e((isset($returnTo) && $returnTo) ? route($returnTo) : $modelInstance->routeGetIndex()); ?>" title="Retour à la liste" class="btn btn-flat btn-cancel" ><span class="fa fa-arrow-left"></span></a>
+	<?php foreach($features as $feature): ?>
+		<?php if(isset($feature['sub'])): ?> <?php /* sous menu */ ?>
+			<div class="btn-group no-margin">
+				<button type="button" class="btn btn-flat btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<?php echo isset($feature['icon']) ? '<span class="fa fa-'.$feature['icon'].'"></span>' : ''; ?> <span class="hidden-xs hidden-sm hidden-md"><?php echo $feature['label']; ?> </span><span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu">
+					<?php foreach($feature['sub'] as $sub): ?>
+						<li>
+							<a href="<?php echo $sub['url']; ?>" title="<?php echo $sub ['label']; ?>">
+								<?php echo isset($sub['icon']) ? '<span class="fa fa-'.$sub['icon'].'"></span>' : ''; ?>
+
+								<?php echo $sub['label']; ?>
+
+							</a>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+		<?php else: ?> <?php /* élément de menu "normal" */ ?>
+			<a
+					href="<?php echo $feature['url']; ?>"
+					class="btn btn-flat <?php echo isset($feature['class']) ? $feature['class'] : 'btn-default'; ?>"<?php echo ($feature['url']==$currentUrl)?' disabled':''; ?>
+
+					title="<?php echo $feature['label']; ?>"
+			>
+				<span class="<?php echo isset($feature['icon']) ? 'fa fa-'.$feature['icon'] : 'btn-primary'; ?>"></span>
+				<?php echo ($feature['url']==$currentUrl) ? '' : '<span class="hidden-xs hidden-sm hidden-md">'.$feature['label'].'</span>'; ?>
+
+			</a>
+		<?php endif; ?>
+	<?php endforeach; ?>
+</div>
