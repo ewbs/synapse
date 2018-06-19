@@ -1156,11 +1156,6 @@ textarea.form-control {
   -moz-animation: blur 900ms infinite;
   -o-animation: blur 900ms infinite;
 }
-input::-webkit-input-speech-button {
-  -webkit-transform: scale(3, 2.2) translate(-2px, -1px);
-  background-color: #fff
-  display:block !important;
-}
 /*PAGES*/
 /*Login*/
 #cl-wrapper.login-container,
@@ -4246,6 +4241,11 @@ ul.banded.bordered {
 }
 .icon-show > div {
   margin: 5px 0;
+}
+.fa-flag-green {
+  color: #1b7e5a;
+  font-size: 20px !important;
+  margin-right: 15px;
 }
 /*Buttons*/
 .btn {

@@ -48,8 +48,10 @@
 						<label class="col-md-2 control-label" for="">Volume</label>
 						<div class="col-md-10">
 							<select class="select2" name="volume">
-								<option value=""></option> @foreach($aVolumes as $vol)
-								<option value="{{$vol}}">{{$vol}}</option> @endforeach
+								<option value=""></option>
+								@foreach($aVolumes as $vol)
+									<option {{{ Input::old('volume', isset($modelInstance) ? ($modelInstance->volume ? "selected" : "") : "") }}} value="{{$vol}}">{{$vol}}</option>
+								@endforeach
 							</select>
 							@optional
 						</div>
@@ -84,6 +86,15 @@
 					@endif
 					<!-- ./ utilisation du formulaire electronique -->
 
+					<!-- Personne de contact -->
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="personne_de_contact">Personne de contact</label>
+						<div class="col-md-10">
+							<textarea style="height: 100px;" class="form-control" name="personne_de_contact" id="personne_de_contact" >{{ Input::old('personne_de_contact', isset($modelInstance) ? $modelInstance->personne_de_contact : "") }}</textarea>
+						</div>
+					</div>
+					<!-- ./ Personne de contact -->
+
 					<!-- commentaire -->
 					<div class="form-group {{{ $errors->has('comment') ? 'has-error' : '' }}}">
 						<label class="col-md-2 control-label" for="name">Commentaire</label>
@@ -94,6 +105,7 @@
 						</div>
 					</div>
 					<!-- ./ commentaire -->
+
 				</div>
 			</div>
 

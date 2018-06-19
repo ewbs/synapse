@@ -584,6 +584,7 @@ class DemarcheController extends TrashableModelController {
 		$demarche->ewbs = Input::has ( 'ewbs' ) ? 1 : 0;
 		$demarche->eform_usage = Input::get ( 'eform_usage' );
 		$demarche->comment = Input::get ( 'comment' );
+		$demarche->personne_de_contact = Input::get ( 'personne_de_contact' );
 		$demarche->volume = strlen(Input::get('volume')) ? Input::get('volume') : null;
 		if(!$demarche->save ()) return false;
 		$demarche->administrations ()->sync ( is_array ( Input::get ( 'administrations' ) ) ? Input::get ( 'administrations' ) : array () );
@@ -1497,7 +1498,7 @@ class DemarcheController extends TrashableModelController {
 			/* @var DemarcheEform $demarcheEform */
 			/* @var Eform $eform */
 			$eform=$demarcheEform->eform;
-			$annexes='';
+			/*$annexes='';
 			foreach($eform->getAnnexes() as $annexe_revision) {
 				// Etats courant et suivant
 				$state = '';
@@ -1519,17 +1520,17 @@ class DemarcheController extends TrashableModelController {
 				
 				$annexes.="<li><strong>{$annexe_revision->annexe_title}</strong>{$edit}{$related}{$state}</li>";
 			}
-			if($annexes)$annexes="<ul>{$annexes}</ul>";
+			if($annexes)$annexes="<ul>{$annexes}</ul>";*/
 			if ($minimal) {
 				$rows[] = [
-					'<a href="components">'.$eform->name().'</a>',
-					$annexes,
+					'<a target="_blank" href="'.route('eformsGetView', $eform->id).'">'.$eform->name().'</a>',
+					//$annexes,
 				];
 			}
 			else {
 				$rows[] = [
-					'<a href="'.route('eformsGetView', $eform->id).'">'.$eform->name().'</a>',
-					$annexes,
+					'<a target="_blank" href="'.route('eformsGetView', $eform->id).'">'.$eform->name().'</a>',
+					//$annexes,
 					$demarcheEform->nostra_id?'#'.$demarcheEform->nostra_id:'',
 					DateHelper::sortabledatetime($demarcheEform->created_at) . '<br/>' . $demarcheEform->user->username,
 					(($manage && $demarcheEform->canManage()) ? '<a href="' . route('demarchesEformsGetDelete', [$demarche->id, $demarcheEform->id]) . '" title="' . Lang::get('button.delete') . '" class="delete btn btn-xs btn-danger servermodal"><span class="fa fa-trash-o"></span></a>' : '')
@@ -1607,6 +1608,7 @@ class DemarcheController extends TrashableModelController {
 	 */
 	private function eformsPostManage(Demarche $demarche, DemarcheEform $demarche_eform=null) {
 		if(!$demarche->canManage()) return $this->serverModalNoRight();
+
 		try {
 			$revision=new DemarcheEform();
 			$revision->demarche()->associate($demarche);
@@ -2752,5 +2754,67 @@ class DemarcheController extends TrashableModelController {
 		->distinct()
 		->get(['ideas.id', 'ideas.name', 'ideas.created_at']);
 		return View::make ( 'admin/demarches/ideas/modal-link', compact ( 'demarche', 'aIdeas' ) );
+	}
+
+	public function integrateFormsNostraToSynapse(Demarche $demarche){
+		if(!$demarche->canManage()) return $this->serverModalNoRight();
+
+
+		$eforms=DemarcheEform::lastRevision()->joinEforms()->forDemarche($demarche)->get();
+		$eforms_ids=[];
+		foreach($eforms as $form) if($form->nostra_id) $eforms_ids[]=$form->nostra_id;
+
+		$nostra_forms=$demarche->nostraDemarche->nostraForms()
+			->with('eform')
+			->orderBy('nostra_forms.title')
+			->whereNotIn('nostra_id',$eforms_ids)
+			->get();
+
+		return View::make ( 'admin/demarches/integrate-forms-nostra-to-synapse', compact ( 'demarche', 'aIdeas', 'nostra_forms' ) );
+	}
+
+	public function integrateFormsNostraToSynapsePost(Demarche $demarche, DemarcheEform $demarche_eform=null){
+		if(!$demarche->canManage()) return $this->redirectNoRight ();
+		$eforms=DemarcheEform::lastRevision()->joinEforms()->forDemarche($demarche)->get();
+		$eforms_ids=[];
+		foreach($eforms as $form) if($form->nostra_id) $eforms_ids[]=$form->nostra_id;
+
+		$nostra_forms=$demarche->nostraDemarche->nostraForms()
+			->with('eform')
+			->orderBy('nostra_forms.title')
+			->whereNotIn('nostra_id',$eforms_ids)
+			->get();
+		$eformIds = [];
+		foreach ($nostra_forms as $form){
+			if(count($form->eform) == 0){
+				$eform = new Eform();
+				$eform->nostra_form_id = $form->id;
+				$eform->save();
+				$eformIds[] = $eform->id;
+			}
+			else{
+				$eformIds[] = $form->eform->id;
+			}
+		}
+
+		foreach ($eformIds as $eformId) {
+			try {
+				$revision = new DemarcheEform();
+				$revision->demarche()->associate($demarche);
+				$revision->eform()->associate(Eform::find($eformId));
+
+				$revision->comment = Input::get('comment');
+
+				$revision->user()->associate($this->getLoggedUser());
+				$revision->save();
+
+			} catch (Exception $e) {
+				Log::error($e);
+				return Redirect::back()->with('error', Lang::get('general.baderror', ['exception' => $e->getMessage()]));
+			}
+		}
+
+		return Redirect::route('demarchesGetView', $demarche->id)->with('success','Tous les formulaires ont été intégrés et liés à la démarche.');
+
 	}
 }

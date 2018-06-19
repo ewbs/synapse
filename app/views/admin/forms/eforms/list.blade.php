@@ -49,7 +49,7 @@
 											<th class="col-md-1">ID Nostra</th>
 											<th class="col-md-1">ID slot</th>
 											<th>Nom</th>
-											<th class="col-md-1">Annexes</th>
+											{{--<th class="col-md-1">Annexes</th>--}}
 											<th class="col-md-2">Démarches</th>
 											<th class="col-md-1">Révision</th>
 											@if ($trash)

@@ -5,6 +5,12 @@
 $lastRevision=($modelInstance) ? $modelInstance->getLastRevisionEform() : null;
 $nostraEditable=!($modelInstance && $modelInstance->nostra_form_id); // Les champs nostra ne peuvent être éditables que si l'eform n'est pas lié à un nostra_form
 $aPiecesStates = DemarchePieceState::all ();
+$disponible_en_ligne_items = Eform::disponibleEnLigne();
+$deposable_en_ligne_items = Eform::deposableEnLigne();
+$dematerialisation_items = Eform::dematerialisation();
+$dematerialisation_canal_items = Eform::dematerialisationCanal();
+$intervention_ewbs_items = Eform::interventionEwbs();
+
 
 $language = Input::old('language', $lastRevision ? $lastRevision->language : '');
 $priority = Input::old('priority', $lastRevision ? $lastRevision->priority : '');
@@ -23,6 +29,16 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 			<div class="content">
 				<form class="form-horizontal" method="post" autocomplete="off" action="{{ ($modelInstance) ? $modelInstance->routePostEdit() : $model->routePostCreate() }}">
 					<input type="hidden" name="_token" id="_token" value="{{{ csrf_token() }}}" />
+
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="">Le formulaire est dématérialisé ?</label>
+						<div class="col-md-10">
+							<div class="switch">
+								<input type="checkbox" name="is_dematerialise" {{ Input::old('is_dematerialise', $modelInstance ? ($modelInstance->is_dematerialise ? ' checked' : '') : '') }} />
+							</div>
+
+						</div>
+					</div>
 					
 					<div class="form-group">
 						<label class="col-md-2 control-label" for="name">Description</label>
@@ -31,7 +47,92 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 							@optional
 						</div>
 					</div>
-					
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="name">Disponible en ligne</label>
+						<div class="col-md-10">
+							<select class="form-control select2" name="disponible_en_ligne" id="disponible_en_ligne" data-placeholder="Veuillez choisir une option">
+								@foreach($disponible_en_ligne_items as $key => $value)
+									<option value="{{ $key }}"{{ Input::old('disponible_en_ligne', $modelInstance->disponible_en_ligne)==$key ?' selected':'' }}>{{ $value }}</option>
+								@endforeach
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="name">Déposable en ligne</label>
+						<div class="col-md-10">
+							<select class="form-control select2" name="deposable_en_ligne" id="deposable_en_ligne" data-placeholder="Veuillez choisir une option">
+								@foreach($deposable_en_ligne_items as $key => $value)
+									<option value="{{ $key }}"{{ Input::old('deposable_en_ligne', $modelInstance->deposable_en_ligne)==$key ?' selected':'' }}> {{ $value }}</option>
+								@endforeach
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group {{{ $errors->has('dematerialisation') ? 'has-error' : '' }}}">
+						<label class="col-md-2 control-label" for="name">Dématérialisation</label>
+						<div class="col-md-10">
+							<select class="form-control select2 " name="dematerialisation" id="dematerialisation" data-placeholder="Veuillez choisir une option">
+								@foreach($dematerialisation_items as $key => $value)
+									<option value="{{ $key }}"{{ Input::old('dematerialisation', $modelInstance->dematerialisation)==$key ?' selected':'' }}> {{ $value }}</option>
+								@endforeach
+							</select>
+							{{ $errors->first('dematerialisation', '<span class="help-inline red">:message</span>') }}
+							<div class="dematerialisation_date" style="margin-top: 10px; {{Input::old('dematerialisation', $modelInstance->dematerialisation)=="oui" ? 'display: block' : 'display: none'}}">
+								<input type="text" class="form-control" name="dematerialisation_date" id="dematerialisation_date" placeholder="mois/année"
+									   value="{{ Input::old('dematerialisation_date', $modelInstance ? $modelInstance->dematerialisation_date : '') }}"
+								/>
+								<small class="pull-right">mois/année</small>
+							</div>
+							<div class="dematerialisation_canal" style="margin-top: 10px; {{Input::old('dematerialisation', $modelInstance->dematerialisation)=="deja_effectue" ? 'display: block' : 'display: none'}}">
+								Canal de dématérialisation : <br/>
+								<select class="form-control select2" name="dematerialisation_canal" id="dematerialisation_canal" data-placeholder="Veuillez choisir une option">
+									@foreach($dematerialisation_canal_items as $key => $value)
+										<option value="{{ $key }}"{{ Input::old('dematerialisation_canal', $modelInstance->dematerialisation_canal)==$key ?' selected':'' }}> {{ $value }}</option>
+									@endforeach
+								</select>
+							</div>
+							<div class="dematerialisation_canal_autres" style="margin-top: 10px; {{Input::old('dematerialisation_canal', $modelInstance->dematerialisation_canal)=="autres" ? 'display: block' : 'display: none'}}">
+								<input type="text" class="form-control" name="dematerialisation_canal_autres" id="dematerialisation_canal_autres" placeholder="Indiquer un canal de dématérialisation"
+									   value="{{ Input::old('dematerialisation_canal_autres', $modelInstance ? $modelInstance->dematerialisation_canal_autres : '') }}"
+								/>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="name">Intervention eWBS</label>
+						<div class="col-md-10">
+							<select class="form-control select2" name="intervention_ewbs" id="intervention_ewbs" data-placeholder="Veuillez choisir une option">
+								@foreach($intervention_ewbs_items as $key => $value)
+									<option value="{{ $key }}"{{ Input::old('intervention_ewbs', $modelInstance->intervention_ewbs)==$key ?' selected':'' }}> {{ $value }}</option>
+								@endforeach
+							</select>
+							<div id="ajouteruneaction" style="@if(Input::old('intervention_ewbs', $modelInstance->intervention_ewbs) === 'oui') display: block; @else display: none; @endif text-align:right; padding-top: 15px;">
+								@if($modelInstance->canManage())
+									<button type="submit" class="btn btn-sm btn-primary servermodal" href="{{route('eformsActionsGetCreate', [$modelInstance->id])}}" data-reload-datatable="table#datatable-eforms-actions"><i class="fa fa-plus"></i> Ajouter une action</button>
+								@endif
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group {{{ $errors->has('references_contrat_administration') ? 'has-error' : '' }}}">
+						<label class="col-md-2 control-label" for="name">Références Contrat d’administration</label>
+						<div class="col-md-10">
+							<input class="form-control" type="text" id="references_contrat_administration" name="references_contrat_administration"
+								   value="{{ Input::old('references_contrat_administration', $modelInstance ? $modelInstance->references_contrat_administration : '') }}"
+							/>
+							{{ $errors->first('references_contrat_administration', '<span class="help-inline">:message</span>') }}
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="name">Remarques</label>
+						<div class="col-md-10">
+							<textarea style="height: 100px;" class="form-control" name="remarques" id="remarques">{{{ Input::old('remarques', $modelInstance ? $modelInstance->remarques : null) }}}</textarea>
+							@optional
+						</div>
+					</div>
 					
 					{{-- Champs Nostra, avec gestion du fait que si l'eform est lié à un nostra_form, les champs nostra ne sont plus éditables (et il faut alors inviter l'utilisateur à demander une modif => cf. workflow créant une action et envoyant un mail à l'équipe NOSTRA) --}}
 					<fieldset>
@@ -184,4 +285,50 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 		</div>
 	</div>
 </div>
+@stop
+
+@section('scripts')
+	<script lang="javascript">
+        $(document).ready( function () {
+
+            $("#deposable_en_ligne").change(function() {
+                if(this.value === 'oui_formulaire_web_ou_application_en_ligne'){
+                    $("#dematerialisation").val('deja_effectue').trigger('change');
+                }
+            });
+
+            $("#dematerialisation").change(function() {
+                if(this.value === 'oui'){
+                    $(".dematerialisation_canal").hide();
+                    $(".dematerialisation_date").show();
+                }
+                else if(this.value === 'deja_effectue'){
+                    $(".dematerialisation_date").hide();
+                    $(".dematerialisation_canal").show();
+                }
+                else {
+                    $(".dematerialisation_date").hide();
+                    $(".dematerialisation_canal").hide();
+                }
+            });
+
+            $("#dematerialisation_canal").change(function() {
+                if(this.value === 'autres'){
+                    $(".dematerialisation_canal_autres").show();
+                }
+                else {
+                    $(".dematerialisation_canal_autres").hide();
+                }
+            });
+
+            $("#intervention_ewbs").change(function() {
+                console.log(this.value);
+               if(this.value === 'oui'){
+                   $("#ajouteruneaction").show();
+			   } else {
+                   $("#ajouteruneaction").hide();
+			   }
+			});
+        });
+	</script>
 @stop

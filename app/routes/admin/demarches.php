@@ -11,17 +11,19 @@ Route::group(['prefix' => 'demarches'], function() {
 	Route::post('export'                   ,['as'=>'demarchesPostExport'            ,'uses'=>'DemarcheController@PostExport']);
 	Route::get('trash'                     ,['as'=>'demarchesGetTrash'              ,'uses'=>'DemarcheController@getTrash']);
 	Route::get('datatrash'                 ,['as'=>'demarchesGetDataTrash'          ,'uses'=>'DemarcheController@getDataTrash']);
-	
+	Route::get('{demarche}/integrate-forms-to-synapse' ,['as'=>'demarchesIntegrateFormsNostraToSynapse' ,'uses'=>'DemarcheController@integrateFormsNostraToSynapse']);
+	Route::get('{demarche}/integrate-forms-to-synapse/validation' ,['as'=>'demarchesIntegrateFormsNostraToSynapsePost' ,'uses'=>'DemarcheController@integrateFormsNostraToSynapsePost']);
+
+
 	// Détail d'une démarche
 	Route::group(['prefix' => '{demarche}'], function() {
 		
 		Route::get ('view'       ,['as'=>'demarchesGetView'       ,'uses'=>'DemarcheController@getView']);
 		Route::get ('edit'       ,['as'=>'demarchesGetEdit'       ,'uses'=>'DemarcheController@getEdit']);
 		Route::post('edit'       ,['as'=>'demarchesPostEdit'      ,'uses'=>'DemarcheController@postEdit'      ,'before' => 'csrf']);
-		
+
 		// Traitement du SCM
 		Route::group(['prefix' => 'scm'], function() {
-			
 			// Download du SCM
 			Route::group(['prefix' => 'download'], function() {
 				Route::get(''   ,['as'=>'demarchesGetDownload'   ,'uses'=>'DemarcheController@scmDownloadGetIndex']);
@@ -131,7 +133,7 @@ Route::group(['prefix' => 'demarches'], function() {
 			Route::get ('create'         ,['as'=>'demarchesActionsGetCreate'         ,'uses'=>'DemarcheController@actionsGetCreate']);
 			Route::post('create'         ,['as'=>'demarchesActionsPostCreate'        ,'uses'=>'DemarcheController@actionsPostCreate'        ,'before' => 'csrf']);
 			Route::post('/triggerupdate' ,['as'=>'demarchesActionsPostTriggerUpdate' ,'uses'=>'DemarcheController@actionsPostTriggerUpdate' ,'before' => 'csrf']);
-			
+
 			// Détails d'une action liée à une démarche
 			Route::group(['prefix' => '{ewbs_action}'], function() {
 				Route::get ('edit'     ,['as'=>'demarchesActionsGetEdit'      ,'uses'=>'DemarcheController@actionsGetEdit']);

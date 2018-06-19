@@ -15,7 +15,7 @@
 	</div>
 
 	<div class="col-md-4">
-		@include('admin.demarches.blocs.components',['minimal'=>true])
+		@include('admin.demarches.blocs.components',['minimal'=>true, 'manage' => $modelInstance->canManage()])
 	</div>
 
 	<div class="col-md-4">
@@ -29,6 +29,17 @@
 				</div>
 			</div>
 		</div>
+		@endif
+
+		@if ($modelInstance->is_dematerialise)
+			<div class="block-flat">
+				<div class="content no-padding">
+					<div class="overflow-hidden">
+						<span class="fa fa-flag fa-4x color-success pull-left"></span>
+						<h3 class="no-margin">Cette démarche est dématerialisée</h3>
+					</div>
+				</div>
+			</div>
 		@endif
 
 		<div class="block-flat">

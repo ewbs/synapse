@@ -30,11 +30,11 @@ class EformController extends TrashableModelController {
 				'icon' => 'pencil'
 			];
 		}
-		$features[]=[
+		/*$features[]=[
 			'label' => Lang::get ( 'admin/annexes/messages.menu' ),
 			'url' => route('eformsAnnexesGetIndex', $modelInstance->id),
 			'icon' => 'wpforms'
-		];
+		];*/
 		$features[]=[
 			'label' => Lang::get ( 'admin/eforms/messages.revisions' ),
 			'url' => route('eformsRevisionsGetIndex', $modelInstance->id),
@@ -103,7 +103,7 @@ class EformController extends TrashableModelController {
 			else {
 				$entry[] = '<a title="' . Lang::get ( 'button.view' ) . '" href="' . route ( 'eformsGetView', $item->eform_id ) . '"><strong>' . $item->title . '</strong><br/><em>' . $item->description . '</em></a>';
 			}
-			$entry[]='<a '. ($item->countannexes > 0 ? ' class="label label-info" ':''). ' href="'.route('eformsAnnexesGetIndex', $item->eform_id).'">'.$item->countannexes.'</a>';
+			//$entry[]='<a '. ($item->countannexes > 0 ? ' class="label label-info" ':''). ' href="'.route('eformsAnnexesGetIndex', $item->eform_id).'">'.$item->countannexes.'</a>';
 			$entry[]=$demarches;
 			$entry[]=$item->deleted_at ? DateHelper::sortabledatetime ( $item->deleted_at ) : DateHelper::sortabledatetime ( $item->created_at ) . '<br/>' . $item->username;
 			if($onlyTrashed) {
@@ -138,8 +138,33 @@ class EformController extends TrashableModelController {
 	 */
 	protected function save(ManageableModel $modelInstance) {
 		/* @var Eform $modelInstance */
+		$modelInstance->is_dematerialise = Input::get ( 'is_dematerialise' ) ? : false;
 		$modelInstance->description = Input::get ( 'description' );
-		
+		$modelInstance->disponible_en_ligne = Input::get ( 'disponible_en_ligne' ) ?: null;
+		$modelInstance->deposable_en_ligne = Input::get ( 'deposable_en_ligne' ) ?: null;
+		$modelInstance->dematerialisation = Input::get ( 'dematerialisation' ) ?: null;
+		$modelInstance->dematerialisation_date = Input::get ( 'dematerialisation_date' ) ?: null;
+		$modelInstance->dematerialisation_canal = Input::get ( 'dematerialisation_canal' ) ?: null;
+		$modelInstance->dematerialisation_canal_autres = Input::get ( 'dematerialisation_canal_autres' ) ?: null;
+		$modelInstance->intervention_ewbs = Input::get ( 'intervention_ewbs' ) ?: null;
+		$modelInstance->references_contrat_administration = Input::get ( 'references_contrat_administration' );
+		$modelInstance->remarques = Input::get ( 'remarques' );
+
+		if($modelInstance->dematerialisation != 'oui') {
+			// ce champ doit etre vide dans ce cas la
+			$modelInstance->dematerialisation_date = '';
+		}
+		if($modelInstance->dematerialisation != 'deja_effectue') {
+			// ce champ doit etre vide dans ce cas la
+			$modelInstance->dematerialisation_canal = '';
+		}
+		if($modelInstance->dematerialisation_canal != 'autres' || $modelInstance->dematerialisation != 'deja_effectue'){
+			// ce champ doit etre vide dans ce cas la
+			$modelInstance->dematerialisation_canal_autres = '';
+		}
+
+
+
 		// Champs non révisés, mis à jour uniquement si pas de lien avec un nostra_form
 		if(!$modelInstance->nostra_form_id) {
 			$modelInstance->title = Input::get ( 'title' );

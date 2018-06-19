@@ -30,6 +30,7 @@ class Demarche extends TrashableModel {
 	public static $VOLUME_L100		='< 100'; //L100 = Less than 100
 	public static $VOLUME_L500		='< 500';
 	public static $VOLUME_L1000		='< 1.000';
+	public static $VOLUME_L5000		='< 5.000';
 	public static $VOLUME_L10000	='< 10.000';
 	public static $VOLUME_M10000	='> 10.000'; //M10000 = More than 10000
 
@@ -55,7 +56,7 @@ class Demarche extends TrashableModel {
 	 * @return array
 	 */
 	public static function volumes() {
-		return [self::$VOLUME_L100, self::$VOLUME_L500, self::$VOLUME_L1000, self::$VOLUME_L10000, self::$VOLUME_M10000];
+		return [self::$VOLUME_L100, self::$VOLUME_L500, self::$VOLUME_L1000, self::$VOLUME_L5000, self::$VOLUME_L10000, self::$VOLUME_M10000];
 	}
 
 	/**
@@ -345,7 +346,14 @@ class Demarche extends TrashableModel {
 		}
 		return null;
 	}
-	
+
+	public function getIsDematerialiseAttribute()
+	{
+		foreach ($this->getLastRevisionEforms() as $demarcheEform){
+			if($demarcheEform->eform->is_dematerialise) return true;
+		}
+		return false;
+	}
 	/**
 	 * Filtre les données sur base du filtre utilisateur par administrations
 	 * 
