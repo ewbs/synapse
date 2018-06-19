@@ -1,1 +1,0 @@
-<li><a href="<?php echo route('damusGetDetailDemarche', $demarche->id); ?>"><?php echo $demarche->title; ?></a></li>

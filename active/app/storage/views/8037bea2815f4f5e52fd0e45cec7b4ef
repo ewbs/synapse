@@ -1,1 +1,0 @@
-<li><a href="<?php echo route('damusGetDetailEvenement', $evenement->id); ?>"><?php echo $evenement->title; ?></a></li>
