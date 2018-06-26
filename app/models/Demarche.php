@@ -350,7 +350,8 @@ class Demarche extends TrashableModel {
 	public function getIsDematerialiseAttribute()
 	{
 		foreach ($this->getLastRevisionEforms() as $demarcheEform){
-			if($demarcheEform->eform->is_dematerialise) return true;
+			echo $demarcheEform->eform->dematerialisation;
+			if($demarcheEform->eform->dematerialisation === 'deja_effectue') return true;
 		}
 		return false;
 	}

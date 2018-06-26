@@ -138,7 +138,6 @@ class EformController extends TrashableModelController {
 	 */
 	protected function save(ManageableModel $modelInstance) {
 		/* @var Eform $modelInstance */
-		$modelInstance->is_dematerialise = Input::get ( 'is_dematerialise' ) ? : false;
 		$modelInstance->description = Input::get ( 'description' );
 		$modelInstance->disponible_en_ligne = Input::get ( 'disponible_en_ligne' ) ?: null;
 		$modelInstance->deposable_en_ligne = Input::get ( 'deposable_en_ligne' ) ?: null;

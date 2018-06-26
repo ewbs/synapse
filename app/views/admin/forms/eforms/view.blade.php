@@ -69,7 +69,7 @@ $lastRevision=$modelInstance->getLastRevisionEform();
 				@if($modelInstance->dematerialisation)
 				<p><strong>Dématérialisation : </strong>{{$modelInstance->dematerialisation ? Eform::dematerialisation()[$modelInstance->dematerialisation] : ''}} @if($modelInstance->dematerialisation == 'oui') le {{$modelInstance->dematerialisation_date}} @endif</p>
 				@endif
-				@if($modelInstance->dematerialisation == 'deja_effectue')
+				@if($modelInstance->c == 'deja_effectue')
 				<p><strong>Canal de dématérialisation : </strong>
 					@if($modelInstance->dematerialisation_canal != 'autres')
 						{{ Eform::dematerialisationCanal()[$modelInstance->dematerialisation_canal] }}
@@ -89,8 +89,7 @@ $lastRevision=$modelInstance->getLastRevisionEform();
 				@endif
 			</div>
 		</div>
-
-		@if($modelInstance->is_dematerialise)
+		@if($modelInstance->dematerialisation == 'deja_effectue')
 		<div class="block-flat">
 			<div class="header">
 				<h3>Dématérialisation</h3>

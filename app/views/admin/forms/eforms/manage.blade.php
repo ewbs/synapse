@@ -31,16 +31,6 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 					<input type="hidden" name="_token" id="_token" value="{{{ csrf_token() }}}" />
 
 					<div class="form-group">
-						<label class="col-md-2 control-label" for="">Le formulaire est dématérialisé ?</label>
-						<div class="col-md-10">
-							<div class="switch">
-								<input type="checkbox" name="is_dematerialise" {{ Input::old('is_dematerialise', $modelInstance ? ($modelInstance->is_dematerialise ? ' checked' : '') : '') }} />
-							</div>
-
-						</div>
-					</div>
-					
-					<div class="form-group">
 						<label class="col-md-2 control-label" for="name">Description</label>
 						<div class="col-md-10">
 							<textarea style="height: 100px;" class="form-control" name="description" id="description">{{{ Input::old('description', $modelInstance ? $modelInstance->description : null) }}}</textarea>
@@ -52,7 +42,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 						<div class="col-md-10">
 							<select class="form-control select2" name="disponible_en_ligne" id="disponible_en_ligne" data-placeholder="Veuillez choisir une option">
 								@foreach($disponible_en_ligne_items as $key => $value)
-									<option value="{{ $key }}"{{ Input::old('disponible_en_ligne', $modelInstance->disponible_en_ligne)==$key ?' selected':'' }}>{{ $value }}</option>
+									<option value="{{ $key }}"{{ Input::old('disponible_en_ligne', $modelInstance ? $modelInstance->disponible_en_ligne : '')==$key ?' selected':'' }}>{{ $value }}</option>
 								@endforeach
 							</select>
 						</div>
@@ -63,7 +53,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 						<div class="col-md-10">
 							<select class="form-control select2" name="deposable_en_ligne" id="deposable_en_ligne" data-placeholder="Veuillez choisir une option">
 								@foreach($deposable_en_ligne_items as $key => $value)
-									<option value="{{ $key }}"{{ Input::old('deposable_en_ligne', $modelInstance->deposable_en_ligne)==$key ?' selected':'' }}> {{ $value }}</option>
+									<option value="{{ $key }}"{{ Input::old('deposable_en_ligne', $modelInstance ? $modelInstance->deposable_en_ligne : '')==$key ?' selected':'' }}> {{ $value }}</option>
 								@endforeach
 							</select>
 						</div>
@@ -74,25 +64,25 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 						<div class="col-md-10">
 							<select class="form-control select2 " name="dematerialisation" id="dematerialisation" data-placeholder="Veuillez choisir une option">
 								@foreach($dematerialisation_items as $key => $value)
-									<option value="{{ $key }}"{{ Input::old('dematerialisation', $modelInstance->dematerialisation)==$key ?' selected':'' }}> {{ $value }}</option>
+									<option value="{{ $key }}"{{ Input::old('dematerialisation', $modelInstance ? $modelInstance->dematerialisation : '')==$key ?' selected':'' }}> {{ $value }}</option>
 								@endforeach
 							</select>
 							{{ $errors->first('dematerialisation', '<span class="help-inline red">:message</span>') }}
-							<div class="dematerialisation_date" style="margin-top: 10px; {{Input::old('dematerialisation', $modelInstance->dematerialisation)=="oui" ? 'display: block' : 'display: none'}}">
+							<div class="dematerialisation_date" style="margin-top: 10px; {{Input::old('dematerialisation', $modelInstance ? $modelInstance->dematerialisation : '')=="oui" ? 'display: block' : 'display: none'}}">
 								<input type="text" class="form-control" name="dematerialisation_date" id="dematerialisation_date" placeholder="mois/année"
 									   value="{{ Input::old('dematerialisation_date', $modelInstance ? $modelInstance->dematerialisation_date : '') }}"
 								/>
 								<small class="pull-right">mois/année</small>
 							</div>
-							<div class="dematerialisation_canal" style="margin-top: 10px; {{Input::old('dematerialisation', $modelInstance->dematerialisation)=="deja_effectue" ? 'display: block' : 'display: none'}}">
+							<div class="dematerialisation_canal" style="margin-top: 10px; {{Input::old('dematerialisation', $modelInstance ? $modelInstance->dematerialisation : '')=="deja_effectue" ? 'display: block' : 'display: none'}}">
 								Canal de dématérialisation : <br/>
 								<select class="form-control select2" name="dematerialisation_canal" id="dematerialisation_canal" data-placeholder="Veuillez choisir une option">
 									@foreach($dematerialisation_canal_items as $key => $value)
-										<option value="{{ $key }}"{{ Input::old('dematerialisation_canal', $modelInstance->dematerialisation_canal)==$key ?' selected':'' }}> {{ $value }}</option>
+										<option value="{{ $key }}"{{ Input::old('dematerialisation_canal', $modelInstance ? $modelInstance->dematerialisation_canal : '')==$key ?' selected':'' }}> {{ $value }}</option>
 									@endforeach
 								</select>
 							</div>
-							<div class="dematerialisation_canal_autres" style="margin-top: 10px; {{Input::old('dematerialisation_canal', $modelInstance->dematerialisation_canal)=="autres" ? 'display: block' : 'display: none'}}">
+							<div class="dematerialisation_canal_autres" style="margin-top: 10px; {{Input::old('dematerialisation_canal', $modelInstance ? $modelInstance->dematerialisation_canal : '')=="autres" ? 'display: block' : 'display: none'}}">
 								<input type="text" class="form-control" name="dematerialisation_canal_autres" id="dematerialisation_canal_autres" placeholder="Indiquer un canal de dématérialisation"
 									   value="{{ Input::old('dematerialisation_canal_autres', $modelInstance ? $modelInstance->dematerialisation_canal_autres : '') }}"
 								/>
@@ -105,11 +95,11 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 						<div class="col-md-10">
 							<select class="form-control select2" name="intervention_ewbs" id="intervention_ewbs" data-placeholder="Veuillez choisir une option">
 								@foreach($intervention_ewbs_items as $key => $value)
-									<option value="{{ $key }}"{{ Input::old('intervention_ewbs', $modelInstance->intervention_ewbs)==$key ?' selected':'' }}> {{ $value }}</option>
+									<option value="{{ $key }}"{{ Input::old('intervention_ewbs', $modelInstance ? $modelInstance->intervention_ewbs : '')==$key ?' selected':'' }}> {{ $value }}</option>
 								@endforeach
 							</select>
-							<div id="ajouteruneaction" style="@if(Input::old('intervention_ewbs', $modelInstance->intervention_ewbs) === 'oui') display: block; @else display: none; @endif text-align:right; padding-top: 15px;">
-								@if($modelInstance->canManage())
+							<div id="ajouteruneaction" style="@if(Input::old('intervention_ewbs', $modelInstance ? $modelInstance->intervention_ewbs : '') === 'oui') display: block; @else display: none; @endif text-align:right; padding-top: 15px;">
+								@if($modelInstance && $modelInstance->canManage())
 									<button type="submit" class="btn btn-sm btn-primary servermodal" href="{{route('eformsActionsGetCreate', [$modelInstance->id])}}" data-reload-datatable="table#datatable-eforms-actions"><i class="fa fa-plus"></i> Ajouter une action</button>
 								@endif
 							</div>
@@ -133,11 +123,11 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 							@optional
 						</div>
 					</div>
-					
+
 					{{-- Champs Nostra, avec gestion du fait que si l'eform est lié à un nostra_form, les champs nostra ne sont plus éditables (et il faut alors inviter l'utilisateur à demander une modif => cf. workflow créant une action et envoyant un mail à l'équipe NOSTRA) --}}
 					<fieldset>
 						<legend>Données Nostra</legend>
-						
+
 						<div class="form-group {{{ $errors->has('title') ? 'has-error' : '' }}}">
 							<label class="col-md-2 control-label" for="title">Nom du formulaire</label>
 							<div class="col-md-10">
@@ -145,7 +135,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 								{{ $errors->first('title', '<span class="help-inline">:message</span>') }}
 							</div>
 						</div>
-						
+
 						<div class="form-group {{{ $errors->has('form_id') ? 'has-error' : '' }}}">
 							<label class="col-md-2 control-label" for="form_id">ID Slot</label>
 							<div class="col-md-10">
@@ -154,7 +144,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 								{{ $errors->first('form_id', '<span class="help-inline">:message</span>') }}
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label class="col-md-2 control-label" for="language">Langue</label>
 							<div class="col-md-10">
@@ -167,7 +157,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 								@optional
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label class="col-md-2 control-label" for="priority">Priorité</label>
 							<div class="col-md-10">
@@ -180,7 +170,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 								@optional
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label class="col-md-2 control-label" for="format">Format</label>
 							<div class="col-md-10">
@@ -193,7 +183,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 								@optional
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label class="col-md-2 control-label" for="url">Url</label>
 							<div class="col-md-10">
@@ -201,7 +191,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 								@optional
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label class="col-md-2 control-label" for="smart">Formulaire intelligent</label>
 							<div class="col-md-10">
@@ -210,7 +200,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 								</div>
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label class="col-md-2 control-label" for="esign">Signable électroniquement</label>
 							<div class="col-md-10">
@@ -219,7 +209,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 								</div>
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label class="col-md-2 control-label" for="simplified">Simplifié</label>
 							<div class="col-md-10">
@@ -234,11 +224,11 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 						</div>
 						@endif
 					</fieldset>
-					
+
 					{{-- Champs sauvés au niveau de la révision --}}
 					<fieldset>
 						<legend>Révision</legend>
-						
+
 						<div class="form-group">
 							<label class="col-md-2 control-label" for="current_state">Etat courant</label>
 							<div class="col-md-10">
@@ -251,7 +241,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 								@optional
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label class="col-md-2 control-label" for="next_state">Etat suivant</label>
 							<div class="col-md-10">
@@ -264,7 +254,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 								@optional
 							</div>
 						</div>
-						
+
 						<div class="form-group">
 							<label class="col-md-2 control-label" for="comment">Commentaire</label>
 							<div class="col-md-10">
@@ -273,7 +263,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 							</div>
 						</div>
 					</fieldset>
-					
+
 					<div class="form-group">
 						<div class="col-md-offset-2 col-md-10">
 							<a class="btn btn-cancel" href="{{ $modelInstance ? $modelInstance->routeGetView() : $model->routeGetIndex() }}">{{Lang::get('button.cancel')}}</a>

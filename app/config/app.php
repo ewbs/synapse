@@ -9,7 +9,7 @@ return array(
 	 | X.Y.Z : Version majeure – Version mineure – Révision
 	 |
 	 */
-	'version' => '4.3.1',
+	'version' => '5.0.0',
 	
 	/*
 	 |--------------------------------------------------------------------------
@@ -18,7 +18,7 @@ return array(
 	 |
 	 |
 	 */
-	'rta' => 'mgr@defimedia.be', //TODO Il faudrait bénéficier d'une adresse mail générique
+	'rta' => 'fsc@audaxis.com', //TODO Il faudrait bénéficier d'une adresse mail générique
 
 
 	/*
