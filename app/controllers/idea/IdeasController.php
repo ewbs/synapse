@@ -187,7 +187,6 @@ class IdeaController extends TrashableModelController {
 		$aNostraDemarches = NostraDemarche::orderBy('title')->get();
 
 		$returnTo = $this->getReturnTo();
-		
 		if($modelInstance){
 			$aSelectedAdministrations = $modelInstance->getAdministrationsIds ();
 			$aSelectedMinisters = $modelInstance->getMinistersIds ();
@@ -201,9 +200,14 @@ class IdeaController extends TrashableModelController {
 			
 			$aSelectedTags = $modelInstance->tags->lists('id');
 
+			$demarchetolink = Input::get('demarchetolink');
+			if ($demarchetolink) {
+				$demarchetolink = Demarche::where('id',$demarchetolink)->first();
+			}
+
 			return $this->makeDetailView($modelInstance, 'admin/ideas/manage',
 				compact ('ewbsMembers', 'aRegions', 'aSelectedAdministrations', 'aGovernements', 'aSelectedMinisters', 'aNostraDemarches', 'aNostraPublics',
-				         'aSelectedNostraPublics', 'aSelectedNostraDemarches', 'availableStates', 'ideaStates','currentIdeaState', 'aTaxonomy', 'aSelectedTags', 'returnTo' ) );
+				         'aSelectedNostraPublics', 'aSelectedNostraDemarches', 'availableStates', 'ideaStates','currentIdeaState', 'aTaxonomy', 'aSelectedTags', 'returnTo', 'demarchetolink' ) );
 		}
 		return View::make ( 'admin/ideas/manage', compact ( 'modelInstance', 'ewbsMembers', 'aRegions', 'aGovernements', 'aTaxonomy', 'aNostraDemarches', 'aNostraPublics', 'returnTo' ) );
 	}
@@ -424,7 +428,7 @@ class IdeaController extends TrashableModelController {
 				$worksheet->getCell ( "H$line" )->setValue ( implode ( "\n", $elements ) );
 				$worksheet->getStyle ( "H$line" )->getAlignment ()->setWrapText ( true );
 				// contact ewbs
-				$worksheet->getCell ( "I$line" )->setValue ( $idea->ewbsMember->firstname . ' ' . $idea->ewbsMember->lastname );
+				$worksheet->getCell ( "I$line" )->setValue ( $idea->ewbsMember ? $idea->ewbsMember->firstname . ' ' . $idea->ewbsMember->lastname : '' );
 				unset ( $ewbsContact );
 				// contact administration
 				$worksheet->getCell ( "J$line" )->setValue ( $idea->ext_contact );

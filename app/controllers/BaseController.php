@@ -208,7 +208,8 @@ abstract class BaseController extends Controller {
 				'label'     => Lang::get ( 'admin/eforms/messages.supermenu' ),
 				'section'   => 'formslibrary',
 				'permission'=> 'formslibrary_display',
-				'submenu'   => [
+				'route'     => 'eformsGetIndex',
+				/*'submenu'   => [
 					[
 						'label'     => Lang::get ( 'admin/annexes/messages.menu' ),
 						'section'   => 'annexes',
@@ -218,7 +219,7 @@ abstract class BaseController extends Controller {
 						'section'   => 'eforms',
 						'route'     => 'eformsGetIndex',
 					]
-				],
+				],*/
 			],
 			[ // Pièces et données
 				'label'      => Lang::get ( 'admin/pieces/messages.supermenu' ),

@@ -11,7 +11,7 @@
 		<div class="block-flat">
 			<div class="header">
 				<h3>
-					SCM Light généré par Synpase
+					SCM Light généré par Synapse
 				</h3>
 			</div>
 			<div class="content">

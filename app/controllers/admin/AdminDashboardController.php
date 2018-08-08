@@ -36,6 +36,7 @@ class AdminDashboardController extends BaseController {
 		$countInProgressProjects = Idea::filtered()->state("ENREALISATION")->count();
 		$countDoneProjects = Idea::filtered()->state("REALISEE")->count();
 		$countCanceledProjects = Idea::filtered()->state("ABANDONNEE")->count();
+		$countSuspendedProjects = Idea::filtered()->state("SUSPENDUE")->count();
 		$countValidatedProjects = Idea::filtered()->state("VALIDEE")->count();
 
 
@@ -110,7 +111,7 @@ class AdminDashboardController extends BaseController {
 		
 		return View::make ( 'admin/dashboard', compact(
 			'txtUserFiltersAdministration',
-			'countFilteredProjects', 'countPrioritaryProjects', 'countGenericProjects', 'countInProgressProjects', 'countDoneProjects', 'countCanceledProjects', 'countValidatedProjects',
+			'countFilteredProjects', 'countPrioritaryProjects', 'countGenericProjects', 'countInProgressProjects', 'countDoneProjects', 'countCanceledProjects', 'countSuspendedProjects', 'countValidatedProjects',
 			'aPoles','totalActions',
 			'countFilteredDemarches', 'countDocumentedDemarches', 'countWithGainsDemarches', 'countPiecesDemarches', 'countTasksDemarches',
 			'potentialAmountAdministration', 'potentialAmountCitizen',

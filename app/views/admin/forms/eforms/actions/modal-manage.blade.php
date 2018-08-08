@@ -22,7 +22,7 @@ $responsible_id=Input::old('responsible_id', $revision ? $revision->responsible_
 				<div class="modal-header">
 					<button class="close" aria-label="Fermer" type="button" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
 					<h3 class="modal-title" id="servermodal-title">
-						{{ ($edit ? 'Edition' : 'Création') }} d'une action
+						{{ ($edit ? 'Edition' : 'Création') }} d'une actiona
 						<span></span>
 					</h3>
 				</div>

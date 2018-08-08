@@ -217,9 +217,8 @@
 									$selectedNostraDemarches = $aSelectedNostraDemarches; //passée par le controlleur (voir function getManage());
 								
 								// Lier le projet à une démarche passée en paramètre (on vient alors d'une démarche que l'on souhaitait lier à ce projet)
-								$demarchetolink=Input::get('demarchetolink'); 
-								if($demarchetolink && !in_array($demarchetolink, $selectedNostraDemarches))
-									array_push($selectedNostraDemarches, $demarchetolink);
+								if(isset($demarchetolink) && !in_array($demarchetolink->nostra_demarche_id, $selectedNostraDemarches))
+									array_push($selectedNostraDemarches, $demarchetolink->nostra_demarche_id);
 							}
 							?>
 							<select class="select2" multiple name="nostra_demarches[]" id="nostra_demarches" data-haspost="{{Input::old('formsubmit')}}">

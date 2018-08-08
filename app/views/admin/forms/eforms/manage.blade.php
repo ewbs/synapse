@@ -226,7 +226,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 					</fieldset>
 
 					{{-- Champs sauvés au niveau de la révision --}}
-					<fieldset>
+					{{--<fieldset>
 						<legend>Révision</legend>
 
 						<div class="form-group">
@@ -262,7 +262,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 								@optional
 							</div>
 						</div>
-					</fieldset>
+					</fieldset>--}}
 
 					<div class="form-group">
 						<div class="col-md-offset-2 col-md-10">

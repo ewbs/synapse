@@ -35,11 +35,11 @@ class EformController extends TrashableModelController {
 			'url' => route('eformsAnnexesGetIndex', $modelInstance->id),
 			'icon' => 'wpforms'
 		];*/
-		$features[]=[
+		/*$features[]=[
 			'label' => Lang::get ( 'admin/eforms/messages.revisions' ),
 			'url' => route('eformsRevisionsGetIndex', $modelInstance->id),
 			'icon' => 'road'
-		];
+		];*/
 		if($modelInstance->canDelete()) {
 			$features[]=[
 				'label' => Lang::get ( 'button.delete' ),

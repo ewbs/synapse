@@ -30,6 +30,11 @@
 								<td class="text-right"><b>{{$countCanceledProjects}}</b></td>
 							</tr>
 							<tr>
+								<td><div class="legend" data-color="#F3F363"></div></td>
+								<td>Suspendus</td>
+								<td class="text-right"><b>{{$countSuspendedProjects}}</b></td>
+							</tr>
+							<tr>
 								<td><div class="legend" data-color="#fd9c35"></div></td>
 								<td>Validés</td>
 								<td class="text-right"><b>{{$countValidatedProjects}}</b></td>
@@ -140,6 +145,7 @@ $(document).ready( function () {
 		{ label: "En cours", data: {{$countInProgressProjects}} },
 		{ label: "Terminés", data: {{$countDoneProjects}} },
 		{ label: "Abandonnés", data: {{$countCanceledProjects}} },
+		{ label: "Suspendus", data: {{$countSuspendedProjects}} },
 		{ label: "Validés", data: {{$countValidatedProjects}} },
 	];
 
@@ -169,7 +175,7 @@ $(document).ready( function () {
 			hoverable: true,
 			clickable: true
 		},
-		colors: ["#5793f3", "#19B698","#dd4444","#fd9c35","#fec42c","#d4df5a","#5578c2"],
+		colors: ["#649BF4", "#19B698","#BD3B47","#F3F363","#fd9c35"],
 		legend: {
 			show: false
 		}
