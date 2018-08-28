@@ -8,17 +8,21 @@ var administrationsContent = '';
 function getDemarchesAjaxUrl() {
 	var ajaxUrl = $('#datatable').attr('data-ajaxurl');
 	if(ajaxUrl.indexOf('?') == -1) ajaxUrl+='?';
-	
+
 	// documentées ?
 	if ($("#catalogDemarches_onlyDocumented").is(":checked")) {
 		ajaxUrl += "&onlyDocumented=1";
 	}
+    // hors nostra ?
+    if ($("#catalogDemarches_onlyHorsNostra").is(":checked")) {
+        ajaxUrl += "&onlyHorsNostra=1";
+    }
 
 	// avec actions ?
 	if ($("#catalogDemarches_onlyWithActions").is(":checked")) {
 		ajaxUrl += "&onlyWithActions=1";
 	}
-	
+
 	// nombre de pièces minimum ?
 	var minPieces = $("#catalogDemarches_minPieces").val();
 	if ( Math.floor(minPieces) == minPieces && $.isNumeric(minPieces) ) { //est ce un entier ?
@@ -36,7 +40,7 @@ function getDemarchesAjaxUrl() {
 			ajaxUrl += "&minTasks=" + minTasks;
 		}
 	}
-	
+
 	// nombre de formulaires minimum ?
 	var minForms = $("#dashboardDemarches_minForms").val();
 	if ( Math.floor(minForms) == minForms&& $.isNumeric(minForms) ) { //est ce un entier ?
@@ -44,7 +48,7 @@ function getDemarchesAjaxUrl() {
 			ajaxUrl += "&minForms=" + minForms;
 		}
 	}
-	
+
 	// public cible ?
 	var selectedNostraPublics = $('select#nostra_publics').val();
 	if (selectedNostraPublics != null) {
@@ -72,7 +76,7 @@ function getDemarchesAjaxUrl() {
 }
 
 $(document).ready(function() {
-	
+
 	var $tableDemarches = $('#datatable').dataTable( {
 		"aoColumnDefs": [
 			{ 'bSortable'  : false, 'aTargets': [6] },
@@ -119,11 +123,11 @@ $(document).ready(function() {
 			$tableDemarches.fnReloadAjax(getDemarchesAjaxUrl());
 		}
 	});
-	
+
 	$("form#catalogDemarches_form input").change( function () {
 		$tableDemarches.fnReloadAjax(getDemarchesAjaxUrl());
 	});
-	
+
 	/*
 	 * Gestion de l'export
 	 */

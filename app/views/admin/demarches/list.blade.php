@@ -7,6 +7,7 @@
 			<div class="header">
 				@if(!$trash)
 				<div class="pull-right"><a id="demarcheExport" href="javascript:void(0);" class="btn btn-small btn-default"><i class="glyphicon glyphicon-download"></i> Exporter au format XLS</a></div>
+				<div class="pull-right"><a href="{{ route('demarchesGetCreate_') }}" class="btn btn-small btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Créer une démarche</a></div>
 				<div class="pull-right"><a href="{{ route('damusGetRequestCreateDemarche') }}" class="btn btn-small btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Demander l'ajout d'une démarche dans NOSTRA</a></div>
 				<h3>Liste des démarches</h3>
 				@else
@@ -25,6 +26,13 @@
 								<div class="checkbox no-padding">
 									<label>
 										<input type="checkbox" class="icheck" id="catalogDemarches_onlyDocumented" {{Auth::user()->sessionGet('catalogDemarches_onlyDocumented') ? 'checked="checked"':''}} /> Uniquement les démarches documentées
+									</label>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="checkbox no-padding">
+									<label>
+										<input type="checkbox" class="icheck" id="catalogDemarches_onlyHorsNostra" {{Auth::user()->sessionGet('catalogDemarches_onlyHorsNostra') ? 'checked="checked"':''}} /> Uniquement les démarches "Hors Nostra"
 									</label>
 								</div>
 							</div>

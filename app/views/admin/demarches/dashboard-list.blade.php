@@ -8,6 +8,7 @@
 		<div class="block-flat">
 			<div class="header">
 				<div class="pull-right"><a id="demarcheExport" href="javascript:void(0);" class="btn btn-small btn-default"><i class="glyphicon glyphicon-download"></i> Exporter au format XLS</a></div>
+				<div class="pull-right"><a href="{{ route('demarchesGetCreate_') }}" class="btn btn-small btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Créer une démarche</a></div>
 				<div class="pull-right"><a href="{{ route('damusGetRequestCreateDemarche') }}" class="btn btn-small btn-primary"><i class="glyphicon glyphicon-plus-sign"></i> Demander l'ajout d'une démarche dans NOSTRA</a></div>
 				<h3>Mes démarches</h3>
 			</div>
@@ -22,6 +23,17 @@
 										<div class="checkbox">
 											<label>
 												<input type="checkbox" class="icheck" id="dashboardDemarches_onlyDocumented" {{Auth::user()->sessionGet('dashboardDemarches_onlyDocumented') ? 'checked="checked"':''}} /> Uniquement les démarches documentées
+											</label>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row no-padding no-margin">
+								<div class="col-md-12">
+									<div class="form-group">
+										<div class="checkbox">
+											<label>
+												<input type="checkbox" class="icheck" id="dashboardDemarches_onlyHorsNostra" {{Auth::user()->sessionGet('dashboardDemarches_onlyHorsNostra') ? 'checked="checked"':''}} /> Uniquement les démarches "Hors Nostra"
 											</label>
 										</div>
 									</div>
@@ -107,6 +119,10 @@
 			if ($("#dashboardDemarches_onlyDocumented").is(":checked")) {
 				ajaxUrl += "&onlyDocumented=1";
 			}
+            // hors nostra ?
+            if ($("#dashboardDemarches_onlyHorsNostra").is(":checked")) {
+                ajaxUrl += "&onlyHorsNostra=1";
+            }
 
 			// avec actions ?
 			if ($("#dashboardDemarches_onlyWithActions").is(":checked")) {

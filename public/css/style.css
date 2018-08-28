@@ -4096,6 +4096,11 @@ h1:first-child {
 .label-info {
   background-color: #5DC4EA;
 }
+.label-nostra {
+  background-color: #E89B00;
+  display: block;
+  font-size: 12px;
+}
 /*Bagde*/
 .badge {
   font-weight: normal;
@@ -4581,6 +4586,9 @@ button::-moz-focus-inner {
 .input-group-addon.btn-danger,
 .input-group-addon.btn-warning {
   color: #fff;
+}
+.btn-group .btn.active {
+  background-color: #F6F6F6;
 }
 /*Modals*/
 .modal {

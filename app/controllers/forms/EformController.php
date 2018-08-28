@@ -319,7 +319,7 @@ class EformController extends TrashableModelController {
 			$eform->save();
 			$i++;
 		}
-		return Redirect::route('eformsGetIndex')->with ( 'success', $i.' formulaires ont été intégrés !' );;
+		return Redirect::route('eformsGetIndex')->with ( 'success', $i.' formulaires ont été intégrés !' );
 
 	}
 	

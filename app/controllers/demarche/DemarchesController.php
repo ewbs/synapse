@@ -68,7 +68,7 @@ class DemarcheController extends TrashableModelController {
 	 * @see ModelController::makeDetailView()
 	 */
 	protected function makeDetailView(ManageableModel $demarche, $view, $data = array()) {
-		$data['aIdeas'] = $demarche->getIdeas(['name', 'id', 'created_at']);
+		$data['aIdeas'] = isset($demarche->nostraDemarche) ? $demarche->getIdeas(['name', 'id', 'created_at']) : [];
 		return parent::makeDetailView($demarche, $view, $data);
 	}
 	
@@ -190,6 +190,8 @@ class DemarcheController extends TrashableModelController {
 
 		// ne prendre que les démarches documentées
 		$documented = Input::has('onlyDocumented');
+		// ne prendre que les démarches hors nostra (connues dans synapse mais pas dans nostra)
+		$horsNostra = Input::has('onlyHorsNostra');
 		// ne prendre que les démarches avec des actions en cours
 		$actions = Input::has('onlyWithActions');
 
@@ -202,6 +204,7 @@ class DemarcheController extends TrashableModelController {
 
 		// on sauve en session user
 		Auth::user()->sessionSet('catalogDemarches_onlyDocumented', $documented);
+		Auth::user()->sessionSet('catalogDemarches_onlyHorsNostra', $horsNostra);
 		Auth::user()->sessionSet('catalogDemarches_onlyWithActions', $actions);
 		Auth::user()->sessionSet('catalogDemarches_minPieces', $pieces);
 		Auth::user()->sessionSet('catalogDemarches_minTasks', $tasks);
@@ -211,14 +214,19 @@ class DemarcheController extends TrashableModelController {
 
 
 
-		$items = $this->getDataSql($trash, false, $documented, $actions, $pieces, $tasks, $forms, $publics, $administrations);
-
+		$items = $this->getDataSql($trash, false, $documented, $actions, $pieces, $tasks, $forms, $publics, $administrations, ', ', $horsNostra);
+		//$items = array_merge($items1, $items2);
 		$dt = Datatables::of ( $items )
 			->edit_column('demarche_completeid', function ($item) {
 				if  (! strlen($item->demarche_completeid)) {
 					return ('<span class="label label-danger">Non documenté</span>');
 				}
-				return DateHelper::year($item->demarche_created_at) . '-' . str_pad ( $item->demarche_completeid, 4, "0", STR_PAD_LEFT );
+
+				$return_date_with_id = DateHelper::year($item->demarche_created_at) . '-' . str_pad ( $item->demarche_completeid, 4, "0", STR_PAD_LEFT );
+				if ($item->nostra_demarche_id === null) {
+					return '<div class="label label-nostra">Hors Nostra <br/>'.$return_date_with_id.'</div>';
+				}
+				return $return_date_with_id;
 			})
 			->edit_column('title', function ($item) use($trash) {
 				if(!$trash) {
@@ -271,6 +279,8 @@ class DemarcheController extends TrashableModelController {
 
 		// ne prendre que les démarches documentées
 		$documented = Input::has('onlyDocumented');
+		// ne prendre que les démarches hors nostra
+		$horsNostra = Input::has('onlyHorsNostra');
 		// ne prendre que les démarches avec des actions en cours
 		$actions = Input::has('onlyWithActions');
 
@@ -280,15 +290,13 @@ class DemarcheController extends TrashableModelController {
 
 		// on sauve en session user
 		Auth::user()->sessionSet('dashboardDemarches_onlyDocumented', $documented);
+		Auth::user()->sessionSet('dashboardDemarches_onlyHorsNostra', $horsNostra);
 		Auth::user()->sessionSet('dashboardDemarches_onlyWithActions', $actions);
 		Auth::user()->sessionSet('dashboardDemarches_minPieces', $pieces);
 		Auth::user()->sessionSet('dashboardDemarches_minTasks', $tasks);
 		Auth::user()->sessionSet('catalogDemarches_minForms', $forms);
 
-
-
-
-		$items = $this->getDataSql(false, true, $documented, $actions, $pieces, $tasks, $forms);
+		$items = $this->getDataSql(false, true, $documented, $actions, $pieces, $tasks, $forms, false, false, ', ', $horsNostra);
 
 		$dt = Datatables::of ( $items )
 			->edit_column('demarche_completeid', function ($item) {
@@ -353,10 +361,33 @@ class DemarcheController extends TrashableModelController {
 	 * @param bool $publics : ne prendre que les demarches liées à un ou plusieurs publics
 	 * @param bool $administrations : ne prendre que les demarches liées à une ou plusieurs administrations
 	 * @param string $multipleSeparator : separateur litéraire pour les arrays transformés en strings
+	 * @param bool $onlyHorsNostra : ne prendre que les démarches hors nostra (connues dans synapse mais pas dans nostra)
+
 	 * @return Eloquent\Builder;
 	 */
-	private function getDataSql($trash=false, $withUserFilters = false, $onlyDocumented=false, $onlyWithActions=false, $minPieces=false, $minTasks=false, $minForms=false, $publics=false, $administrations=false, $multipleSeparator = ', ')
+	private function getDataSql($trash=false, $withUserFilters = false, $onlyDocumented=false, $onlyWithActions=false, $minPieces=false, $minTasks=false, $minForms=false, $publics=false, $administrations=false, $multipleSeparator = ', ', $horsNostra = false)
 	{
+
+		$demarches_not_in_nostra = Demarche::getQuery()->whereNull('nostra_demarche_id')->select(
+			DB::raw('id as demarche_completeid'),
+			DB::raw('id as demarche_id'),
+			DB::raw('title as title'),
+			DB::raw('title as titlelong'),
+			DB::raw('volume as volume'),
+			DB::raw('created_at as demarche_created_at'),
+			DB::raw('NULL as count_pieces'),
+			DB::raw('NULL as count_tasks'),
+			DB::raw('NULL as count_eforms'),
+			DB::raw('NULL as publics'),
+			DB::raw('NULL as administrations'),
+			DB::raw('NULL as actions'),
+			DB::raw('NULL as nostra_demarche_id'),
+			DB::raw('NULL as count_state_todo'),
+			DB::raw('NULL as count_state_progress'),
+			DB::raw('NULL as count_state_done'),
+			DB::raw('NULL as count_state_standby'),
+			DB::raw('NULL as count_state_givenup')
+		);
 
 		$columns = [
 			DB::raw("CASE WHEN demarches.id IS NOT NULL THEN demarches.id ELSE NULL END AS demarche_completeid"),
@@ -384,17 +415,18 @@ class DemarcheController extends TrashableModelController {
 		} else { // sinon on prend tout par défaut
 			$builder = NostraDemarche::query(); //pas utiliser getQuery car l'objet retourné n'est pas le meme !!!!!!!!
 		}
-		
+
 		if($trash) $builder->onlyTrashed();
 
-		$builder->join('demarches', 'demarches.nostra_demarche_id', '=', 'nostra_demarches.id', (($onlyDocumented || $onlyWithActions) ? 'inner' : 'left'))
+		$builder->join('demarches', 'demarches.nostra_demarche_id', '=', 'nostra_demarches.id', (($onlyDocumented || $onlyWithActions || $horsNostra) ? 'inner' : 'left'))
 			->join('ewbsActions', 'ewbsActions.demarche_id', '=', 'demarches.id', ($onlyWithActions ? 'inner' : 'left'))
 			->join('v_lastrevisionewbsaction', 'v_lastrevisionewbsaction.ewbs_action_id', '=', 'ewbsActions.id', ($onlyWithActions ? 'inner' : 'left'))
 			->leftjoin('nostra_demarche_nostra_public', 'nostra_demarches.id', '=', 'nostra_demarche_nostra_public.nostra_demarche_id')
 			->leftjoin('nostra_publics', 'nostra_publics.id', '=', 'nostra_demarche_nostra_public.nostra_public_id')
 			->leftjoin ( 'administration_demarche', 'demarches.id', '=', 'administration_demarche.demarche_id' )
 			->leftjoin ( 'administrations', 'administrations.id', '=', 'administration_demarche.administration_id' )
-			->groupBy(['nostra_demarches.id', 'demarches.id']);
+			->groupBy(['nostra_demarches.id', 'demarches.id'])
+		;
 
 		// Si on demande un nombre minimum de pièces, on fera un inner join, avec en where du join le nombre de pieces
 		if ($minPieces) {
@@ -440,9 +472,37 @@ class DemarcheController extends TrashableModelController {
 			$builder->whereIn('administrations.id', $aAdministrationsIds);
 		}
 
+		$builder->union($demarches_not_in_nostra);
+
+		if($horsNostra) {
+			$builder->whereNull('demarches.nostra_demarche_id');
+		}
 
 		return $builder->select($columns); ///////////////////////
 
+	}
+
+	/**
+	 * Permet de créer une démarche dans Synapse manuellement (autrefois impossible)
+	 */
+	public function getCreate_() {
+		return View::make ( 'admin/demarches/create');
+	}
+
+	public function postCreate_() {
+		$demarche = new Demarche();
+		$validator = Validator::make ( Input::all (), $demarche->formRules2 () );
+		if ($validator->fails ()) {
+			$errors = $validator->errors ();
+
+			return View::make ( 'admin/demarches/create', ['errors' => $errors]);
+		} else {
+			$demarche->title = Input::get('title');
+			$demarche->user_id = $this->getLoggedUser ()->id;
+			$demarche->save();
+			return Redirect::route('demarchesGetIndex')->with ( 'success', 'La démarche a bien été créée' );
+
+		}
 	}
 	
 	/**
@@ -550,7 +610,7 @@ class DemarcheController extends TrashableModelController {
 	 * @see ModelController::save()
 	 */
 	protected function save(ManageableModel $demarche) {
-			
+
 		// Valider le formulaire
 		if (! Input::has ( 'nostra_demarche' )) {
 			Session::flash('error', Lang::get ( 'admin/demarches/messages.manage.nodemarche-error' ));

@@ -1,12 +1,16 @@
 @extends('site.layouts.container-fluid')
-@section('title')<span class="text-primary"> {{DateHelper::year($modelInstance->created_at)}}-{{$modelInstance->id}}</span> {{$modelInstance->nostraDemarche->title}} @stop
+@section('title')<span class="text-primary"> {{DateHelper::year($modelInstance->created_at)}}-{{$modelInstance->id}}</span> {{$modelInstance->nostraDemarche ? $modelInstance->nostraDemarche->title : $modelInstance->title}} @stop
 @section('content')
 <div class="row">
 	<div class="col-md-4">
 		{{-- 	--------------------------------------------------------------------------------------------
 				INFOS NOSTRA
 				--------------------------------------------------------------------------------------------	--}}
-		@include('admin.demarches.blocs.infos_nostra')
+		@if($modelInstance->nostraDemarche)
+			@include('admin.demarches.blocs.infos_nostra')
+		@else
+			@include('admin.demarches.blocs.infos_nostra_empty')
+		@endif
 
 		{{-- 	--------------------------------------------------------------------------------------------
 				ACTIONS DE LA DEMARCHE
@@ -93,7 +97,7 @@
 				@endif
 			</div>
 		</div>
-		
+
 		<div class="block-flat">
 			<div class="header">
 				<h4><span class="fa fa-tag"></span> Taxonomie</h4>
@@ -108,7 +112,7 @@
 				@endif
 			</div>
 		</div>
-		
+
 		<div class="block-flat">
 			<div class="header">
 				<h4>Administrations impliquées</h4>
@@ -119,7 +123,7 @@
 				@endforeach
 			</div>
 		</div>
-		
+
 		<div class="block-flat">
 			<div class="header">
 				<h4>Informations complémentaires</h4>

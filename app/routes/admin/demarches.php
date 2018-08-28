@@ -3,6 +3,8 @@
 // Catalogue des démarches
 Route::group(['prefix' => 'demarches'], function() {
 	Route::get(''                          ,['as'=>'demarchesGetIndex'              ,'uses'=>'DemarcheController@getIndex']);
+	Route::get ('create'   				 ,['as'=>'demarchesGetCreate_'   		  ,'uses'=>'DemarcheController@getCreate_']);
+	Route::post('create'   				 ,['as'=>'demarchesPostCreate'  		  ,'uses'=>'DemarcheController@postCreate_' ,'before' => 'csrf']);
 	Route::get('data'                      ,['as'=>'demarchesGetData'               ,'uses'=>'DemarcheController@getData']);
 	Route::get('filtered-data'             ,['as'=>'demarchesGetFilteredData'       ,'uses'=>'DemarcheController@getDataFiltered']);
 	Route::get('filteredcharges-data'      ,['as'=>'demarchesGetFilteredChargesData','uses'=>'DemarcheController@getDataFilteredCharges']);

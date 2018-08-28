@@ -51,6 +51,17 @@ class Demarche extends TrashableModel {
 		];
 	}
 
+
+	/**
+	 * {@inheritDoc}
+	 * @see ManageableModel::formRules()
+	 */
+	public function formRules2() {
+		return [
+			'title' => array ('required'),
+		];
+	}
+
 	/**
 	 * Retourne les volumes possibles (enum en DB)
 	 * @return array
