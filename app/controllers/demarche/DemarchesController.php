@@ -959,7 +959,7 @@ class DemarcheController extends TrashableModelController {
 	 */
 	public function scmDownloadGetIndex(Demarche $demarche) {
 		if(!$demarche->canManage()) return $this->redirectNoRight ();
-		
+
 		/*
 		 * La première chose à faire, c'est de vérifier s'il existe des fichiers XLS uploadé.
 		 * S'il en existe, on les proposera au téléchargement, sinon on fera un download direct du SCMLight
@@ -980,7 +980,7 @@ class DemarcheController extends TrashableModelController {
 			if (! count ( $aDemarcheComponent['piece'] ) && ! count ( $aDemarcheComponent['task'] )) {
 				return Redirect::secure ( $demarche->routeGetView() )->with ( 'error', Lang::get ( 'admin/demarches/messages.scm.empty' ) );
 			}
-			
+
 			// tout semble ok, on crée l'xlsx
 			$totalGainPotentialCitizen = 0;
 			$totalGainPotentialAdministration = 0;
@@ -993,7 +993,7 @@ class DemarcheController extends TrashableModelController {
 			$objPHPExcel->setActiveSheetIndex ( 0 );
 			$worksheet = $objPHPExcel->getActiveSheet ();
 			$worksheet->getProtection ()->setSheet ( true );
-			
+
 			$columns = scmexport_getDemarcheComponentColumns ();
 			$lastColumn = scmexport_getLastDemarcheComponentColumnPosition ();
 			/*
@@ -1002,12 +1002,12 @@ class DemarcheController extends TrashableModelController {
 			foreach ( range ( 'A', $lastColumn ) as $columnID ) {
 				$worksheet->getColumnDimension ( $columnID )->setAutoSize ( true );
 			}
-			
+
 			/*
 			 * TITRES DANS EXCEL
 			 */
 			$worksheet->mergeCells ( "A{$line}:{$lastColumn}{$line}" );
-			$worksheet->getCell ( "A{$line}" )->setValue ( $demarche->nostraDemarche->title );
+			$worksheet->getCell ( "A{$line}" )->setValue ( $demarche->nostraDemarche ? $demarche->nostraDemarche->title : $demarche );
 			$worksheet->getStyle ( "A{$line}" )->applyFromArray ( xlsexport_getStyles ( 'big_title' ) );
 			$line += 2;
 			$worksheet->getCell ( "A{$line}" )->setValue ( Lang::get ( 'admin/demarches/scmfiles.titles.activity' ) );
@@ -1017,7 +1017,7 @@ class DemarcheController extends TrashableModelController {
 				$worksheet->getCell ( $colproperties ['pos'] . $line )->setValue ( Lang::get ( "admin/demarches/scmfiles.titles.{$colname}" ) );
 			$worksheet->getStyle ( "A{$line}:{$lastColumn}{$line}" )->getFont ()->setBold ( true );
 			$worksheet->getStyle ( "A{$line}:{$lastColumn}{$line}" )->applyFromArray ( xlsexport_getStyles ( 'white_on_blue' ) );
-			
+
 			/*
 			 * CONTENU
 			 */
@@ -1075,7 +1075,7 @@ class DemarcheController extends TrashableModelController {
 			}
 			$line += 3;
 			$endingLine = $line - 1;
-			
+
 			/*
 			 * Formattage des colonnes contenant des devises
 			 */
@@ -1515,7 +1515,8 @@ class DemarcheController extends TrashableModelController {
 	public function getComponents(Demarche $demarche) {
 		if(!$demarche->canManage()) return $this->redirectNoRight ();
 		try {
-			$nostraDemarche = NostraDemarche::findOrFail ( $demarche->nostra_demarche_id );
+			//$nostraDemarche = NostraDemarche::findOrFail ( $demarche->nostra_demarche_id );
+			$nostraDemarche = NostraDemarche::find ( $demarche->nostra_demarche_id );
 		}
 		catch ( ModelNotFoundException $ex ) {
 			Log::error ( $e );
@@ -1651,13 +1652,18 @@ class DemarcheController extends TrashableModelController {
 		}
 		else {
 			//on regarde les nostra_forms liés à cette démarche pour proposer ceux-ci en "suggérés".
-			$aSuggestedEforms = $demarche->nostraDemarche->nostraForms()->getBaseQuery()
-			->join('eforms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
-			->join('v_lastrevisioneforms', 'eforms.id', '=', 'v_lastrevisioneforms.eform_id')
-			->whereNull('v_lastrevisioneforms.deleted_at')
-			->whereRaw("eforms.id NOT IN(SELECT eform_id FROM v_lastrevisiondemarcheeform WHERE demarche_id={$demarche->id} AND deleted_at IS NULL)")
-			->orderby('title')
-			->select(['eforms.id', DB::raw('COALESCE(nostra_forms.title, eforms.title) AS title'), 'nostra_forms.nostra_id as nostra_id', 'v_lastrevisioneforms.current_state_id', 'v_lastrevisioneforms.next_state_id'])->get();
+			if($demarche->nostraDemarche) {
+				$aSuggestedEforms = $demarche->nostraDemarche->nostraForms()->getBaseQuery()
+					->join('eforms', 'eforms.nostra_form_id', '=', 'nostra_forms.id')
+					->join('v_lastrevisioneforms', 'eforms.id', '=', 'v_lastrevisioneforms.eform_id')
+					->whereNull('v_lastrevisioneforms.deleted_at')
+					->whereRaw("eforms.id NOT IN(SELECT eform_id FROM v_lastrevisiondemarcheeform WHERE demarche_id={$demarche->id} AND deleted_at IS NULL)")
+					->orderby('title')
+					->select(['eforms.id', DB::raw('COALESCE(nostra_forms.title, eforms.title) AS title'), 'nostra_forms.nostra_id as nostra_id', 'v_lastrevisioneforms.current_state_id', 'v_lastrevisioneforms.next_state_id'])->get();
+
+			} else {
+				$aSuggestedEforms = [];
+			}
 			$aEforms=[];
 			
 			// et ici on prend les autres formulaires non liés à un formulaire nostra

@@ -195,10 +195,15 @@ class Idea extends TrashableModel {
 	 * @return \Illuminate\Database\Eloquent\Collection|static[]
 	 */
 	public static function getFromDemarche(Demarche $demarche, $columns = array('*')) {
-		$nostraDemarcheId = $demarche->nostraDemarche->id;
-		return Idea::whereHas('nostraDemarches', function(Illuminate\Database\Eloquent\Builder $q) use ($nostraDemarcheId) {
-			$q->where('nostra_demarche_id', '=', $nostraDemarcheId);
-		})->get($columns);
+		if($demarche->nostraDemarche) {
+			$nostraDemarcheId = $demarche->nostraDemarche->id;
+			return Idea::whereHas('nostraDemarches', function(Illuminate\Database\Eloquent\Builder $q) use ($nostraDemarcheId) {
+				$q->where('nostra_demarche_id', '=', $nostraDemarcheId);
+			})->get($columns);
+		} else {
+			return [];
+		}
+
 	}
 	
 	/**

@@ -4,13 +4,13 @@
  */
 ?>
 @extends('site.layouts.container-fluid')
-@section('title')SCM de la démarche <em>{{ $modelInstance->nostraDemarche->title }}</em> @stop
+@section('title')SCM de la démarche <em>{{ $modelInstance->nostraDemarche ? $modelInstance->nostraDemarche->title : $modelInstance->title }}</em> @stop
 @section('content')
 <div class="row">
-	<div class="col-md-8">
+	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="header">
-				<h3><span class="text-primary">{{$modelInstance->completeId}}</span> {{$modelInstance->nostraDemarche->title}}</h3>
+				<h3><span class="text-primary">{{$modelInstance->completeId}}</span> {{ $modelInstance->nostraDemarche ? $modelInstance->nostraDemarche->title : $modelInstance->title }}</h3>
 			</div>
 			<div class="content">
 				
@@ -94,10 +94,6 @@
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="col-md-4">
-		@include('admin.demarches.blocs.projets_lies')
-		@include('admin.demarches.blocs.infos_nostra')
 	</div>
 </div>
 @stop

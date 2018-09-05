@@ -6,18 +6,14 @@ $nostraDemarche=$modelInstance->nostraDemarche;
 $manage = $modelInstance->canManage();
 ?>
 @extends('site.layouts.container-fluid')
-@section('title')Formulaires, pièces & tâches de la démarche <br/><em>{{ $nostraDemarche->title }}</em> @stop
+@section('title')Formulaires, pièces & tâches de la démarche <br/><em>{{ $nostraDemarche ? $nostraDemarche->title : $modelInstance->title }}</em> @stop
 @section('content')
 <form>
 	<input type="hidden" id="_token" name="_token" value="{{{ csrf_token() }}}" />
 </form>
 <div class="row">
-	<div class="col-md-8">
+	<div class="col-md-12">
 		@include('admin.demarches.blocs.components')
-	</div>
-	<div class="col-md-4">
-		@include('admin.demarches.blocs.projets_lies',['manage'=>true])
-		@include('admin.demarches.blocs.infos_nostra',['manage'=>true])
 	</div>
 </div>
 @stop
