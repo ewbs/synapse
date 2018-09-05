@@ -1,8 +1,8 @@
 @extends('site.layouts.container-fluid')
-@section('title')Documentation de la démarche <em>{{ $nostraDemarche->title }}</em> @stop
+@section('title')Documentation de la démarche <em>{{ $nostraDemarche ? $nostraDemarche->title : $modelInstance->title  }}</em> @stop
 @section('content')
 <form id="create-edit-demarche-form" method="post" action="{{ $modelInstance->routeGetEdit() }}" autocomplete="off" class="form-horizontal">
-	<input type="hidden" id="_token" name="_token" value="{{{ csrf_token() }}}" /> <input type="hidden" name="nostra_demarche" value="{{$nostraDemarche->id}}" />
+	<input type="hidden" id="_token" name="_token" value="{{{ csrf_token() }}}" /> <input type="hidden" name="nostra_demarche" value="{{$nostraDemarche ? $nostraDemarche->id : ''}}" />
 	<div class="row">
 		<div class="col-md-8">
 			<div class="block-flat">
@@ -70,7 +70,7 @@
 					<!-- ./ Périmetre eWBS -->
 
 					<!-- utilisation du formulaire electronique -->
-					@if ( ! count($nostraDemarche->nostraForms) )
+					@if ( $nostraDemarche && ! count($nostraDemarche->nostraForms) )
 					<input type="hidden" name="eform_usage" value="0" />
 					@else
 					<div class="form-group {{{ $errors->has('eform_usage') ? 'has-error' : '' }}}">
@@ -257,7 +257,12 @@
 		</div>
 		<div class="col-md-4">
 			@include('admin.demarches.blocs.projets_lies',['manage'=>true])
-			@include('admin.demarches.blocs.infos_nostra',['manage'=>true])
+			@if($nostraDemarche)
+				@include('admin.demarches.blocs.infos_nostra',['manage'=>true])
+			@else
+				@include('admin.demarches.blocs.infos_nostra_empty',['manage'=>true])
+			@endif
+
 		</div>
 	</div>
 

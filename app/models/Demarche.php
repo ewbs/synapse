@@ -162,7 +162,55 @@ class Demarche extends TrashableModel {
 	public function docLinks() {
 		return $this->hasMany('DemarcheDocLink');
 	}
-	
+
+	public function nostraPublics() {
+		return $this->belongsToMany ( 'NostraPublic' );
+	}
+
+	public function getNostraPublicsIds() {
+		return $this->nostraPublics->lists('id');
+	}
+
+	public function getNostraPublicsNames() {
+		$array = array ();
+		foreach ( $this->nostraPublics as $t ) {
+			array_push ( $array, $t->title );
+		}
+		return $array;
+	}
+
+	public function nostraThematiqueabc() {
+		return $this->belongsToMany ( 'NostraThematiqueabc' );
+	}
+
+	public function getnostraThematiqueabcIds() {
+		return $this->nostraThematiqueabc->lists('id');
+	}
+
+	public function getnostraThematiqueabcNames() {
+		$array = array ();
+		foreach ( $this->nostraThematiqueabc as $t ) {
+			array_push ( $array, $t->title );
+		}
+		return $array;
+	}
+
+	public function nostraThematiqueadm() {
+		return $this->belongsToMany ( 'NostraThematiqueadm' );
+	}
+
+	public function getNostraThematiqueadmIds() {
+		return $this->nostraThematiqueadm->lists('id');
+	}
+
+	public function getNostraThematiqueadmNames() {
+		$array = array ();
+		foreach ( $this->nostraThematiqueadm as $t ) {
+			array_push ( $array, $t->title );
+		}
+		return $array;
+	}
+
 	/**
 	 * Vérifie si il y a des fichiers SCMs qui ont été uploadés.
 	 * 

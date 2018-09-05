@@ -368,17 +368,17 @@ class DemarcheController extends TrashableModelController {
 	private function getDataSql($trash=false, $withUserFilters = false, $onlyDocumented=false, $onlyWithActions=false, $minPieces=false, $minTasks=false, $minForms=false, $publics=false, $administrations=false, $multipleSeparator = ', ', $horsNostra = false)
 	{
 
-		$demarches_not_in_nostra = Demarche::getQuery()->whereNull('nostra_demarche_id')->select(
-			DB::raw('id as demarche_completeid'),
-			DB::raw('id as demarche_id'),
-			DB::raw('title as title'),
-			DB::raw('title as titlelong'),
-			DB::raw('volume as volume'),
-			DB::raw('created_at as demarche_created_at'),
+		$builder_demarches_not_in_nostra = Demarche::getQuery()->whereNull('nostra_demarche_id')->select(
+			DB::raw('demarches.id as demarche_completeid'),
+			DB::raw('demarches.id as demarche_id'),
+			DB::raw('demarches.title as title'),
+			DB::raw('demarches.title as titlelong'),
+			DB::raw('demarches.volume as volume'),
+			DB::raw('demarches.created_at as demarche_created_at'),
 			DB::raw('NULL as count_pieces'),
 			DB::raw('NULL as count_tasks'),
 			DB::raw('NULL as count_eforms'),
-			DB::raw('NULL as publics'),
+			DB::raw("ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nostra_publics.title), '{$multipleSeparator}', '') AS publics"),
 			DB::raw('NULL as administrations'),
 			DB::raw('NULL as actions'),
 			DB::raw('NULL as nostra_demarche_id'),
@@ -388,6 +388,11 @@ class DemarcheController extends TrashableModelController {
 			DB::raw('NULL as count_state_standby'),
 			DB::raw('NULL as count_state_givenup')
 		);
+
+		$builder_demarches_not_in_nostra
+			->leftjoin('demarche_nostra_public', 'demarches.id', '=', 'demarche_nostra_public.demarche_id')
+			->leftjoin('nostra_publics', 'nostra_publics.id', '=', 'demarche_nostra_public.nostra_public_id')
+			->groupBy(['demarches.id']);
 
 		$columns = [
 			DB::raw("CASE WHEN demarches.id IS NOT NULL THEN demarches.id ELSE NULL END AS demarche_completeid"),
@@ -465,6 +470,7 @@ class DemarcheController extends TrashableModelController {
 		if ($publics) {
 			$aPublicsIds = explode(',', $publics);
 			$builder->whereIn('nostra_demarche_nostra_public.nostra_public_id', $aPublicsIds);
+			$builder_demarches_not_in_nostra->whereIn('demarche_nostra_public.nostra_public_id', $aPublicsIds);
 		}
 
 		if ($administrations) {
@@ -472,7 +478,7 @@ class DemarcheController extends TrashableModelController {
 			$builder->whereIn('administrations.id', $aAdministrationsIds);
 		}
 
-		$builder->union($demarches_not_in_nostra);
+		$builder->union($builder_demarches_not_in_nostra);
 
 		if($horsNostra) {
 			$builder->whereNull('demarches.nostra_demarche_id');
@@ -586,7 +592,7 @@ class DemarcheController extends TrashableModelController {
 	 */
 	protected function getManage(ManageableModel $demarche=null){
 		try {
-			$nostraDemarche = NostraDemarche::findOrFail ( $demarche->nostra_demarche_id );
+			$nostraDemarche = NostraDemarche::find ( $demarche->nostra_demarche_id );
 		}
 		catch ( ModelNotFoundException $ex ) {
 			Log::error ( $e );
@@ -602,7 +608,15 @@ class DemarcheController extends TrashableModelController {
 		$aVolumes = Demarche::volumes();
 		$aTaxonomy = TaxonomyCategory::orderBy('name')->get();
 		$aSelectedTags = $demarche->tags->lists('id');
-		return $this->makeDetailView ( $demarche, 'admin/demarches/manage', compact ( 'aRegions', 'aSelectedAdministrations', 'nostraDemarche', 'calculatedGains', 'lastRevision', 'aVolumes', 'returnTo', 'aTaxonomy', 'aSelectedTags' ) );
+		$aNostraPublics = NostraPublic::root()->get();
+		$aSelectedNostraPublics = $demarche->getNostraPublicsIds();
+		$aNostraThematiqueabc = NostraThematiqueabc::root()->get();
+		$aSelectedNostraThematiqueabc = $demarche->getNostraThematiqueabcIds();
+		$aNostraThematiqueadm = NostraThematiqueadm::root()->get();
+		$aSelectedNostraThematiqueadm = $demarche->getNostraThematiqueadmIds();
+		return $this->makeDetailView ( $demarche, 'admin/demarches/manage', compact (
+			'aRegions', 'aSelectedAdministrations', 'nostraDemarche', 'calculatedGains', 'lastRevision', 'aVolumes', 'returnTo',
+			'aTaxonomy', 'aSelectedTags', 'aNostraPublics', 'aSelectedNostraPublics', 'aNostraThematiqueabc', 'aSelectedNostraThematiqueabc', 'aNostraThematiqueadm', 'aSelectedNostraThematiqueadm' ) );
 	}
 	
 	/**
@@ -612,10 +626,10 @@ class DemarcheController extends TrashableModelController {
 	protected function save(ManageableModel $demarche) {
 
 		// Valider le formulaire
-		if (! Input::has ( 'nostra_demarche' )) {
+		/*if (! Input::has ( 'nostra_demarche' )) {
 			Session::flash('error', Lang::get ( 'admin/demarches/messages.manage.nodemarche-error' ));
 			return false;
-		}
+		}*/
 		
 		// Valider les liens urls de documentation
 		$aLinkId = Input::get ( "docLinkId", [ ] );
@@ -640,6 +654,7 @@ class DemarcheController extends TrashableModelController {
 		
 		// Sauvegarde de la démarche
 		$demarche->nostra_demarche_id = Input::get ( 'nostra_demarche' );
+		if($demarche->nostra_demarche_id == '') $demarche->nostra_demarche_id = null;
 		$demarche->user_id = $this->getLoggedUser ()->id;
 		$demarche->ewbs = Input::has ( 'ewbs' ) ? 1 : 0;
 		$demarche->eform_usage = Input::get ( 'eform_usage' );
@@ -651,6 +666,15 @@ class DemarcheController extends TrashableModelController {
 		$demarche->tags()->sync( is_array( Input::get('tags') ) ? Input::get('tags') : []);
 		// Création de la révision de la démarche
 		$this->createDemarcheRevisionFromInput ( $demarche );
+
+		$arrayNostraPublics = Input::get('nostra_publics', []);
+		$demarche->nostraPublics()->sync($arrayNostraPublics);
+
+		$arrayNostraThematiqueabc = Input::get('nostra_thematiquesabc', []);
+		$demarche->nostraThematiqueabc()->sync($arrayNostraThematiqueabc);
+
+		$arrayNostraThematiqueadm = Input::get('nostra_thematiquesadm', []);
+		$demarche->nostraThematiqueadm()->sync($arrayNostraThematiqueadm);
 		
 		// Parcours ds ids de liens envoyés
 		$newDocLinkIds = array ();
