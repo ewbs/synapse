@@ -94,12 +94,14 @@
 						<thead>
 						<tr>
 							<th class="col-md-1">#</th>
+							{{--<th>NostraID</th>--}}
 							<th>Nom</th>
 							<th>Volume</th>
 							<th>P/T/F</th>
 							<th>Public(s) Cible(s)</th>
 							<th>Administrations</th>
 							<th>Actions</th>
+							<th></th>
 							<th></th>
 						</tr>
 						</thead>

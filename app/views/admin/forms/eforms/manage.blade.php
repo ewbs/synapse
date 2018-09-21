@@ -27,8 +27,11 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 		<div class="block-flat">
 			<div class="header"><h3>{{ ($modelInstance ? 'Edition' : 'Création') }} d'un formulaire</h3></div>
 			<div class="content">
-				<form class="form-horizontal" method="post" autocomplete="off" action="{{ ($modelInstance) ? $modelInstance->routePostEdit() : $model->routePostCreate() }}">
+				<form class="form-horizontal" method="post" autocomplete="off"  action="{{ ($modelInstance) ? $modelInstance->routePostEdit() : $model->routePostCreate() }}?fromDemarche=14">
 					<input type="hidden" name="_token" id="_token" value="{{{ csrf_token() }}}" />
+					{{--PT = pieces et taches--}}
+					<input type="hidden" name="fromDemarche" id="fromDemarche" value="{{{ Input::old('fromDemarche', Input::get('fromDemarche')) }}}" />
+					<input type="hidden" name="fromDemarchePT" id="fromDemarchePT" value="{{{ Input::old('fromDemarchePT', Input::get('fromDemarchePT')) }}}" />
 
 					<div class="form-group">
 						<label class="col-md-2 control-label" for="name">Description</label>
@@ -77,6 +80,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 							<div class="dematerialisation_canal" style="margin-top: 10px; {{Input::old('dematerialisation', $modelInstance ? $modelInstance->dematerialisation : '')=="deja_effectue" ? 'display: block' : 'display: none'}}">
 								Canal de dématérialisation : <br/>
 								<select class="form-control select2" name="dematerialisation_canal" id="dematerialisation_canal" data-placeholder="Veuillez choisir une option">
+									<option value="non_communique">Non communiqué</option>
 									@foreach($dematerialisation_canal_items as $key => $value)
 										<option value="{{ $key }}"{{ Input::old('dematerialisation_canal', $modelInstance ? $modelInstance->dematerialisation_canal : '')==$key ?' selected':'' }}> {{ $value }}</option>
 									@endforeach
@@ -266,7 +270,15 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 
 					<div class="form-group">
 						<div class="col-md-offset-2 col-md-10">
-							<a class="btn btn-cancel" href="{{ $modelInstance ? $modelInstance->routeGetView() : $model->routeGetIndex() }}">{{Lang::get('button.cancel')}}</a>
+							@if(Input::old('fromDemarche', Input::get('fromDemarche')))
+								{{--On vient de la démarche, il faut donc retourner à celle-ci--}}
+								<a class="btn btn-cancel" href="{{ route('demarchesGetView', Input::old('fromDemarche', Input::get('fromDemarche'))) }}">{{Lang::get('button.cancel')}}</a>
+							@elseif(Input::old('fromDemarchePT', Input::get('fromDemarchePT')))
+								{{--On vient des pièces et taches d'une démarche, il faut donc y retourner--}}
+								<a class="btn btn-cancel" href="{{ route('demarchesGetComponents', Input::old('fromDemarchePT', Input::get('fromDemarchePT'))) }}">{{Lang::get('button.cancel')}}</a>
+							@else
+								<a class="btn btn-cancel" href="{{ $modelInstance ? $modelInstance->routeGetView() : $model->routeGetIndex() }}">{{Lang::get('button.cancel')}}</a>
+							@endif
 							<button type="submit" class="btn btn-primary">{{Lang::get('button.save')}}</button>
 						</div>
 					</div>
@@ -312,7 +324,6 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
             });
 
             $("#intervention_ewbs").change(function() {
-                console.log(this.value);
                if(this.value === 'oui'){
                    $("#ajouteruneaction").show();
 			   } else {

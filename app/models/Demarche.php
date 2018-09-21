@@ -98,7 +98,7 @@ class Demarche extends TrashableModel {
 	 * @see ManageableModel::name()
 	 */
 	public function name() {
-		return $this->nostraDemarche->title;
+		return $this->nostraDemarche ? $this->nostraDemarche->title : $this->title;
 	}
 
 	public function toArray() {
@@ -409,7 +409,6 @@ class Demarche extends TrashableModel {
 	public function getIsDematerialiseAttribute()
 	{
 		foreach ($this->getLastRevisionEforms() as $demarcheEform){
-			echo $demarcheEform->eform->dematerialisation;
 			if($demarcheEform->eform->dematerialisation === 'deja_effectue') return true;
 		}
 		return false;

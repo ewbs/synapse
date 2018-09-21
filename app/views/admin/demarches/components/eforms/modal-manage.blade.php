@@ -61,6 +61,12 @@ $eform_id = Input::old('eform_id', $demarche_eform ? $demarche_eform->eform_id :
 					</div>-->
 				</div>
 				<div class="modal-footer">
+					{{--PT = on utilise une variable différentes si on vient de la démarche ou de la section pièeces et taches de la démarche--}}
+					@if(Input::get('pieces-et-taches'))
+						<a href="{{route('eformsGetCreate')}}?fromDemarchePT={{$demarche->id}}" class="btn btn-primary" style="float: left">Créer un formulaire</a>
+					@else
+						<a href="{{route('eformsGetCreate')}}?fromDemarche={{$demarche->id}}" class="btn btn-primary" style="float: left">Créer un formulaire</a>
+					@endif
 					<button type="button" class="btn btn-default" data-dismiss="modal">{{Lang::get('button.cancel')}}</button>
 					<button type="submit" name="action" value="save" class="btn btn-primary">{{Lang::get('button.save')}}</button>
 				</div>

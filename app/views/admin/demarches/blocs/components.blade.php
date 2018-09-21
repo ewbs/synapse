@@ -30,7 +30,13 @@ if(!isset($minimal)) $minimal=false;
         </div>
         @if($manage)
             <div class="form-group">
-                <a href="{{route('demarchesEformsGetCreate', $modelInstance->id)}}" class="btn btn-sm btn-primary servermodal" data-reload-datatable="#eforms-table"><i class="fa fa-plus"></i> Ajouter un formulaire</a>
+                {{--pieces-et-taches=true => on utilise une variable différentes si on vient de la démarche ou de la section pièeces et taches de la démarche--}}
+
+            @if($minimal)
+                    <a href="{{route('demarchesEformsGetCreate', $modelInstance->id)}}" class="btn btn-sm btn-primary servermodal" data-reload-datatable="#eforms-table"><i class="fa fa-plus"></i> Ajouter un formulaire</a>
+                @else
+                    <a href="{{route('demarchesEformsGetCreate', $modelInstance->id)}}?pieces-et-taches=true" class="btn btn-sm btn-primary servermodal" data-reload-datatable="#eforms-table"><i class="fa fa-plus"></i> Ajouter un formulaire</a>
+                @endif
             </div>
         @endif
     </div>

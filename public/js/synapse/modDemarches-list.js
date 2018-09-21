@@ -81,7 +81,7 @@ $(document).ready(function() {
 		"aoColumnDefs": [
 			{ 'bSortable'  : false, 'aTargets': [6] },
 			{ 'bSearchable': false, 'aTargets': [6] },
-			{ 'bVisible': false, 'aTargets': [7] }
+			{ 'bVisible': false, 'aTargets': [7,8] }
 		],
 		"aaSorting" : [[0, "desc"]],
 		"sAjaxSource": getDemarchesAjaxUrl(),

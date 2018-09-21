@@ -39,8 +39,8 @@
 			<div class="block-flat">
 				<div class="content no-padding">
 					<div class="overflow-hidden">
-						<span class="fa fa-flag fa-4x color-success pull-left"></span>
-						<h3 class="no-margin">Cette démarche est dématerialisée</h3>
+						<span class="fa fa-flag fa-2x color-success pull-left"></span>
+						<h4 class="no-margin">Cette démarche est dématerialisée</h4>
 					</div>
 				</div>
 			</div>

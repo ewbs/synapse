@@ -182,7 +182,35 @@ class EformController extends TrashableModelController {
 		$modelInstance->setCurrentStateId(Input::get ( 'current_state' ));
 		$modelInstance->setNextStateId(Input::get ( 'next_state' ));
 		if($modelInstance->save()) {
-			if(Input::has ( 'nostraRequest' )) return route('damusGetRequestEform', $modelInstance->id);
+
+
+			if(Input::has ( 'nostraRequest' ))return route('damusGetRequestEform', $modelInstance->id);
+
+			if(Input::get('fromDemarche')){
+				// lier le formulaire a une démarche
+
+				$demarche = Demarche::find(Input::get ( 'fromDemarche' ));
+				$route = route('demarchesGetView', Input::get('fromDemarche'));
+			}
+			if(Input::get('fromDemarchePT')){
+				// lier le formulaire a une démarche
+
+				$demarche = Demarche::find(Input::get ( 'fromDemarchePT' ));
+				$route = route('demarchesGetComponents', Input::get('fromDemarchePT'));
+			}
+			if(Input::get('fromDemarche') || Input::get('fromDemarchePT')) {
+				$revision=new DemarcheEform();
+				$revision->demarche()->associate($demarche);
+
+				$eform_id=$modelInstance->id;
+				if($eform_id) $revision->eform()->associate(Eform::find($eform_id));
+				$revision->comment = '';
+				$revision->user()->associate($this->getLoggedUser());
+				$revision->save();
+
+				return $route;
+			}
+
 			return true;
 		}
 		return false;

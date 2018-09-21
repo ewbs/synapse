@@ -59,6 +59,15 @@ class DemarcheController extends TrashableModelController {
 					]
 				]
 			];
+			if($modelInstance->nostra_demarche_id === null){
+				$features[]=[
+					'label' => Lang::get ( 'button.delete' ),
+					'url' => $modelInstance->routeGetDelete(),
+					'icon' => 'trash-o',
+					'class' =>'btn-danger',
+				];
+			}
+
 		}
 		return $features;
 	}
@@ -382,6 +391,7 @@ class DemarcheController extends TrashableModelController {
 			DB::raw('NULL as administrations'),
 			DB::raw('NULL as actions'),
 			DB::raw('NULL as nostra_demarche_id'),
+			DB::raw('NULL as nostra_demarche_nostra_id'),
 			DB::raw('NULL as count_state_todo'),
 			DB::raw('NULL as count_state_progress'),
 			DB::raw('NULL as count_state_done'),
@@ -408,6 +418,7 @@ class DemarcheController extends TrashableModelController {
 			DB::raw("ARRAY_TO_STRING(ARRAY_AGG(DISTINCT administrations.name), '{$multipleSeparator}', '') AS administrations"),
 			DB::raw('1 AS actions'), //pour afficher le compte des actions
 			'nostra_demarches.id AS nostra_demarche_id', //ne pas changer de place : c'est envoyé à la vue puis caché
+			'nostra_demarches.nostra_id as nostra_demarche_nostra_id', //ne pas changer de place : c'est envoyé à la vue puis caché
 			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_TODO . "'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_todo"),
 			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_PROGRESS . "' THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_progress"),
 			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_DONE . "'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_done"),

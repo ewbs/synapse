@@ -23,6 +23,8 @@ Route::group(['prefix' => 'demarches'], function() {
 		Route::get ('view'       ,['as'=>'demarchesGetView'       ,'uses'=>'DemarcheController@getView']);
 		Route::get ('edit'       ,['as'=>'demarchesGetEdit'       ,'uses'=>'DemarcheController@getEdit']);
 		Route::post('edit'       ,['as'=>'demarchesPostEdit'      ,'uses'=>'DemarcheController@postEdit'      ,'before' => 'csrf']);
+		Route::get ('delete'      ,['as'=>'demarchesGetDelete'    ,'uses'=>'DemarcheController@getDelete']);
+		Route::post('delete'      ,['as'=>'demarchesPostDelete'   ,'uses'=>'DemarcheController@postDelete'        ,'before' => 'csrf']);
 
 		// Traitement du SCM
 		Route::group(['prefix' => 'scm'], function() {

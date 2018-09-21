@@ -12,7 +12,7 @@ return [
 	'not_linked' => 'Non lié',
 	
 	'manage' => [
-		'success' => 'Le formulaire a été sauvegardé. Merci.<br/>Vous pouvez si vous le souhaitez créer ou modifier les actions via la fonction "Actions" disponible dans le panel de droite.' 
+		'success' => 'Le formulaire a été sauvegardé.'
 	],
 	
 	'delete' => [

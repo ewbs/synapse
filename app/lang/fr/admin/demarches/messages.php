@@ -24,6 +24,8 @@ return [
 		'pieces' => 'Supprimer la pièce',
 		'tasks' => 'Supprimer la tâche',
 		'actions' => 'Supprimer l\'action',
+		'detail' => 'Confirmez vous la suppression de la démarche <strong>:name</strong> ?',
+		'subtitle' => 'Suppression d\'une démarche'
 	],
 	
 	'export' => [
