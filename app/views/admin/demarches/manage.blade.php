@@ -60,7 +60,7 @@
 
 					<!-- Périmetre eWBS -->
 					<div class="form-group">
-						<label class="col-md-2 control-label" for="">Périmètre d'action eWBS ?</label>
+						<label class="col-md-2 control-label" for="">Périmètre d'action eWBS</label>
 						<div class="col-md-10">
 							<div class="switch">
 								<input type="checkbox" name="ewbs" {{{ Input::old('ewbs', isset($modelInstance) ? ($modelInstance->ewbs ? "checked" : "") : "") }}}/>
@@ -68,6 +68,18 @@
 						</div>
 					</div>
 					<!-- ./ Périmetre eWBS -->
+
+					<!-- Issu du plan demat -->
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="title">Issue du plan demat</label>
+						<div class="col-md-10">
+							<div class="switch">
+								<input type="checkbox" name="from_plan_demat" id="from_plan_demat" {{{ Input::old('from_plan_demat', isset($modelInstance) ? ($modelInstance->from_plan_demat ? "checked" : "") : "") }}}  />
+							</div>
+						</div>
+					</div>
+					<!-- ./ Issu du plan demat -->
+
 
 					<!-- utilisation du formulaire electronique -->
 					@if ( $nostraDemarche && ! count($nostraDemarche->nostraForms) )

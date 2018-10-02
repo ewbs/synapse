@@ -148,10 +148,9 @@ class EformController extends TrashableModelController {
 		$modelInstance->intervention_ewbs = Input::get ( 'intervention_ewbs' ) ?: null;
 		$modelInstance->references_contrat_administration = Input::get ( 'references_contrat_administration' );
 		$modelInstance->remarques = Input::get ( 'remarques' );
-
 		if($modelInstance->dematerialisation != 'oui') {
 			// ce champ doit etre vide dans ce cas la
-			$modelInstance->dematerialisation_date = '';
+			$modelInstance->dematerialisation_date = null;
 		}
 		if($modelInstance->dematerialisation != 'deja_effectue') {
 			// ce champ doit etre vide dans ce cas la
@@ -161,7 +160,6 @@ class EformController extends TrashableModelController {
 			// ce champ doit etre vide dans ce cas la
 			$modelInstance->dematerialisation_canal_autres = '';
 		}
-
 
 
 		// Champs non révisés, mis à jour uniquement si pas de lien avec un nostra_form

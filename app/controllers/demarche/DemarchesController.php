@@ -515,9 +515,10 @@ class DemarcheController extends TrashableModelController {
 			return View::make ( 'admin/demarches/create', ['errors' => $errors]);
 		} else {
 			$demarche->title = Input::get('title');
+			Input::get('from_plan_demat') === null ? $demarche->from_plan_demat = 0 : $demarche->from_plan_demat = 1;
 			$demarche->user_id = $this->getLoggedUser ()->id;
 			$demarche->save();
-			return Redirect::route('demarchesGetIndex')->with ( 'success', 'La démarche a bien été créée' );
+			return Redirect::route('demarchesGetEdit', $demarche->id)->with ( 'success', 'La démarche a bien été créée' );
 
 		}
 	}
@@ -668,6 +669,7 @@ class DemarcheController extends TrashableModelController {
 		if($demarche->nostra_demarche_id == '') $demarche->nostra_demarche_id = null;
 		$demarche->user_id = $this->getLoggedUser ()->id;
 		$demarche->ewbs = Input::has ( 'ewbs' ) ? 1 : 0;
+		$demarche->from_plan_demat = Input::has ( 'from_plan_demat' ) ? 1 : 0;
 		$demarche->eform_usage = Input::get ( 'eform_usage' );
 		$demarche->comment = Input::get ( 'comment' );
 		$demarche->personne_de_contact = Input::get ( 'personne_de_contact' );

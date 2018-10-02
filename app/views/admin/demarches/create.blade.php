@@ -17,6 +17,14 @@
                                 {{ $errors->first('title', '<span class="help-inline">Ce champ est obligatoire</span>') }}
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="title">Issue du plan demat ?</label>
+                            <div class="col-md-10">
+                                <div class="switch">
+                                    <input type="checkbox" name="from_plan_demat" id="from_plan_demat" value="1"  />
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="form-group">
                             <a class="btn btn-cancel" href="{{route('demarchesGetIndex')}}">{{Lang::get('button.cancel')}}</a>

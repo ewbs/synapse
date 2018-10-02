@@ -83,6 +83,7 @@ class DamusController extends BaseController {
 	public function postRequestCreateDemarche() {
 		if(!$this->getLoggedUser()->can('demarches_encode')) return $this->redirectNoRight(route('ideasGetIndex'));
 
+
 		$name=Input::get('name');
 		$nostra_publics=Input::get('nostra_publics' );
 		$nostra_thematiquesabc=Input::get('nostra_thematiquesabc' );
@@ -123,10 +124,11 @@ class DamusController extends BaseController {
 
 		$description.=PHP_EOL.PHP_EOL;
 		$description.='Demandé par : '.Auth::user()->username.' (<a href="mailto:'.Auth::user()->email.'">'.Auth::user()->email.'</a>)';
-	
+
 		Mail::queueOn('nostra', 'emails.damus.request.action', ['link'=>route('damusGetResponse', [$action->id, $action->token]), 'request'=>$description], function(\Illuminate\Mail\Message $message) {
 			$message->to(Config::get('app.nostra.mail'))->subject(Lang::get('admin/damus/messages.request.mail.source').' : '.Lang::get('admin/damus/messages.request.demarche.create.title'));
 		});
+
 	
 		return Redirect::secure(route('demarchesGetIndex'))->with('success', Lang::get('admin/damus/messages.request.success'));
 	}
@@ -170,6 +172,15 @@ class DamusController extends BaseController {
 		Mail::queueOn('nostra', 'emails.damus.request.action', ['link'=>route('damusGetResponse', [$action->id, $action->token]), 'request'=>$detail], function(\Illuminate\Mail\Message $message) {
 			$message->to(Config::get('app.nostra.mail'))->subject(Lang::get('admin/damus/messages.request.mail.source').' : '.Lang::get('admin/damus/messages.request.demarche.edit.title'));
 		});
+		echo 'message to : '.Config::get('app.nostra.mail');
+		die();
+		Mail::send('emails.damus.request.action', ['link'=>route('damusGetResponse', [$action->id, $action->token]), 'request'=>$detail], function(\Illuminate\Mail\Message $message)
+		{
+			$message->to(Config::get('app.nostra.mail'))->subject(Lang::get('admin/damus/messages.request.mail.source').' : '.Lang::get('admin/damus/messages.request.demarche.edit.title'));
+		});
+
+
+
 	
 		return Redirect::secure(route('demarchesGetView', $demarche->id))->with('success', Lang::get('admin/damus/messages.request.success'));
 	}

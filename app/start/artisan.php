@@ -17,3 +17,4 @@ Artisan::add ( new cleanTempFiles () );
 Artisan::add ( new ViewsCommand() );
 Artisan::add ( new TransactionalMigrateCommand  ( app('migrator'), app('path.base').'/vendor' ));
 Artisan::add ( new TransactionalRollbackCommand ( app('migrator') ));
+Artisan::add ( new QueueInfo() );

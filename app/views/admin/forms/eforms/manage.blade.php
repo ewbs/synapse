@@ -72,12 +72,12 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 							</select>
 							{{ $errors->first('dematerialisation', '<span class="help-inline red">:message</span>') }}
 							<div class="dematerialisation_date" style="margin-top: 10px; {{Input::old('dematerialisation', $modelInstance ? $modelInstance->dematerialisation : '')=="oui" ? 'display: block' : 'display: none'}}">
-								<input type="text" class="form-control" name="dematerialisation_date" id="dematerialisation_date" placeholder="mois/année"
-									   value="{{ Input::old('dematerialisation_date', $modelInstance ? $modelInstance->dematerialisation_date : '') }}"
-								/>
-								<small class="pull-right">mois/année</small>
+								<div class="input-group date datepicker">
+									<input type="text" class="form-control" name="dematerialisation_date" value="{{{ Input::old('dematerialisation_date', $modelInstance ? $modelInstance->dematerialisation_date : null) }}}"/>
+									<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+								</div>
 							</div>
-							<div class="dematerialisation_canal" style="margin-top: 10px; {{Input::old('dematerialisation', $modelInstance ? $modelInstance->dematerialisation : '')=="deja_effectue" ? 'display: block' : 'display: none'}}">
+							<div class="dematerialisation_canal" style="margin-top: 10px; ">
 								Canal de dématérialisation : <br/>
 								<select class="form-control select2" name="dematerialisation_canal" id="dematerialisation_canal" data-placeholder="Veuillez choisir une option">
 									<option value="non_communique">Non communiqué</option>
@@ -301,16 +301,13 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 
             $("#dematerialisation").change(function() {
                 if(this.value === 'oui'){
-                    $(".dematerialisation_canal").hide();
                     $(".dematerialisation_date").show();
                 }
                 else if(this.value === 'deja_effectue'){
                     $(".dematerialisation_date").hide();
-                    $(".dematerialisation_canal").show();
                 }
                 else {
                     $(".dematerialisation_date").hide();
-                    $(".dematerialisation_canal").hide();
                 }
             });
 
