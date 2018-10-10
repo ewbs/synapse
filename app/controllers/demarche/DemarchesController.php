@@ -269,7 +269,7 @@ class DemarcheController extends TrashableModelController {
 				}
 			})
 			->remove_column('titlelong')
-			//->remove_column('demarche_id')
+			->remove_column('nostra_demarche_nostra_id')
 			->remove_column('demarche_created_at')
 			->remove_column('count_tasks')
 			->remove_column('count_eforms')
@@ -352,7 +352,7 @@ class DemarcheController extends TrashableModelController {
 				}
 			})
 			->remove_column('titlelong')
-			->remove_column('demarche_id')
+			->remove_column('nostra_demarche_nostra_id')
 			->remove_column('demarche_created_at')
 			->remove_column('count_tasks')
 			->remove_column('count_eforms')
@@ -390,11 +390,9 @@ class DemarcheController extends TrashableModelController {
 
 		$builder_demarches_not_in_nostra = Demarche::getQuery()->whereNull('nostra_demarche_id')->select(
 			DB::raw('demarches.id as demarche_completeid'),
-			DB::raw('demarches.id as demarche_id'),
 			DB::raw('demarches.title as title'),
 			DB::raw('demarches.title as titlelong'),
 			DB::raw('demarches.volume as volume'),
-			DB::raw('demarches.from_plan_demat as from_plan_demat'),
 			DB::raw('demarches.created_at as demarche_created_at'),
 			DB::raw('NULL as count_pieces'),
 			DB::raw('NULL as count_tasks'),
@@ -404,6 +402,7 @@ class DemarcheController extends TrashableModelController {
 			DB::raw('NULL as actions'),
 			DB::raw('NULL as nostra_demarche_id'),
 			DB::raw('NULL as nostra_demarche_nostra_id'),
+			DB::raw('demarches.id as demarche_id'),
 			DB::raw('NULL as count_state_todo'),
 			DB::raw('NULL as count_state_progress'),
 			DB::raw('NULL as count_state_done'),
@@ -422,11 +421,9 @@ class DemarcheController extends TrashableModelController {
 
 		$columns = [
 			DB::raw("CASE WHEN demarches.id IS NOT NULL THEN demarches.id ELSE NULL END AS demarche_completeid"),
-			'demarches.id AS demarche_id',
 			'nostra_demarches.title AS title',
 			'nostra_demarches.title_long AS titlelong',
 			'demarches.volume',
-			'demarches.from_plan_demat as from_plan_demat',
 			DB::raw("CASE WHEN demarches.id IS NOT NULL THEN demarches.created_at ELSE NULL END AS demarche_created_at"),
 			DB::raw('COUNT(DISTINCT CASE WHEN "demarche_demarchePiece".deleted_at IS NULL THEN "demarche_demarchePiece".id ELSE NULL END) AS count_pieces'),
 			DB::raw('COUNT(DISTINCT CASE WHEN "demarche_demarcheTask".deleted_at IS NULL THEN "demarche_demarcheTask".id ELSE NULL END) AS count_tasks'),
@@ -436,6 +433,7 @@ class DemarcheController extends TrashableModelController {
 			DB::raw('1 AS actions'), //pour afficher le compte des actions
 			'nostra_demarches.id AS nostra_demarche_id', //ne pas changer de place : c'est envoyé à la vue puis caché
 			'nostra_demarches.nostra_id as nostra_demarche_nostra_id', //ne pas changer de place : c'est envoyé à la vue puis caché
+			'demarches.id AS demarche_id', //ne pas changer de place : c'est envoyé à la vue puis caché
 			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_TODO . "'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_todo"),
 			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_PROGRESS . "' THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_progress"),
 			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_DONE . "'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_done"),

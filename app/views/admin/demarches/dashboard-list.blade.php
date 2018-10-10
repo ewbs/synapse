@@ -92,6 +92,7 @@
 							<th>Administrations</th>
 							<th>Actions</th>
 							<th></th>
+							<th></th>
 						</tr>
 						</thead>
 						<tbody>
@@ -113,7 +114,8 @@
 {{-- ce fomulaire invisible sert à l'export des démarches (la page d'export est appelée en POST --}}
 <form class="hidden" id="formExportDemarches" method="post" action="{{route('demarchesPostExport')}}" target="_blank">
 	<input type="hidden" id="_token" name="_token" value="{{{ csrf_token() }}}"/>
-	<input type="hidden" id="demarches_ids" name="demarches_ids" value=""/>
+	<input type="hidden" id="demarches_horsnostra_ids" name="demarches_horsnostra_ids" value=""/>
+	<input type="hidden" id="demarches_nostra_ids" name="demarches_nostra_ids" value=""/>
 </form>
 @stop
 
@@ -181,7 +183,7 @@
 			"aoColumnDefs": [
 				{ 'bSortable'  : false, 'aTargets': [6] },
 				{ 'bSearchable': false, 'aTargets': [6] },
-				{ 'bVisible': false, 'aTargets': [7] }
+				{ 'bVisible': false, 'aTargets': [7,8] }
 			],
 			"aaSorting" : [[0, "desc"]],
 			"sAjaxSource": getAjaxUrl(),
@@ -191,9 +193,29 @@
 		 * Gestion de l'export
 		 */
 		$("#demarcheExport").click( function () {
-			var ids = $tableDemarches.fnGetColumnData(7);
-			$("input#demarches_ids").val(ids);
-			$("form#formExportDemarches").submit();
+
+            var demarches_nostra_ids = $tableDemarches.fnGetColumnData(7, null, null, null, false);
+            var demarches_ids = $tableDemarches.fnGetColumnData(8, null, null, null, false);
+
+            // on crée un array ou l'on a retiré les éléments ou nostra_id est null
+            var demarche_nostra_ids_nonull = [];
+            for(var i = 0; i < demarches_nostra_ids.length; i++) {
+                if(demarches_nostra_ids[i] != null) {
+                    demarche_nostra_ids_nonull.push(demarches_nostra_ids[i]);
+                }
+            }
+
+            // dans demarches_horsnostra_ids on ne veut garder que les id des démarches qui ne sont pas dans nostra
+            var demarches_horsnostra_ids = [];
+            for(var i = 0; i < demarches_nostra_ids.length; i++) {
+                if(demarches_nostra_ids[i] == null) {
+                    demarches_horsnostra_ids.push(demarches_ids[i]);
+                }
+            }
+
+            $("input#demarches_horsnostra_ids").val(demarches_horsnostra_ids);
+            $("input#demarches_nostra_ids").val(demarche_nostra_ids_nonull);
+            $("form#formExportDemarches").submit();
 		});
 	});
 </script>
