@@ -62,7 +62,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 						</div>
 					</div>
 
-					<div class="form-group {{{ $errors->has('dematerialisation') ? 'has-error' : '' }}}">
+					<div class="form-group {{{ $errors->has('dematerialisation') || $errors->has('dematerialisation_date') ? 'has-error' : '' }}}">
 						<label class="col-md-2 control-label" for="name">Dématérialisation</label>
 						<div class="col-md-10">
 							<select class="form-control select2 " name="dematerialisation" id="dematerialisation" data-placeholder="Veuillez choisir une option">
@@ -71,9 +71,10 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 								@endforeach
 							</select>
 							{{ $errors->first('dematerialisation', '<span class="help-inline red">:message</span>') }}
+							{{ $errors->first('dematerialisation_date', '<span class="help-inline red">:message</span>') }}
 							<div class="dematerialisation_date" style="margin-top: 10px; {{Input::old('dematerialisation', $modelInstance ? $modelInstance->dematerialisation : '')=="oui" ? 'display: block' : 'display: none'}}">
 								<div class="input-group date datepicker">
-									<input type="text" class="form-control" name="dematerialisation_date" value="{{{ Input::old('dematerialisation_date', $modelInstance ? $modelInstance->dematerialisation_date : null) }}}"/>
+									<input type="text" class="form-control" name="dematerialisation_date" value="{{{ Input::old('dematerialisation_date', $modelInstance ? $modelInstance->getDematerialisationDate() : null) }}}"/>
 									<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
 								</div>
 							</div>

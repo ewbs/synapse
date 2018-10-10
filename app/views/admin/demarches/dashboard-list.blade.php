@@ -50,6 +50,17 @@
 									</div>
 								</div>
 							</div>
+							<div class="row no-padding no-margin">
+								<div class="col-md-12">
+									<div class="form-group">
+										<div class="checkbox">
+											<label>
+												<input type="checkbox" class="icheck" id="dashboardDemarches_onlyPlanDemat" {{Auth::user()->sessionGet('dashboardDemarches_onlyPlanDemat') ? 'checked="checked"':''}} /> Uniquement les démarches issue du plan demat
+											</label>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 						<div class="col-md-6">
 							<div class="row no-padding no-margin">
@@ -128,6 +139,11 @@
 			if ($("#dashboardDemarches_onlyWithActions").is(":checked")) {
 				ajaxUrl += "&onlyWithActions=1";
 			}
+
+            // plan demat
+            if ($("#dashboardDemarches_onlyPlanDemat").is(":checked")) {
+                ajaxUrl += "&onlyPlanDemat=1";
+            }
 
 			// nombre de pièces minimum ?
 			var minPieces = $("#dashboardDemarches_minPieces").val();

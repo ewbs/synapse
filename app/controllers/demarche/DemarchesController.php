@@ -203,6 +203,8 @@ class DemarcheController extends TrashableModelController {
 		$horsNostra = Input::has('onlyHorsNostra');
 		// ne prendre que les démarches avec des actions en cours
 		$actions = Input::has('onlyWithActions');
+		// ne prendre que les démarches issue du plan demat
+		$plandemat = Input::has('onlyPlanDemat');
 
 		$pieces = Input::has('minPieces') ? Input::get('minPieces') : false;
 		$tasks = Input::has('minTasks') ? Input::get('minTasks') : false;
@@ -215,6 +217,7 @@ class DemarcheController extends TrashableModelController {
 		Auth::user()->sessionSet('catalogDemarches_onlyDocumented', $documented);
 		Auth::user()->sessionSet('catalogDemarches_onlyHorsNostra', $horsNostra);
 		Auth::user()->sessionSet('catalogDemarches_onlyWithActions', $actions);
+		Auth::user()->sessionSet('catalogDemarches_onlyPlanDemat', $plandemat);
 		Auth::user()->sessionSet('catalogDemarches_minPieces', $pieces);
 		Auth::user()->sessionSet('catalogDemarches_minTasks', $tasks);
 		Auth::user()->sessionSet('catalogDemarches_minForms', $forms);
@@ -223,7 +226,7 @@ class DemarcheController extends TrashableModelController {
 
 
 
-		$items = $this->getDataSql($trash, false, $documented, $actions, $pieces, $tasks, $forms, $publics, $administrations, ', ', $horsNostra);
+		$items = $this->getDataSql($trash, false, $documented, $actions, $pieces, $tasks, $forms, $publics, $administrations, ', ', $horsNostra, $plandemat);
 		//$items = array_merge($items1, $items2);
 		$dt = Datatables::of ( $items )
 			->edit_column('demarche_completeid', function ($item) {
@@ -266,7 +269,7 @@ class DemarcheController extends TrashableModelController {
 				}
 			})
 			->remove_column('titlelong')
-			->remove_column('demarche_id')
+			//->remove_column('demarche_id')
 			->remove_column('demarche_created_at')
 			->remove_column('count_tasks')
 			->remove_column('count_eforms')
@@ -292,6 +295,8 @@ class DemarcheController extends TrashableModelController {
 		$horsNostra = Input::has('onlyHorsNostra');
 		// ne prendre que les démarches avec des actions en cours
 		$actions = Input::has('onlyWithActions');
+		// ne prendre que les démarches issue du plan demat
+		$plandemat = Input::has('onlyPlanDemat');
 
 		$pieces = Input::has('minPieces') ? Input::get('minPieces') : false;
 		$tasks = Input::has('minTasks') ? Input::get('minTasks') : false;
@@ -301,18 +306,23 @@ class DemarcheController extends TrashableModelController {
 		Auth::user()->sessionSet('dashboardDemarches_onlyDocumented', $documented);
 		Auth::user()->sessionSet('dashboardDemarches_onlyHorsNostra', $horsNostra);
 		Auth::user()->sessionSet('dashboardDemarches_onlyWithActions', $actions);
+		Auth::user()->sessionSet('dashboardDemarches_onlyPlanDemat', $plandemat);
 		Auth::user()->sessionSet('dashboardDemarches_minPieces', $pieces);
 		Auth::user()->sessionSet('dashboardDemarches_minTasks', $tasks);
 		Auth::user()->sessionSet('catalogDemarches_minForms', $forms);
 
-		$items = $this->getDataSql(false, true, $documented, $actions, $pieces, $tasks, $forms, false, false, ', ', $horsNostra);
+		$items = $this->getDataSql(false, true, $documented, $actions, $pieces, $tasks, $forms, false, false, ', ', $horsNostra, $plandemat);
 
 		$dt = Datatables::of ( $items )
 			->edit_column('demarche_completeid', function ($item) {
 				if  (! strlen($item->demarche_completeid)) {
 					return ('<span class="label label-danger">Non documenté</span>');
 				}
-				return DateHelper::year($item->demarche_created_at) . '-' . str_pad ( $item->demarche_completeid, 4, "0", STR_PAD_LEFT );
+				$return_date_with_id =DateHelper::year($item->demarche_created_at) . '-' . str_pad ( $item->demarche_completeid, 4, "0", STR_PAD_LEFT );
+				if ($item->nostra_demarche_id === null) {
+					return '<div class="label label-nostra">Hors Nostra <br/>'.$return_date_with_id.'</div>';
+				}
+				return $return_date_with_id;
 			})
 			->edit_column('title', function ($item) {
 				if ( strlen($item->demarche_completeid) ) {
@@ -371,10 +381,11 @@ class DemarcheController extends TrashableModelController {
 	 * @param bool $administrations : ne prendre que les demarches liées à une ou plusieurs administrations
 	 * @param string $multipleSeparator : separateur litéraire pour les arrays transformés en strings
 	 * @param bool $onlyHorsNostra : ne prendre que les démarches hors nostra (connues dans synapse mais pas dans nostra)
+	 * @param bool $onlyPlanDemat : ne prendre que les démarches issue du plan demat
 
 	 * @return Eloquent\Builder;
 	 */
-	private function getDataSql($trash=false, $withUserFilters = false, $onlyDocumented=false, $onlyWithActions=false, $minPieces=false, $minTasks=false, $minForms=false, $publics=false, $administrations=false, $multipleSeparator = ', ', $horsNostra = false)
+	private function getDataSql($trash=false, $withUserFilters = false, $onlyDocumented=false, $onlyWithActions=false, $minPieces=false, $minTasks=false, $minForms=false, $publics=false, $administrations=false, $multipleSeparator = ', ', $onlyHorsNostra = false, $onlyPlanDemat = false)
 	{
 
 		$builder_demarches_not_in_nostra = Demarche::getQuery()->whereNull('nostra_demarche_id')->select(
@@ -434,7 +445,7 @@ class DemarcheController extends TrashableModelController {
 
 		if($trash) $builder->onlyTrashed();
 
-		$builder->join('demarches', 'demarches.nostra_demarche_id', '=', 'nostra_demarches.id', (($onlyDocumented || $onlyWithActions || $horsNostra) ? 'inner' : 'left'))
+		$builder->join('demarches', 'demarches.nostra_demarche_id', '=', 'nostra_demarches.id', (($onlyDocumented || $onlyWithActions || $onlyHorsNostra) ? 'inner' : 'left'))
 			->join('ewbsActions', 'ewbsActions.demarche_id', '=', 'demarches.id', ($onlyWithActions ? 'inner' : 'left'))
 			->join('v_lastrevisionewbsaction', 'v_lastrevisionewbsaction.ewbs_action_id', '=', 'ewbsActions.id', ($onlyWithActions ? 'inner' : 'left'))
 			->leftjoin('nostra_demarche_nostra_public', 'nostra_demarches.id', '=', 'nostra_demarche_nostra_public.nostra_demarche_id')
@@ -491,8 +502,11 @@ class DemarcheController extends TrashableModelController {
 
 		$builder->union($builder_demarches_not_in_nostra);
 
-		if($horsNostra) {
+		if($onlyHorsNostra) {
 			$builder->whereNull('demarches.nostra_demarche_id');
+		}
+		if($onlyPlanDemat) {
+			$builder->where('demarches.from_plan_demat', 1);
 		}
 
 		return $builder->select($columns); ///////////////////////
@@ -740,10 +754,64 @@ class DemarcheController extends TrashableModelController {
 	 * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\RedirectResponse
 	 */
 	public function postExport() {
+
 		try {
 			$multipleSeparator = PHP_EOL;
-			$demarches_ids = Input::has('demarches_ids') ? explode(',', Input::get('demarches_ids')) : [0];
-			
+			$demarches_horsnostra_ids = Input::has('demarches_horsnostra_ids') ? explode(',', Input::get('demarches_horsnostra_ids')) : [0];
+			$demarches_nostra_ids = Input::has('demarches_nostra_ids') ? explode(',', Input::get('demarches_nostra_ids')) : [0];
+			$builder_demarches_not_in_nostra = Demarche::getQuery()->whereNull('nostra_demarche_id')->select(
+				DB::raw('NULL'),
+				DB::raw('demarches.title as title'),
+				DB::raw('demarches.title as titlelong'),
+				DB::raw('NULL'),
+				DB::raw('NULL'),
+				DB::raw('NULL'),
+				DB::raw('demarches.ewbs AS demarche_ewbs'),
+				DB::raw('demarches.id AS demarche_id'),
+				DB::raw('demarches.user_id AS demarche_user_id'),
+				DB::raw('demarches.eform_usage AS demarche_eform_usage'),
+				DB::raw('demarches.comment AS demarche_comment'),
+				DB::raw('demarches.volume'),
+				DB::raw('demarches.created_at AS demarche_created_at'),
+				DB::raw('demarches.updated_at AS demarche_updated_at'),
+				DB::raw('demarches.personne_de_contact AS demarche_personne_de_contact'),
+				DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT administrations.name), '{$multipleSeparator}', '') AS administrations" ),
+				DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nostra_thematiquesabc.title), '{$multipleSeparator}', '') AS thematiquesabc" ),
+				DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nostra_thematiquesadm.title), '{$multipleSeparator}', '') AS thematiquesadm" ),
+				DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nostra_publics.title), '{$multipleSeparator}', '') AS publics" ),
+				DB::raw ( "CASE WHEN demarches.id IS NOT NULL THEN CONCAT(DATE_PART('year', demarches.created_at), '-', demarches.id) ELSE NULL END AS demarche_completeid" ),
+				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_TODO."'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_todo" ),
+				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_PROGRESS."' THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_progress" ),
+				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_DONE."'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_done" ),
+				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_STANDBY."'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_standby" ),
+				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_GIVENUP."'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_givenup" ),
+				//DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT eforms.title), '{$multipleSeparator}', '') AS eforms"),
+				//DB::raw('NULL'),
+				DB::raw('NULL')
+			);
+
+			$builder_demarches_not_in_nostra
+				->leftjoin('ewbsActions', 'ewbsActions.demarche_id', '=', 'demarches.id')
+				->leftjoin('v_lastrevisionewbsaction', 'v_lastrevisionewbsaction.ewbs_action_id', '=', 'ewbsActions.id')
+
+				->leftjoin('demarche_nostra_public', 'demarches.id', '=', 'demarche_nostra_public.demarche_id')
+				->leftjoin('nostra_publics', 'nostra_publics.id', '=', 'demarche_nostra_public.nostra_public_id')
+
+				->leftjoin('demarche_nostra_thematiqueabc', 'demarches.id', '=', 'demarche_nostra_thematiqueabc.demarche_id' )
+				->leftjoin('nostra_thematiquesabc', 'nostra_thematiquesabc.id', '=', 'demarche_nostra_thematiqueabc.nostra_thematiqueabc_id' )
+
+				->leftjoin('demarche_nostra_thematiqueadm', 'demarches.id', '=', 'demarche_nostra_thematiqueadm.demarche_id' )
+				->leftjoin('nostra_thematiquesadm', 'nostra_thematiquesadm.id', '=', 'demarche_nostra_thematiqueadm.nostra_thematiqueadm_id' )
+
+				->leftjoin('administration_demarche', 'demarches.id', '=', 'administration_demarche.demarche_id' )
+				->leftjoin('administrations', 'administrations.id', '=', 'administration_demarche.administration_id' )
+
+				/*->leftjoin('v_lastrevisiondemarcheeform', 'v_lastrevisiondemarcheeform.demarche_id', '=', 'demarches.id')
+				->leftjoin('eforms', 'eforms.id', '=', 'v_lastrevisiondemarcheeform.eform_id')*/
+				->whereIn('demarches.id', $demarches_horsnostra_ids)
+				->groupBy(['demarches.id']);
+
+
 			$columns = [
 				'nostra_demarches.nostra_id',
 				'nostra_demarches.title',
@@ -757,6 +825,9 @@ class DemarcheController extends TrashableModelController {
 				'demarches.eform_usage AS demarche_eform_usage', // xls
 				'demarches.comment AS demarche_comment', // xls
 				'demarches.volume',
+				'demarches.created_at as demarche_created_at',
+				'demarches.updated_at as demarche_updated_at',
+				'demarches.personne_de_contact as demarche_personne_de_contact',
 				DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT administrations.name), '{$multipleSeparator}', '') AS administrations" ),
 				DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nostra_thematiquesabc.title), '{$multipleSeparator}', '') AS thematiquesabc" ),
 				DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nostra_thematiquesadm.title), '{$multipleSeparator}', '') AS thematiquesadm" ),
@@ -767,53 +838,145 @@ class DemarcheController extends TrashableModelController {
 				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_DONE."'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_done" ),
 				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_STANDBY."'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_standby" ),
 				DB::raw ( "COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '".EwbsActionRevision::$STATE_GIVENUP."'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_givenup" ),
-				DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT eforms.title), '{$multipleSeparator}', '') AS eforms"),
-				DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nostra_forms.title), '{$multipleSeparator}', '') AS nostra_forms"),
+				//DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT eforms.title), '{$multipleSeparator}', '') AS eforms"),
+				//DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nostra_forms.title), '{$multipleSeparator}', '') AS nostra_forms"),
 				DB::raw ( "ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nostra_documents.title), '{$multipleSeparator}', '') AS nostra_documents"),
 			];
-			
+
 			$aNostraDemarches =
 			NostraDemarche
 				::leftjoin('demarches', 'demarches.nostra_demarche_id', '=', 'nostra_demarches.id')
-				
+
 				->leftjoin('ewbsActions', 'ewbsActions.demarche_id', '=', 'demarches.id')
 				->leftjoin('v_lastrevisionewbsaction', 'v_lastrevisionewbsaction.ewbs_action_id', '=', 'ewbsActions.id')
-				
+
 				->leftjoin('nostra_demarche_nostra_public', 'nostra_demarches.id', '=', 'nostra_demarche_nostra_public.nostra_demarche_id')
 				->leftjoin('nostra_publics', 'nostra_publics.id', '=', 'nostra_demarche_nostra_public.nostra_public_id')
-				
+
 				->leftjoin('nostra_demarche_nostra_thematiqueabc', 'nostra_demarches.id', '=', 'nostra_demarche_nostra_thematiqueabc.nostra_demarche_id' )
 				->leftjoin('nostra_thematiquesabc', 'nostra_thematiquesabc.id', '=', 'nostra_demarche_nostra_thematiqueabc.nostra_thematiqueabc_id' )
-				
+
 				->leftjoin('nostra_demarche_nostra_thematiqueadm', 'nostra_demarches.id', '=', 'nostra_demarche_nostra_thematiqueadm.nostra_demarche_id' )
 				->leftjoin('nostra_thematiquesadm', 'nostra_thematiquesadm.id', '=', 'nostra_demarche_nostra_thematiqueadm.nostra_thematiqueadm_id' )
-				
+
 				->leftjoin('administration_demarche', 'demarches.id', '=', 'administration_demarche.demarche_id' )
 				->leftjoin('administrations', 'administrations.id', '=', 'administration_demarche.administration_id' )
-				
-				->leftjoin('v_lastrevisiondemarcheeform', 'v_lastrevisiondemarcheeform.demarche_id', '=', 'demarches.id')
-				->leftjoin('eforms', 'eforms.id', '=', 'v_lastrevisiondemarcheeform.eform_id')
-				->whereNull('v_lastrevisiondemarcheeform.deleted_at')
-				
-				->leftjoin('nostra_demarche_nostra_form', 'nostra_demarche_nostra_form.nostra_demarche_id', '=', 'demarches.nostra_demarche_id')
+
+				/*->leftjoin('v_lastrevisiondemarcheeform', 'v_lastrevisiondemarcheeform.demarche_id', '=', 'demarches.id')
+				->leftjoin('eforms', 'eforms.id', '=', 'v_lastrevisiondemarcheeform.eform_id')*/
+				//->whereNull('v_lastrevisiondemarcheeform.deleted_at') fsc : je ne sais pas a quoi ca sers
+
+				/*->leftjoin('nostra_demarche_nostra_form', 'nostra_demarche_nostra_form.nostra_demarche_id', '=', 'demarches.nostra_demarche_id')
 				->leftjoin('nostra_forms', 'nostra_forms.id', '=', 'nostra_demarche_nostra_form.nostra_form_id')
-				->whereNull('nostra_forms.deleted_at')
-				
+				->whereNull('nostra_forms.deleted_at')*/
+
 				->leftjoin('nostra_demarche_nostra_document', 'nostra_demarche_nostra_document.nostra_demarche_id', '=', 'demarches.nostra_demarche_id')
 				->leftjoin('nostra_documents', 'nostra_documents.id', '=', 'nostra_demarche_nostra_document.nostra_document_id')
 				->whereNull('nostra_documents.deleted_at')
 				
-				->whereIn('nostra_demarches.id', $demarches_ids)
+				->whereIn('nostra_demarches.id', $demarches_nostra_ids)
 				->groupBy(['nostra_demarches.id', 'demarches.id'])
+				->union($builder_demarches_not_in_nostra)
 				->get($columns);
-			
+
+
+			foreach ($aNostraDemarches as $aNostraDemarche){
+				$demarche_forms = [];
+				if($aNostraDemarche->demarche_id) {
+					$demarche = Demarche::where('id', $aNostraDemarche->demarche_id)->first();
+					$eforms=DemarcheEform::lastRevision()->joinEforms()->forDemarche($demarche)->get();
+					foreach ( $eforms as $eform ) {
+						$demarche_forms[] = [
+							'title' => $eform->title,
+							'nostra_id' => $eform->nostra_id,
+							'format' => $eform->format,
+							'disponible_en_ligne' => $eform->disponible_en_ligne,
+							'deposable_en_ligne' => $eform->deposable_en_ligne,
+							'dematerialisation' => $eform->dematerialisation,
+							'dematerialisation_date' => $eform->dematerialisation_date,
+							'dematerialisation_canal' => $eform->dematerialisation_canal,
+							'dematerialisation_canal_autres' => $eform->dematerialisation_canal_autres,
+							'intervention_ewbs' => $eform->intervention_ewbs,
+							'remarques' => $eform->remarques,
+							'last_modif' => $eform->last_modif,
+						];
+					}
+				}
+
+				$aNostraDemarche->demarche_forms = $demarche_forms;
+			}
+			//echo $aNostraDemarches; die();
+			$datas = [];
+			foreach ( $aNostraDemarches as $nostraDemarche ) {
+				// datas_commun = les lignes qui seront en commun car ce sont les ifnos de la démarche
+				$datas_commun = [
+					'demarche_id' => $nostraDemarche->demarche_id ? DateHelper::year($nostraDemarche->demarche_created_at) . '-' . str_pad($nostraDemarche->demarche_id, 4, "0", STR_PAD_LEFT) : '',
+					'dg' => $nostraDemarche->administrations,
+					'direction' => '',
+					'thematiquesabc' => $nostraDemarche->thematiquesabc,
+					'thematiquesadm' => $nostraDemarche->thematiquesadm,
+					'demarche_title' => $nostraDemarche->title,
+					'demarche_nostra_id' => $nostraDemarche->nostra_id,
+					'german_version' => $nostraDemarche->german_version ? 'DE' : '',
+					'citoyen' => strpos($nostraDemarche->publics, 'Citoyen') !== false ? 'Citoyen' : '',
+					'entreprise' => strpos($nostraDemarche->publics, 'Entreprise') !== false ? 'Entreprise' : '',
+					'non_marchand' => strpos($nostraDemarche->publics, 'Non-marchand') !== false ? 'Non-marchand' : '',
+					'pouvoir_local' => strpos($nostraDemarche->publics, 'Pouvoir local') !== false ? 'Pouvoir local' : '',
+					'fonctionnaire' => strpos($nostraDemarche->publics, 'Fonctionnaire') !== false ? 'Fonctionnaire' : '',
+					'dossiers_par_ans' => $nostraDemarche->volume,
+					'personne_de_contact' => $nostraDemarche->demarche_personne_de_contact,
+					'perimetre_action_ewbs' => $nostraDemarche->demarche_ewbs ? 'Oui' : '',
+					'commentaires' => $nostraDemarche->demarche_comment,
+					'demarche_revu_le' => $nostraDemarche->demarche_updated_at,
+
+				];
+
+				if(count($nostraDemarche->demarche_forms) > 0) {
+
+					foreach ($nostraDemarche->demarche_forms as $form) {
+						$datas[] = array_merge($datas_commun, [
+							'formulaire_existant' => $form['title'],
+							'formulaire_nostra_id' => $form['nostra_id'],
+							'format' => $form['format'],
+							'disponible_en_ligne' => $form['disponible_en_ligne'] ? Eform::disponibleEnLigne()[$form['disponible_en_ligne']] : '',
+							'deposable_en_ligne' => $form['deposable_en_ligne'] ? Eform::deposableEnLigne()[$form['deposable_en_ligne']] : '',
+							'dematerialisation' => $form['dematerialisation'] ? Eform::dematerialisation()[$form['dematerialisation']] : '',
+							'dematerialisation_date' => $form['dematerialisation_date'],
+							'dematerialisation_canal' => $form['dematerialisation_canal'],
+							'dematerialisation_canal_autres' => $form['dematerialisation_canal_autres'],
+							'intervention_ewbs' => $form['intervention_ewbs'] ? 'Oui' : '',
+							'remarques' => $form['remarques'],
+							'last_modif' => $form['last_modif']
+						]);
+					}
+				}
+				else {
+					$datas[] = array_merge($datas_commun, [
+						'formulaire_existant' => '',
+						'formulaire_nostra_id' => '',
+						'format' => '',
+						'disponible_en_ligne' => '',
+						'deposable_en_ligne' => '',
+						'dematerialisation' => '',
+						'dematerialisation_date' => '',
+						'dematerialisation_canal' => '',
+						'dematerialisation_canal_autres' => '',
+						'intervention_ewbs' => '',
+						'remarques' => '',
+						'last_modif' => ''
+					]);
+				}
+			}
+			//echo json_encode($datas);die();
+
+
 			$objPHPExcel = xlsexport_getNewHandler ();
 			$line = 1; // ligne dans Excel
 			$objPHPExcel->setActiveSheetIndex ( 0 );
 			$worksheet = $objPHPExcel->getActiveSheet ();
 
 			// STYLES GLOBAUX
-			foreach ( range ( 'A', 'W' ) as $columnID ) {
+			foreach ( range ( 'A', 'AD' ) as $columnID ) {
 				$worksheet->getColumnDimension ( $columnID )->setAutoSize ( true );
 			}
 			$objPHPExcel->getDefaultStyle ()->getFont ()->setName ( 'Arial' );
@@ -835,109 +998,76 @@ class DemarcheController extends TrashableModelController {
 			];
 
 			// TITRES DANS EXCEL
-			$worksheet->getCell ( 'A1' )->setValue ( 'Documenté' );
-			$worksheet->getCell ( 'B1' )->setValue ( 'ID Nostra' );
-			$worksheet->getCell ( 'C1' )->setValue ( 'ID Synapse' );
-			$worksheet->getCell ( 'D1' )->setValue ( 'Nom' );
-			$worksheet->getCell ( 'E1' )->setValue ( 'Public(s)' );
-			$worksheet->getCell ( 'F1' )->setValue ( 'Thématique(s) usager' );
-			$worksheet->getCell ( 'G1' )->setValue ( 'Thématique(s) administration' );
-			
-			$worksheet->getCell ( 'H1' )->setValue ( 'Simplifié' );
-			$worksheet->getCell ( 'I1' )->setValue ( 'Version allemande' );
-			$worksheet->getCell ( 'J1' )->setValue ( 'Type' );
-			$worksheet->getCell ( 'K1' )->setValue ( 'Administrations impliquées' );
-			$worksheet->getCell ( 'L1' )->setValue ( 'Périmètre eWBS' );
-			$worksheet->getCell ( 'M1' )->setValue ( 'Usage e-Form' );
-			$worksheet->getCell ( 'N1' )->setValue ( 'Gain potentiel usager' );
-			$worksheet->getCell ( 'O1' )->setValue ( 'Gain potentiel administration' );
-			$worksheet->getCell ( 'P1' )->setValue ( 'Gain effectif usager' );
-			$worksheet->getCell ( 'Q1' )->setValue ( 'Gain effectif administration' );
-			$worksheet->getCell ( 'R1' )->setValue ( 'Actions' );
-			$worksheet->getCell ( 'S1' )->setValue ( 'Commentaire' );
-			$worksheet->getCell ( 'T1' )->setValue ( 'Taxonomie');
-			$worksheet->getCell ( 'U1' )->setValue ( 'Volume');
-			$worksheet->getCell ( 'V1' )->setValue ( 'Formulaires');
-			$worksheet->getCell ( 'W1' )->setValue ( 'Formulaires NOSTRA');
-			$worksheet->getCell ( 'X1' )->setValue ( 'Documents NOSTRA');
-			
-			$worksheet->getStyle ( 'A1:X1' )->getFont ()->setBold ( true );
+			$worksheet->getCell ( 'A1' )->setValue ( 'Demarche ID' );
+			$worksheet->getCell ( 'B1' )->setValue ( 'DG' );
+			$worksheet->getCell ( 'C1' )->setValue ( 'Direction' );
+			$worksheet->getCell ( 'D1' )->setValue ( 'Thématiques usagers' );
+			$worksheet->getCell ( 'E1' )->setValue ( 'Thématiques administrations' );
+			$worksheet->getCell ( 'F1' )->setValue ( 'Titre' );
+			$worksheet->getCell ( 'G1' )->setValue ( 'ID Nostra' );
+			$worksheet->getCell ( 'H1' )->setValue ( 'Autre langue' );
+			$worksheet->getCell ( 'I1' )->setValue ( 'Citoyen' );
+			$worksheet->getCell ( 'J1' )->setValue ( 'Entreprise' );
+			$worksheet->getCell ( 'K1' )->setValue ( 'Non marchand' );
+			$worksheet->getCell ( 'L1' )->setValue ( 'Pouvoir local' );
+			$worksheet->getCell ( 'M1' )->setValue ( 'Fonctionnaire' );
+			$worksheet->getCell ( 'N1' )->setValue ( 'Nb dossiers/ans' );
+			$worksheet->getCell ( 'O1' )->setValue ( 'Personne de contact' );
+			$worksheet->getCell ( 'P1' )->setValue ( 'Périmètre action ewbs' );
+			$worksheet->getCell ( 'Q1' )->setValue ( 'Commentaire' );
+			$worksheet->getCell ( 'R1' )->setValue ( 'Démarche revu le' );
+			$worksheet->getCell ( 'S1' )->setValue ( 'Formulaire existant' );
+			$worksheet->getCell ( 'T1' )->setValue ( 'Formulaire Nostra ID' );
+			$worksheet->getCell ( 'U1' )->setValue ( 'Format' );
+			$worksheet->getCell ( 'V1' )->setValue ( 'Disponible en ligne' );
+			$worksheet->getCell ( 'W1' )->setValue ( 'Déposable en ligne' );
+			$worksheet->getCell ( 'X1' )->setValue ( 'Dématérialisation' );
+			$worksheet->getCell ( 'Y1' )->setValue ( 'Dématérialisation date' );
+			$worksheet->getCell ( 'Z1' )->setValue ( 'Dématérialisation canal' );
+			$worksheet->getCell ( 'AA1' )->setValue ( 'Dématérialisation canal autres' );
+			$worksheet->getCell ( 'AB1' )->setValue ( 'Intervention ewbs' );
+			$worksheet->getCell ( 'AC1' )->setValue ( 'Remarques' );
+			$worksheet->getCell ( 'AD1' )->setValue ( 'Formulaire revu le' );
+
+			$worksheet->getStyle ( 'A1:AB1' )->getFont ()->setBold ( true );
 			
 			// CONTENU
-			$calculatedGains = Demarche::getAllCalculatedGains ();
-			foreach ( $aNostraDemarches as $nostraDemarche ) {
+			foreach ( $datas as $data ) {
 				/*@var NostraDemarche $nostraDemarche */
 				$line ++; // on commencera donc en ligne 2 : ceci est le compteur de position générale
-				if (isset ( $nostraDemarche->demarche_id )) {
-					$lastRevision = Demarche::getLastDemarcheRevision ( $nostraDemarche->demarche_id ); // TODO Voir si pas moyen de récupérer cela au niveau de la requête principale, pour éviter de faire cette requête pour chaque nostraDemarche
-					foreach ( [
-								  'gain_potential_administration',
-								  'gain_real_administration',
-								  'gain_potential_citizen',
-								  'gain_real_citizen'
-							  ] as $gainName ) {
-						if ($lastRevision && $lastRevision->$gainName) {
-							$nostraDemarche->$gainName = $lastRevision->$gainName;
-						}
-						else if (array_has ( $calculatedGains, $nostraDemarche->demarche_id )) {
-							$nostraDemarche->$gainName = $calculatedGains [$nostraDemarche->demarche_id]->$gainName;
-						}
-					}
-					
-					$worksheet->getStyle ( "A$line" )->applyFromArray ( $styles ['white_on_blue'] );
-					$worksheet->getCell ( "A$line" )->setValue ( "oui" );
-					$worksheet->getCell ( "B$line" )->setValue ( $nostraDemarche->nostra_id );
-					$worksheet->getCell ( "C$line" )->setValue ( $nostraDemarche->demarche_completeid );
-					$worksheet->getCell ( "K$line" )->setValue ( $nostraDemarche->administrations )->getStyle ()->getAlignment ()->setWrapText ( true );
-					if ($nostraDemarche->demarche_ewbs) {
-						$worksheet->getStyle ( "L$line" )->applyFromArray ( $styles ['white_on_blue'] );
-						$worksheet->getCell ( "L$line" )->setValue ( "oui" );
-					}
-					else {
-						$worksheet->getCell ( "L$line" )->setValue ( "non" );
-					}
-					$worksheet->getCell ( "M$line" )->setValue ( $nostraDemarche->demarche_eform_usage . '%' );
-					$worksheet->getCell ( "N$line" )->setValue ( $nostraDemarche->gain_potential_citizen );
-					$worksheet->getCell ( "O$line" )->setValue ( $nostraDemarche->gain_potential_administration );
-					$worksheet->getCell ( "P$line" )->setValue ( $nostraDemarche->gain_real_citizen );
-					$worksheet->getCell ( "Q$line" )->setValue ( $nostraDemarche->gain_real_administration );
-					
-					if ($globalActionsState = EwbsAction::globalState ( $nostraDemarche )) {
-						$value = Lang::get ( "admin/ewbsactions/messages.state.{$globalActionsState}" ) . ' :';
-						foreach(EwbsActionRevision::states() as $state)
-							if ($count=$nostraDemarche->getAttribute("count_state_{$state}"))
-								$value .= PHP_EOL . Lang::choice ( "admin/ewbsactions/messages.wording.{$state}", $count);
-						$cell = $worksheet->getCell ( "R$line" )->setValue ( $value );
-						$cell->getHyperlink ()->setUrl ( route ( 'demarchesActionsGetIndex', $nostraDemarche->demarche_id ) );
-						$cell->getStyle ()->applyFromArray ( $styles [EwbsActionRevision::stateToClass ( $globalActionsState )] )->getAlignment ()->setWrapText ( true );
-					}
-					$worksheet->getCell ( "S$line" )->setValue ( $nostraDemarche->demarche_comment )->getStyle ()->getAlignment ()->setWrapText ( true );
-					
-					/*
-					 * Taxonomie
-					 */
-					//FIXME: beau gros kludge par manque de temps : à remplacer par une jointure propre dans la requete principale
-					if ($nostraDemarche->demarche_id) {
-						$worksheet->getCell ( "T$line" )->setValue ( implode($multipleSeparator, Demarche::find($nostraDemarche->demarche_id)->tags()->lists('name')) )->getStyle ()->getAlignment ()->setWrapText ( true );
-					}
-					
-					$worksheet->getCell ( "U$line" )->setValue ( $nostraDemarche->volume )->getStyle ()->getAlignment ()->setWrapText ( true );
-					$worksheet->getCell ( "V$line" )->setValue ( $nostraDemarche->eforms )->getStyle ()->getAlignment ()->setWrapText ( true );
-					$worksheet->getCell ( "W$line" )->setValue ( $nostraDemarche->nostra_forms )->getStyle ()->getAlignment ()->setWrapText ( true );
-					$worksheet->getCell ( "X$line" )->setValue ( $nostraDemarche->nostra_documents )->getStyle ()->getAlignment ()->setWrapText ( true );
-				}
-				else {
-					$worksheet->getCell ( "A$line" )->setValue ( "non" );
-				}
-				
-				$worksheet->getCell ( "D$line" )->setValue ( $nostraDemarche->title );
-				$worksheet->getCell ( "E$line" )->setValue ( $nostraDemarche->publics )->getStyle ()->getAlignment ()->setWrapText ( true );
-				$worksheet->getCell ( "F$line" )->setValue ( $nostraDemarche->thematiquesabc )->getStyle ()->getAlignment ()->setWrapText ( true );
-				$worksheet->getCell ( "G$line" )->setValue ( $nostraDemarche->thematiquesadm )->getStyle ()->getAlignment ()->setWrapText ( true );
-				$worksheet->getCell ( "H$line" )->setValue ( $nostraDemarche->simplified ? "oui" : "non" );
-				$worksheet->getCell ( "I$line" )->setValue ( $nostraDemarche->german_version ? "oui" : "non" );
-				$worksheet->getCell ( "J$line" )->setValue ( $nostraDemarche->type );
-				
+
+				$worksheet->getCell ( "A$line" )->setValue ( $data['demarche_id']);
+				$worksheet->getCell ( "B$line" )->setValue ( $data['dg']);
+				$worksheet->getCell ( "C$line" )->setValue ( $data['direction']);
+				$worksheet->getCell ( "D$line" )->setValue ( $data['thematiquesabc']);
+				$worksheet->getCell ( "E$line" )->setValue ( $data['thematiquesadm']);
+				$worksheet->getCell ( "F$line" )->setValue ( $data['demarche_title']);
+				$worksheet->getCell ( "G$line" )->setValue ( $data['demarche_nostra_id']);
+				$worksheet->getCell ( "H$line" )->setValue ( $data['german_version']);
+				$worksheet->getCell ( "I$line" )->setValue ( $data['citoyen']);
+				$worksheet->getCell ( "J$line" )->setValue ( $data['entreprise']);
+				$worksheet->getCell ( "K$line" )->setValue ( $data['non_marchand']);
+				$worksheet->getCell ( "L$line" )->setValue ( $data['pouvoir_local']);
+				$worksheet->getCell ( "M$line" )->setValue ( $data['fonctionnaire']);
+				$worksheet->getCell ( "N$line" )->setValue ( $data['dossiers_par_ans']);
+				$worksheet->getCell ( "O$line" )->setValue ( $data['personne_de_contact']);
+				$worksheet->getCell ( "P$line" )->setValue ( $data['perimetre_action_ewbs']);
+				$worksheet->getCell ( "Q$line" )->setValue ( $data['commentaires']);
+				$worksheet->getCell ( "R$line" )->setValue ( $data['demarche_revu_le']);
+				$worksheet->getCell ( "S$line" )->setValue ( $data['formulaire_existant']);
+				$worksheet->getCell ( "T$line" )->setValue ( $data['formulaire_nostra_id']);
+				$worksheet->getCell ( "U$line" )->setValue ( $data['format']);
+				$worksheet->getCell ( "V$line" )->setValue ( $data['disponible_en_ligne']);
+				$worksheet->getCell ( "W$line" )->setValue ( $data['deposable_en_ligne']);
+				$worksheet->getCell ( "X$line" )->setValue ( $data['dematerialisation']);
+				$worksheet->getCell ( "Y$line" )->setValue ( $data['dematerialisation_date']);
+				$worksheet->getCell ( "Z$line" )->setValue ( $data['dematerialisation_canal']);
+				$worksheet->getCell ( "AA$line" )->setValue ( $data['dematerialisation_canal_autres']);
+				$worksheet->getCell ( "AB$line" )->setValue ( $data['intervention_ewbs']);
+				$worksheet->getCell ( "AC$line" )->setValue ( $data['remarques'] );
+				$worksheet->getCell ( "AD$line" )->setValue ( $data['last_modif'] );
+
+
 				// hauteur de ligne en auto (car pas mal de texte dans certaines cellules)
 				$worksheet->getRowDimension ( $line )->setRowHeight ( - 1 );
 			}

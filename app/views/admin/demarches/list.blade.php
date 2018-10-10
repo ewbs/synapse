@@ -43,6 +43,13 @@
 									</label>
 								</div>
 							</div>
+							<div class="form-group">
+								<div class="checkbox no-padding">
+									<label>
+										<input type="checkbox" class="icheck" id="catalogDemarches_onlyPlanDemat" {{Auth::user()->sessionGet('catalogDemarches_onlyPlanDemat') ? 'checked="checked"':''}} /> Uniquement les démarches issue du plan demat
+									</label>
+								</div>
+							</div>
 						</div>
 						<div class="col-md-4">
 							<div class="form-group">
@@ -116,7 +123,8 @@
 {{-- ce fomulaire invisible sert à l'export des démarches (la page d'export est appelée en POST --}}
 <form class="hidden" id="formExportDemarches" method="post" action="{{route('demarchesPostExport')}}" target="_blank">
 	<input type="hidden" id="_token" name="_token" value="{{{ csrf_token() }}}"/>
-	<input type="hidden" id="demarches_ids" name="demarches_ids" value=""/>
+	<input type="hidden" id="demarches_horsnostra_ids" name="demarches_horsnostra_ids" value=""/>
+	<input type="hidden" id="demarches_nostra_ids" name="demarches_nostra_ids" value=""/>
 </form>
 @stop
 

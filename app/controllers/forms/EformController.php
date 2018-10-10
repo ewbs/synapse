@@ -143,6 +143,10 @@ class EformController extends TrashableModelController {
 		$modelInstance->deposable_en_ligne = Input::get ( 'deposable_en_ligne' ) ?: null;
 		$modelInstance->dematerialisation = Input::get ( 'dematerialisation' ) ?: null;
 		$modelInstance->dematerialisation_date = Input::get ( 'dematerialisation_date' ) ?: null;
+		if($modelInstance->dematerialisation_date !== null) {
+			$datetime = DateTime::createFromFormat('d/m/Y', $modelInstance->dematerialisation_date);
+			$modelInstance->dematerialisation_date = $datetime->format('Y-m-d');
+		}
 		$modelInstance->dematerialisation_canal = Input::get ( 'dematerialisation_canal' ) ?: null;
 		$modelInstance->dematerialisation_canal_autres = Input::get ( 'dematerialisation_canal_autres' ) ?: null;
 		$modelInstance->intervention_ewbs = Input::get ( 'intervention_ewbs' ) ?: null;
@@ -152,11 +156,11 @@ class EformController extends TrashableModelController {
 			// ce champ doit etre vide dans ce cas la
 			$modelInstance->dematerialisation_date = null;
 		}
-		if($modelInstance->dematerialisation != 'deja_effectue') {
+		/*if($modelInstance->dematerialisation != 'deja_effectue') {
 			// ce champ doit etre vide dans ce cas la
 			$modelInstance->dematerialisation_canal = '';
-		}
-		if($modelInstance->dematerialisation_canal != 'autres' || $modelInstance->dematerialisation != 'deja_effectue'){
+		}*/
+		if($modelInstance->dematerialisation_canal != 'autres' /*|| $modelInstance->dematerialisation != 'deja_effectue'*/){
 			// ce champ doit etre vide dans ce cas la
 			$modelInstance->dematerialisation_canal_autres = '';
 		}

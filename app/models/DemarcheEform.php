@@ -75,6 +75,16 @@ class DemarcheEform extends RevisionModel {
 		->join('eforms', 'demarche_eform.eform_id', '=', 'eforms.id')
 		->leftjoin('nostra_forms', 'nostra_forms.id', '=', 'eforms.nostra_form_id')
 		->addSelect(DB::raw('COALESCE(nostra_forms.title, eforms.title) AS title'), 'nostra_forms.nostra_id')
+		->addSelect('nostra_forms.format as format')
+		->addSelect('intervention_ewbs')
+		->addSelect('dematerialisation')
+		->addSelect('dematerialisation_date')
+		->addSelect('dematerialisation_canal')
+		->addSelect('dematerialisation_canal_autres')
+		->addSelect('disponible_en_ligne')
+		->addSelect('deposable_en_ligne')
+		->addSelect('remarques')
+		->addSelect('eforms.updated_at as last_modif')
 		->orderBy('title');
 	}
 	

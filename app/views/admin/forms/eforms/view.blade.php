@@ -67,9 +67,9 @@ $lastRevision=$modelInstance->getLastRevisionEform();
 				<p><strong>Déposable en ligne : </strong>{{$modelInstance->deposable_en_ligne ? Eform::deposableEnLigne()[$modelInstance->deposable_en_ligne] : ''}}</p>
 				@endif
 				@if($modelInstance->dematerialisation)
-				<p><strong>Dématérialisation : </strong>{{$modelInstance->dematerialisation ? Eform::dematerialisation()[$modelInstance->dematerialisation] : ''}} @if($modelInstance->dematerialisation == 'oui') le {{$modelInstance->dematerialisation_date}} @endif</p>
+				<p><strong>Dématérialisation : </strong>{{$modelInstance->dematerialisation ? Eform::dematerialisation()[$modelInstance->dematerialisation] : ''}} @if($modelInstance->dematerialisation == 'oui') le {{$modelInstance->getDematerialisationDate() }} @endif</p>
 				@endif
-				@if($modelInstance->c == 'deja_effectue')
+
 				<p><strong>Canal de dématérialisation : </strong>
 					@if($modelInstance->dematerialisation_canal != 'autres')
 						{{ Eform::dematerialisationCanal()[$modelInstance->dematerialisation_canal] }}
@@ -77,7 +77,7 @@ $lastRevision=$modelInstance->getLastRevisionEform();
 						{{ $modelInstance->dematerialisation_canal_autres }}
 					@endif
 				</p>
-				@endif
+
 				@if($modelInstance->intervention_ewbs)
 				<p><strong>Intervention eWBS  : </strong>{{$modelInstance->intervention_ewbs ? Eform::interventionEwbs()[$modelInstance->intervention_ewbs] : ''}}</p>
 				@endif

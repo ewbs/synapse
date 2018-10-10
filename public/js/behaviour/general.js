@@ -579,12 +579,11 @@ var App = function() {
 						weekStart : 1
 					});
 				});
-				
 				/* DatePicker */
 				top.find(".datepicker").each(function() {
 					$(this).datetimepicker({
 						autoclose : 1,
-						format : 'yyyy-mm-dd',
+						format : 'dd/mm/yyyy',
 						initialDate : new Date(),
 						minView : 2,
 						language : 'fr',

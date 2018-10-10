@@ -107,6 +107,14 @@ class MinistersController extends TrashableModelController {
 			'<a title="' . Lang::get('button.edit') . '" class="edit btn btn-xs btn-default servermodal" href="' . route('ministersMandatesGetEdit', [$modelInstance->id, $item->id]) . '"><span class="fa fa-pencil"></span></a>' .
 			'<a title="' . Lang::get('button.delete') . '" class="delete btn btn-xs btn-danger servermodal" href="' . route('ministersMandatesGetDelete', [$modelInstance->id, $item->id]) . '"><span class="fa fa-trash-o"></span></a>';
 		})
+		->editColumn('start', function ($item) {
+			$datetime = DateTime::createFromFormat('Y-m-d', $item->start);
+			return $datetime->format('d/m/Y');
+		})
+		->editColumn('end', function ($item) {
+			$datetime = DateTime::createFromFormat('Y-m-d', $item->end);
+			return $datetime->format('d/m/Y');
+		})
 		->remove_column('id')
 		->make ();
 	}
