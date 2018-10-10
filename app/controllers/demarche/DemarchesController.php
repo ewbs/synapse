@@ -394,6 +394,7 @@ class DemarcheController extends TrashableModelController {
 			DB::raw('demarches.title as title'),
 			DB::raw('demarches.title as titlelong'),
 			DB::raw('demarches.volume as volume'),
+			DB::raw('demarches.from_plan_demat as from_plan_demat'),
 			DB::raw('demarches.created_at as demarche_created_at'),
 			DB::raw('NULL as count_pieces'),
 			DB::raw('NULL as count_tasks'),
@@ -415,12 +416,17 @@ class DemarcheController extends TrashableModelController {
 			->leftjoin('nostra_publics', 'nostra_publics.id', '=', 'demarche_nostra_public.nostra_public_id')
 			->groupBy(['demarches.id']);
 
+		if($onlyPlanDemat) {
+			$builder_demarches_not_in_nostra->where('demarches.from_plan_demat', true);
+		}
+
 		$columns = [
 			DB::raw("CASE WHEN demarches.id IS NOT NULL THEN demarches.id ELSE NULL END AS demarche_completeid"),
 			'demarches.id AS demarche_id',
 			'nostra_demarches.title AS title',
 			'nostra_demarches.title_long AS titlelong',
 			'demarches.volume',
+			'demarches.from_plan_demat as from_plan_demat',
 			DB::raw("CASE WHEN demarches.id IS NOT NULL THEN demarches.created_at ELSE NULL END AS demarche_created_at"),
 			DB::raw('COUNT(DISTINCT CASE WHEN "demarche_demarchePiece".deleted_at IS NULL THEN "demarche_demarchePiece".id ELSE NULL END) AS count_pieces'),
 			DB::raw('COUNT(DISTINCT CASE WHEN "demarche_demarcheTask".deleted_at IS NULL THEN "demarche_demarcheTask".id ELSE NULL END) AS count_tasks'),
@@ -445,6 +451,8 @@ class DemarcheController extends TrashableModelController {
 
 		if($trash) $builder->onlyTrashed();
 
+
+
 		$builder->join('demarches', 'demarches.nostra_demarche_id', '=', 'nostra_demarches.id', (($onlyDocumented || $onlyWithActions || $onlyHorsNostra) ? 'inner' : 'left'))
 			->join('ewbsActions', 'ewbsActions.demarche_id', '=', 'demarches.id', ($onlyWithActions ? 'inner' : 'left'))
 			->join('v_lastrevisionewbsaction', 'v_lastrevisionewbsaction.ewbs_action_id', '=', 'ewbsActions.id', ($onlyWithActions ? 'inner' : 'left'))
@@ -454,6 +462,12 @@ class DemarcheController extends TrashableModelController {
 			->leftjoin ( 'administrations', 'administrations.id', '=', 'administration_demarche.administration_id' )
 			->groupBy(['nostra_demarches.id', 'demarches.id'])
 		;
+
+		if($onlyPlanDemat) {
+			//$builder->where('demarches.from_plan_demat', '=', true);
+			$builder->where('demarches.from_plan_demat', true);
+		}
+
 
 		// Si on demande un nombre minimum de pièces, on fera un inner join, avec en where du join le nombre de pieces
 		if ($minPieces) {
@@ -488,6 +502,7 @@ class DemarcheController extends TrashableModelController {
 			$builder->leftjoin('demarche_eform', 'demarche_eform.demarche_id', '=', 'demarches.id');
 		}
 
+
 		// faut il filtrer selon des publics ?
 		if ($publics) {
 			$aPublicsIds = explode(',', $publics);
@@ -500,14 +515,13 @@ class DemarcheController extends TrashableModelController {
 			$builder->whereIn('administrations.id', $aAdministrationsIds);
 		}
 
+
 		$builder->union($builder_demarches_not_in_nostra);
 
 		if($onlyHorsNostra) {
 			$builder->whereNull('demarches.nostra_demarche_id');
 		}
-		if($onlyPlanDemat) {
-			$builder->where('demarches.from_plan_demat', 1);
-		}
+
 
 		return $builder->select($columns); ///////////////////////
 
