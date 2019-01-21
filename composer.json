@@ -59,7 +59,8 @@
         "barryvdh/laravel-debugbar": "~1.8",
         "ewbs/laravel-async-queue": "0.3",
         "artdarek/gravatarer": "dev-master",
-        "guzzlehttp/guzzle": "~5.0"
+        "guzzlehttp/guzzle": "~5.0",
+        "doctrine/dbal": "^2.5"
     },
     "require-dev": {
         "way/generators": "~2.6",

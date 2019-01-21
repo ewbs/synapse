@@ -183,7 +183,7 @@
 			"aoColumnDefs": [
 				{ 'bSortable'  : false, 'aTargets': [6] },
 				{ 'bSearchable': false, 'aTargets': [6] },
-				{ 'bVisible': false, 'aTargets': [7,8] }
+				{ 'bVisible': false, 'aTargets': [7,8,9] }
 			],
 			"aaSorting" : [[0, "desc"]],
 			"sAjaxSource": getAjaxUrl(),
@@ -195,7 +195,7 @@
 		$("#demarcheExport").click( function () {
 
             var demarches_nostra_ids = $tableDemarches.fnGetColumnData(7, null, null, null, false);
-            var demarches_ids = $tableDemarches.fnGetColumnData(8, null, null, null, false);
+            var demarches_ids = $tableDemarches.fnGetColumnData(9, null, null, null, false);
 
             // on crée un array ou l'on a retiré les éléments ou nostra_id est null
             var demarche_nostra_ids_nonull = [];

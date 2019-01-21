@@ -230,14 +230,27 @@ class EformController extends TrashableModelController {
 		::join('v_lastrevisiondemarcheeform', 'v_lastrevisiondemarcheeform.demarche_id', '=', 'demarches.id')
 		->join('nostra_demarches', 'nostra_demarches.id', '=', 'demarches.nostra_demarche_id')
 		->where('v_lastrevisiondemarcheeform.eform_id', '=', $modelInstance->id)
+		->where('v_lastrevisiondemarcheeform.deleted_at', '=', null)
 		->get(['demarches.id', 'nostra_demarches.title as name'])->toArray();
-		if(!empty($items)) {
+
+
+		$items2=
+			Demarche
+				::join('v_lastrevisiondemarcheeform', 'v_lastrevisiondemarcheeform.demarche_id', '=', 'demarches.id')
+				->where('v_lastrevisiondemarcheeform.eform_id', '=', $modelInstance->id)
+				->where('demarches.nostra_demarche_id', '=', null)
+				->where('v_lastrevisiondemarcheeform.deleted_at', '=', null)
+				->get(['demarches.id', 'demarches.title as name'])->toArray();
+
+
+		if(!empty($items) || !empty($items2)) {
 			$links[]=[
 				'route'=> 'demarchesGetView',
 				'label' => Lang::get('admin/demarches/messages.title'),
-				'items' => $items
+				'items' => array_merge($items, $items2)
 			];
 		}
+
 		return $links;
 	}
 	

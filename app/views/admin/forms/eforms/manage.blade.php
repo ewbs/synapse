@@ -81,7 +81,6 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 							<div class="dematerialisation_canal" style="margin-top: 10px; ">
 								Canal de dématérialisation : <br/>
 								<select class="form-control select2" name="dematerialisation_canal" id="dematerialisation_canal" data-placeholder="Veuillez choisir une option">
-									<option value="non_communique">Non communiqué</option>
 									@foreach($dematerialisation_canal_items as $key => $value)
 										<option value="{{ $key }}"{{ Input::old('dematerialisation_canal', $modelInstance ? $modelInstance->dematerialisation_canal : '')==$key ?' selected':'' }}> {{ $value }}</option>
 									@endforeach
@@ -117,6 +116,7 @@ $next_state = Input::old('next_state', $lastRevision ? $lastRevision->next_state
 							<input class="form-control" type="text" id="references_contrat_administration" name="references_contrat_administration"
 								   value="{{ Input::old('references_contrat_administration', $modelInstance ? $modelInstance->references_contrat_administration : '') }}"
 							/>
+							@optional
 							{{ $errors->first('references_contrat_administration', '<span class="help-inline">:message</span>') }}
 						</div>
 					</div>

@@ -590,7 +590,9 @@ var App = function() {
 						startView : 2,
 						todayBtn : 1,
 						todayHighlight : 1,
-						weekStart : 1
+						weekStart : 1,
+                        disableTouchKeyboard: true,
+                        forceParse: false
 					});
 				});
 				

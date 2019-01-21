@@ -81,6 +81,7 @@ class DemarcheEform extends RevisionModel {
 		->addSelect('dematerialisation_date')
 		->addSelect('dematerialisation_canal')
 		->addSelect('dematerialisation_canal_autres')
+		->addSelect('references_contrat_administration')
 		->addSelect('disponible_en_ligne')
 		->addSelect('deposable_en_ligne')
 		->addSelect('remarques')

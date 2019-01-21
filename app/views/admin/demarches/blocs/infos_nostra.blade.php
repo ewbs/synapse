@@ -64,7 +64,7 @@
 					@endif
 					@if($moreFormsInNostra)
 					<li>Présent dans Nostra et pas dans Synapse :<br/>{{implode(', ', $moreFormsInNostra)}} <br>
-						<a href="{{route('demarchesIntegrateFormsNostraToSynapse',$modelInstance->id)}}" class="servermodal btn btn-primary">Intégrer dans synapse</a>
+						<a href="{{route('demarchesIntegrateFormsNostraToSynapse',$modelInstance->id)}}" class="btn btn-primary">Intégrer dans synapse</a>
 					</li>
 					@endif
 					</ul>

@@ -14,7 +14,7 @@ Route::group(['prefix' => 'demarches'], function() {
 	Route::get('trash'                     ,['as'=>'demarchesGetTrash'              ,'uses'=>'DemarcheController@getTrash']);
 	Route::get('datatrash'                 ,['as'=>'demarchesGetDataTrash'          ,'uses'=>'DemarcheController@getDataTrash']);
 	Route::get('{demarche}/integrate-forms-to-synapse' ,['as'=>'demarchesIntegrateFormsNostraToSynapse' ,'uses'=>'DemarcheController@integrateFormsNostraToSynapse']);
-	Route::get('{demarche}/integrate-forms-to-synapse/validation' ,['as'=>'demarchesIntegrateFormsNostraToSynapsePost' ,'uses'=>'DemarcheController@integrateFormsNostraToSynapsePost']);
+	Route::post('{demarche}/integrate-forms-to-synapse/validation' ,['as'=>'demarchesIntegrateFormsNostraToSynapsePost' ,'uses'=>'DemarcheController@integrateFormsNostraToSynapsePost']);
 
 
 	// Détail d'une démarche

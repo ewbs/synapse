@@ -28,6 +28,7 @@ class Demarche extends TrashableModel {
 	use TraitFilterable;
 
 	public static $VOLUME_L100		='< 100'; //L100 = Less than 100
+	public static $VOLUME_L200		='< 200';
 	public static $VOLUME_L500		='< 500';
 	public static $VOLUME_L1000		='< 1.000';
 	public static $VOLUME_L5000		='< 5.000';
@@ -67,7 +68,7 @@ class Demarche extends TrashableModel {
 	 * @return array
 	 */
 	public static function volumes() {
-		return [self::$VOLUME_L100, self::$VOLUME_L500, self::$VOLUME_L1000, self::$VOLUME_L5000, self::$VOLUME_L10000, self::$VOLUME_M10000];
+		return [self::$VOLUME_L100, self::$VOLUME_L200, self::$VOLUME_L500, self::$VOLUME_L1000, self::$VOLUME_L5000, self::$VOLUME_L10000, self::$VOLUME_M10000];
 	}
 
 	/**
@@ -409,7 +410,7 @@ class Demarche extends TrashableModel {
 	public function getIsDematerialiseAttribute()
 	{
 		foreach ($this->getLastRevisionEforms() as $demarcheEform){
-			if($demarcheEform->eform->dematerialisation === 'deja_effectue') return true;
+			if($demarcheEform->eform && $demarcheEform->eform->dematerialisation === 'deja_effectue') return true;
 		}
 		return false;
 	}

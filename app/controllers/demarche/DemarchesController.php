@@ -269,7 +269,7 @@ class DemarcheController extends TrashableModelController {
 				}
 			})
 			->remove_column('titlelong')
-			->remove_column('nostra_demarche_nostra_id')
+			//->remove_column('nostra_demarche_nostra_id')
 			->remove_column('demarche_created_at')
 			->remove_column('count_tasks')
 			->remove_column('count_eforms')
@@ -352,7 +352,7 @@ class DemarcheController extends TrashableModelController {
 				}
 			})
 			->remove_column('titlelong')
-			->remove_column('nostra_demarche_nostra_id')
+			//->remove_column('nostra_demarche_nostra_id')
 			->remove_column('demarche_created_at')
 			->remove_column('count_tasks')
 			->remove_column('count_eforms')
@@ -394,25 +394,29 @@ class DemarcheController extends TrashableModelController {
 			DB::raw('demarches.title as titlelong'),
 			DB::raw('demarches.volume as volume'),
 			DB::raw('demarches.created_at as demarche_created_at'),
-			DB::raw('NULL as count_pieces'),
-			DB::raw('NULL as count_tasks'),
-			DB::raw('NULL as count_eforms'),
+			DB::raw('COUNT(DISTINCT CASE WHEN "demarche_demarchePiece".deleted_at IS NULL THEN "demarche_demarchePiece".id ELSE NULL END) AS count_pieces'),
+			DB::raw('COUNT(DISTINCT CASE WHEN "demarche_demarcheTask".deleted_at IS NULL THEN "demarche_demarcheTask".id ELSE NULL END) AS count_tasks'),
+			DB::raw('COUNT(DISTINCT CASE WHEN "demarche_eform".deleted_at IS NULL THEN "demarche_eform".id ELSE NULL END) AS count_eforms'),
 			DB::raw("ARRAY_TO_STRING(ARRAY_AGG(DISTINCT nostra_publics.title), '{$multipleSeparator}', '') AS publics"),
-			DB::raw('NULL as administrations'),
-			DB::raw('NULL as actions'),
+			DB::raw("ARRAY_TO_STRING(ARRAY_AGG(DISTINCT administrations.name), '{$multipleSeparator}', '') AS administrations"),
+			DB::raw('1 AS actions'),
 			DB::raw('NULL as nostra_demarche_id'),
 			DB::raw('NULL as nostra_demarche_nostra_id'),
 			DB::raw('demarches.id as demarche_id'),
-			DB::raw('NULL as count_state_todo'),
-			DB::raw('NULL as count_state_progress'),
-			DB::raw('NULL as count_state_done'),
-			DB::raw('NULL as count_state_standby'),
-			DB::raw('NULL as count_state_givenup')
+			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_TODO . "'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_todo"),
+			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_PROGRESS . "' THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_progress"),
+			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_DONE . "'     THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_done"),
+			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_STANDBY . "'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_standby"),
+			DB::raw("COUNT(DISTINCT CASE WHEN v_lastrevisionewbsaction.deleted_at iS NULL AND v_lastrevisionewbsaction.state = '" . EwbsActionRevision::$STATE_GIVENUP . "'  THEN v_lastrevisionewbsaction.id ELSE NULL END) AS count_state_givenup")
 		);
 
 		$builder_demarches_not_in_nostra
+			->join('ewbsActions', 'ewbsActions.demarche_id', '=', 'demarches.id', ($onlyWithActions ? 'inner' : 'left'))
+			->join('v_lastrevisionewbsaction', 'v_lastrevisionewbsaction.ewbs_action_id', '=', 'ewbsActions.id', ($onlyWithActions ? 'inner' : 'left'))
 			->leftjoin('demarche_nostra_public', 'demarches.id', '=', 'demarche_nostra_public.demarche_id')
 			->leftjoin('nostra_publics', 'nostra_publics.id', '=', 'demarche_nostra_public.nostra_public_id')
+			->leftjoin ( 'administration_demarche', 'demarches.id', '=', 'administration_demarche.demarche_id' )
+			->leftjoin ( 'administrations', 'administrations.id', '=', 'administration_demarche.administration_id' )
 			->groupBy(['demarches.id']);
 
 		if($onlyPlanDemat) {
@@ -473,9 +477,15 @@ class DemarcheController extends TrashableModelController {
 				->join('demarche_demarchePiece', function ($join) use ($minPieces) {
 					$join->on('demarche_demarchePiece.demarche_id', '=', 'demarches.id')->whereNull('demarche_demarchePiece.deleted_at');
 				})->having(DB::raw('COUNT(DISTINCT CASE WHEN "demarche_demarchePiece".deleted_at IS NULL THEN "demarche_demarchePiece".id ELSE NULL END)'), '>=', $minPieces);
+			$builder_demarches_not_in_nostra
+				->join('demarche_demarchePiece', function ($join) use ($minPieces) {
+					$join->on('demarche_demarchePiece.demarche_id', '=', 'demarches.id')->whereNull('demarche_demarchePiece.deleted_at');
+				})->having(DB::raw('COUNT(DISTINCT CASE WHEN "demarche_demarchePiece".deleted_at IS NULL THEN "demarche_demarchePiece".id ELSE NULL END)'), '>=', $minPieces);
+
 		} // si on a pas besoin, on se contente d'un leftjoin
 		else {
 			$builder->leftjoin('demarche_demarchePiece', 'demarche_demarchePiece.demarche_id', '=', 'demarches.id');
+			$builder_demarches_not_in_nostra->leftjoin('demarche_demarchePiece', 'demarche_demarchePiece.demarche_id', '=', 'demarches.id');
 		}
 
 		// Si on demande un nombre minimum de taches, on fera un inner join, avec en where du join le nombre de taches
@@ -484,9 +494,15 @@ class DemarcheController extends TrashableModelController {
 				->join('demarche_demarcheTask', function ($join) use ($minTasks) {
 					$join->on('demarche_demarcheTask.demarche_id', '=', 'demarches.id')->whereNull('demarche_demarcheTask.deleted_at');
 				})->having(DB::raw('COUNT(DISTINCT CASE WHEN "demarche_demarcheTask".deleted_at IS NULL THEN "demarche_demarcheTask".id ELSE NULL END)'), '>=', $minTasks);
+			$builder_demarches_not_in_nostra
+				->join('demarche_demarcheTask', function ($join) use ($minTasks) {
+					$join->on('demarche_demarcheTask.demarche_id', '=', 'demarches.id')->whereNull('demarche_demarcheTask.deleted_at');
+				})->having(DB::raw('COUNT(DISTINCT CASE WHEN "demarche_demarcheTask".deleted_at IS NULL THEN "demarche_demarcheTask".id ELSE NULL END)'), '>=', $minTasks);
+
 		} // si on a pas besoin, on se contente d'un leftjoin
 		else {
 			$builder->leftjoin('demarche_demarcheTask', 'demarche_demarcheTask.demarche_id', '=', 'demarches.id');
+			$builder_demarches_not_in_nostra->leftjoin('demarche_demarcheTask', 'demarche_demarcheTask.demarche_id', '=', 'demarches.id');
 		}
 
 		// Si on demande un nombre minimum de formulaires, on fera un inner join, avec en where du join le nombre de formulaires
@@ -495,9 +511,15 @@ class DemarcheController extends TrashableModelController {
 				->join('demarche_eform', function ($join) use ($minForms) {
 					$join->on('demarche_eform.demarche_id', '=', 'demarches.id')->whereNull('demarche_eform.deleted_at');
 				})->having(DB::raw('COUNT(DISTINCT CASE WHEN "demarche_eform".deleted_at IS NULL THEN "demarche_eform".id ELSE NULL END)'), '>=', $minForms);
+			$builder_demarches_not_in_nostra
+				->join('demarche_eform', function ($join) use ($minForms) {
+					$join->on('demarche_eform.demarche_id', '=', 'demarches.id')->whereNull('demarche_eform.deleted_at');
+				})->having(DB::raw('COUNT(DISTINCT CASE WHEN "demarche_eform".deleted_at IS NULL THEN "demarche_eform".id ELSE NULL END)'), '>=', $minForms);
+
 		} // si on a pas besoin, on se contente d'un leftjoin
 		else {
 			$builder->leftjoin('demarche_eform', 'demarche_eform.demarche_id', '=', 'demarches.id');
+			$builder_demarches_not_in_nostra->leftjoin('demarche_eform', 'demarche_eform.demarche_id', '=', 'demarches.id');
 		}
 
 
@@ -511,6 +533,7 @@ class DemarcheController extends TrashableModelController {
 		if ($administrations) {
 			$aAdministrationsIds = explode(',', $administrations);
 			$builder->whereIn('administrations.id', $aAdministrationsIds);
+			$builder_demarches_not_in_nostra->whereIn('administrations.id', $aAdministrationsIds);
 		}
 
 
@@ -909,6 +932,7 @@ class DemarcheController extends TrashableModelController {
 							'dematerialisation_canal' => $eform->dematerialisation_canal,
 							'dematerialisation_canal_autres' => $eform->dematerialisation_canal_autres,
 							'intervention_ewbs' => $eform->intervention_ewbs,
+							'references_contrat_administration' => $eform->references_contrat_administration,
 							'remarques' => $eform->remarques,
 							'last_modif' => $eform->last_modif,
 						];
@@ -944,7 +968,6 @@ class DemarcheController extends TrashableModelController {
 				];
 
 				if(count($nostraDemarche->demarche_forms) > 0) {
-
 					foreach ($nostraDemarche->demarche_forms as $form) {
 						$datas[] = array_merge($datas_commun, [
 							'formulaire_existant' => $form['title'],
@@ -957,6 +980,7 @@ class DemarcheController extends TrashableModelController {
 							'dematerialisation_canal' => $form['dematerialisation_canal'],
 							'dematerialisation_canal_autres' => $form['dematerialisation_canal_autres'],
 							'intervention_ewbs' => $form['intervention_ewbs'] ? 'Oui' : '',
+							'references_contrat_administration' => $form['references_contrat_administration'],
 							'remarques' => $form['remarques'],
 							'last_modif' => $form['last_modif']
 						]);
@@ -974,6 +998,7 @@ class DemarcheController extends TrashableModelController {
 						'dematerialisation_canal' => '',
 						'dematerialisation_canal_autres' => '',
 						'intervention_ewbs' => '',
+						'references_contrat_administration' => '',
 						'remarques' => '',
 						'last_modif' => ''
 					]);
@@ -1038,10 +1063,11 @@ class DemarcheController extends TrashableModelController {
 			$worksheet->getCell ( 'Z1' )->setValue ( 'Dématérialisation canal' );
 			$worksheet->getCell ( 'AA1' )->setValue ( 'Dématérialisation canal autres' );
 			$worksheet->getCell ( 'AB1' )->setValue ( 'Intervention ewbs' );
-			$worksheet->getCell ( 'AC1' )->setValue ( 'Remarques' );
-			$worksheet->getCell ( 'AD1' )->setValue ( 'Formulaire revu le' );
+			$worksheet->getCell ( 'AC1' )->setValue ( 'Références Contrat d’administration' );
+			$worksheet->getCell ( 'AD1' )->setValue ( 'Remarques' );
+			$worksheet->getCell ( 'AE1' )->setValue ( 'Formulaire revu le' );
 
-			$worksheet->getStyle ( 'A1:AB1' )->getFont ()->setBold ( true );
+			$worksheet->getStyle ( 'A1:AE1' )->getFont ()->setBold ( true );
 			
 			// CONTENU
 			foreach ( $datas as $data ) {
@@ -1076,8 +1102,9 @@ class DemarcheController extends TrashableModelController {
 				$worksheet->getCell ( "Z$line" )->setValue ( $data['dematerialisation_canal']);
 				$worksheet->getCell ( "AA$line" )->setValue ( $data['dematerialisation_canal_autres']);
 				$worksheet->getCell ( "AB$line" )->setValue ( $data['intervention_ewbs']);
-				$worksheet->getCell ( "AC$line" )->setValue ( $data['remarques'] );
-				$worksheet->getCell ( "AD$line" )->setValue ( $data['last_modif'] );
+				$worksheet->getCell ( "AC$line" )->setValue ( $data['references_contrat_administration']);
+				$worksheet->getCell ( "AD$line" )->setValue ( $data['remarques'] );
+				$worksheet->getCell ( "AE$line" )->setValue ( $data['last_modif'] );
 
 
 				// hauteur de ligne en auto (car pas mal de texte dans certaines cellules)
@@ -3020,6 +3047,7 @@ class DemarcheController extends TrashableModelController {
 
 	public function integrateFormsNostraToSynapsePost(Demarche $demarche, DemarcheEform $demarche_eform=null){
 		if(!$demarche->canManage()) return $this->redirectNoRight ();
+
 		$eforms=DemarcheEform::lastRevision()->joinEforms()->forDemarche($demarche)->get();
 		$eforms_ids=[];
 		foreach($eforms as $form) if($form->nostra_id) $eforms_ids[]=$form->nostra_id;
@@ -3031,14 +3059,16 @@ class DemarcheController extends TrashableModelController {
 			->get();
 		$eformIds = [];
 		foreach ($nostra_forms as $form){
-			if(count($form->eform) == 0){
-				$eform = new Eform();
-				$eform->nostra_form_id = $form->id;
-				$eform->save();
-				$eformIds[] = $eform->id;
-			}
-			else{
-				$eformIds[] = $form->eform->id;
+			if(Input::get('fid_'.$form->nostra_id) === 'on'){
+				if(count($form->eform) == 0){
+					$eform = new Eform();
+					$eform->nostra_form_id = $form->id;
+					$eform->save();
+					$eformIds[] = $eform->id;
+				}
+				else{
+					$eformIds[] = $form->eform->id;
+				}
 			}
 		}
 
@@ -3060,6 +3090,5 @@ class DemarcheController extends TrashableModelController {
 		}
 
 		return Redirect::route('demarchesGetView', $demarche->id)->with('success','Tous les formulaires ont été intégrés et liés à la démarche.');
-
 	}
 }

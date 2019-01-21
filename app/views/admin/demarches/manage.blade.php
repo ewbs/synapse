@@ -50,7 +50,7 @@
 							<select class="select2" name="volume">
 								<option value=""></option>
 								@foreach($aVolumes as $vol)
-									<option {{{ Input::old('volume', isset($modelInstance) ? ($modelInstance->volume ? "selected" : "") : "") }}} value="{{$vol}}">{{$vol}}</option>
+									<option {{{ Input::old('volume', isset($modelInstance) ? ($modelInstance->volume === $vol ? "selected" : "") : "") }}} value="{{$vol}}">{{$vol}}</option>
 								@endforeach
 							</select>
 							@optional
