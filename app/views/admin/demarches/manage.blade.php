@@ -43,6 +43,17 @@
 					</div>
 					<!-- ./ administrations impliquées -->
 
+
+					<!-- Direction -->
+					<div class="form-group">
+						<label class="col-md-2 control-label" for="direction">Direction</label>
+						<div class="col-md-10">
+							<input type="text" class="form-control" name="direction" value="{{{ Input::old('direction', isset($modelInstance) ? ($modelInstance->direction ? $modelInstance->direction : "") : "") }}}" />
+							@optional
+						</div>
+					</div>
+					<!-- ./ Direction -->
+
 					<!-- volume -->
 					<div class="form-group">
 						<label class="col-md-2 control-label" for="">Volume</label>

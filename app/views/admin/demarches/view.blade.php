@@ -23,26 +23,33 @@
 	</div>
 
 	<div class="col-md-4">
-		@if (strlen($modelInstance->volume))
-		<div class="block-flat">
-			<div class="content no-padding">
-				<div class="overflow-hidden">
-					<span class="fa fa-random fa-4x color-success pull-left"></span>
-					<h3 class="no-margin">{{$modelInstance->volume}}</h3>
-					<p class="color-success">dossiers par an</p>
-				</div>
-			</div>
-		</div>
-		@endif
-
-		@if ($modelInstance->is_dematerialise)
+		@if ($modelInstance->from_plan_demat || $modelInstance->is_dematerialise || strlen($modelInstance->volume))
 			<div class="block-flat">
-				<div class="content no-padding">
+				@if (strlen($modelInstance->volume))
+				<div class="content no-padding" style="margin-bottom: 10px">
 					<div class="overflow-hidden">
-						<span class="fa fa-flag fa-2x color-success pull-left"></span>
-						<h4 class="no-margin">Cette démarche est dématerialisée</h4>
+						<span class="fa fa-random fa-4x color-success pull-left"></span>
+						<h3 class="no-margin">{{$modelInstance->volume}}</h3>
+						<p class="color-success">dossiers par an</p>
 					</div>
 				</div>
+				@endif
+				@if ($modelInstance->from_plan_demat)
+				<div class="content no-padding" style="margin-bottom: 10px">
+					<div class="overflow-hidden">
+						<span class="fa fa-flag fa-2x pull-left" style="color: #4D90FD"></span>
+						<h4 class="no-margin">Démarche issue du plan démat</h4>
+					</div>
+				</div>
+				@endif
+				@if ($modelInstance->is_dematerialise)
+				<div class="content no-padding" style="margin-bottom: 10px">
+					<div class="overflow-hidden">
+						<span class="fa fa-flag fa-2x color-success pull-left"></span>
+						<h4 class="no-margin">Démarche dématerialisée</h4>
+					</div>
+				</div>
+				@endif
 			</div>
 		@endif
 

@@ -564,6 +564,7 @@ class DemarcheController extends TrashableModelController {
 			return View::make ( 'admin/demarches/create', ['errors' => $errors]);
 		} else {
 			$demarche->title = Input::get('title');
+			$demarche->direction = Input::get('direction');
 			Input::get('from_plan_demat') === null ? $demarche->from_plan_demat = 0 : $demarche->from_plan_demat = 1;
 			$demarche->user_id = $this->getLoggedUser ()->id;
 			$demarche->save();
@@ -720,6 +721,7 @@ class DemarcheController extends TrashableModelController {
 		$demarche->ewbs = Input::has ( 'ewbs' ) ? 1 : 0;
 		$demarche->from_plan_demat = Input::has ( 'from_plan_demat' ) ? 1 : 0;
 		$demarche->eform_usage = Input::get ( 'eform_usage' );
+		$demarche->direction = Input::get ( 'direction' );
 		$demarche->comment = Input::get ( 'comment' );
 		$demarche->personne_de_contact = Input::get ( 'personne_de_contact' );
 		$demarche->volume = strlen(Input::get('volume')) ? Input::get('volume') : null;
@@ -807,6 +809,7 @@ class DemarcheController extends TrashableModelController {
 				DB::raw('demarches.eform_usage AS demarche_eform_usage'),
 				DB::raw('demarches.comment AS demarche_comment'),
 				DB::raw('demarches.volume'),
+				DB::raw('demarches.direction'),
 				DB::raw('demarches.created_at AS demarche_created_at'),
 				DB::raw('demarches.updated_at AS demarche_updated_at'),
 				DB::raw('demarches.personne_de_contact AS demarche_personne_de_contact'),
@@ -860,6 +863,7 @@ class DemarcheController extends TrashableModelController {
 				'demarches.eform_usage AS demarche_eform_usage', // xls
 				'demarches.comment AS demarche_comment', // xls
 				'demarches.volume',
+				'demarches.direction',
 				'demarches.created_at as demarche_created_at',
 				'demarches.updated_at as demarche_updated_at',
 				'demarches.personne_de_contact as demarche_personne_de_contact',
@@ -948,7 +952,6 @@ class DemarcheController extends TrashableModelController {
 				$datas_commun = [
 					'demarche_id' => $nostraDemarche->demarche_id ? DateHelper::year($nostraDemarche->demarche_created_at) . '-' . str_pad($nostraDemarche->demarche_id, 4, "0", STR_PAD_LEFT) : '',
 					'dg' => $nostraDemarche->administrations,
-					'direction' => '',
 					'thematiquesabc' => $nostraDemarche->thematiquesabc,
 					'thematiquesadm' => $nostraDemarche->thematiquesadm,
 					'demarche_title' => $nostraDemarche->title,
@@ -964,6 +967,7 @@ class DemarcheController extends TrashableModelController {
 					'perimetre_action_ewbs' => $nostraDemarche->demarche_ewbs ? 'Oui' : '',
 					'commentaires' => $nostraDemarche->demarche_comment,
 					'demarche_revu_le' => $nostraDemarche->demarche_updated_at,
+					'direction' => $nostraDemarche->direction,
 
 				];
 
@@ -1791,12 +1795,14 @@ class DemarcheController extends TrashableModelController {
 			if ($minimal) {
 				$rows[] = [
 					'<a target="_blank" href="'.route('eformsGetView', $eform->id).'">'.$eform->name().'</a>',
+					DateHelper::sortabledatetime($eform->updated_at) > DateHelper::sortabledatetime($eform->created_at) ? '<i class="fa fa-check" aria-hidden="true"></i>' : '',
 					//$annexes,
 				];
 			}
 			else {
 				$rows[] = [
 					'<a target="_blank" href="'.route('eformsGetView', $eform->id).'">'.$eform->name().'</a>',
+					DateHelper::sortabledatetime($eform->updated_at) > DateHelper::sortabledatetime($eform->created_at) ? '<i class="fa fa-check" aria-hidden="true"></i>' : '',
 					//$annexes,
 					$demarcheEform->nostra_id?'#'.$demarcheEform->nostra_id:'',
 					DateHelper::sortabledatetime($demarcheEform->created_at) . '<br/>' . $demarcheEform->user->username,

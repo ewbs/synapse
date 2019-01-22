@@ -232,6 +232,8 @@
 					<div class="form-group" id="modideas_nostralight_demarche_button">
 						<div class="col-md-12">
 							<a id="modideas_nostralight_demarche_button_button" class="btn btn-info btn-sm">Je ne trouve pas ma démarche et préfère lier à un public</a>
+							<br> <br>
+							<a target="_blank" href="{{route('demarchesGetCreate_')}}" class="btn btn-primary btn-sm">Créer une démarche</a>
 						</div>
 					</div>
 					<div class="form-group" id="modideas_nostralight_public">

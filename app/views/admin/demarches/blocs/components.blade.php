@@ -7,6 +7,12 @@ if(!isset($manage)) $manage=false;
 if(!isset($minimal)) $minimal=false;
 ?>
 
+<style type="text/css">
+    table#eforms-table td:nth-child(2) {
+        text-align: center;
+    }
+</style>
+
 <div class="block-flat">
     <div class="header">
         <h4><span class="fa fa-wpforms"></span> Formulaires</h4>
@@ -17,7 +23,7 @@ if(!isset($minimal)) $minimal=false;
                 <thead>
                 <tr>
                     <th>Nom</th>
-                    <!--<th>Annexes</th>-->
+                    <th>Documenté</th>
                     @if (!$minimal)
                     	<th>Id Nostra</th>
                         <th>Révision</th>

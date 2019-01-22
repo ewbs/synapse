@@ -7,7 +7,7 @@
 ?>
 
 @extends('site.layouts.container-fluid')
-@section('title')Intégrer les formulaires Nostra à la démarche : <br> <em>{{ $demarche->name()}}</em>@stop
+@section('title')Intégrer des formulaires Nostra à la démarche : <br> <em>{{ $demarche->name()}}</em>@stop
 @section('content')
     <div class="row">
         <div class="col-md-12">
@@ -18,27 +18,29 @@
                 2 actions vont être réalisées : <br>
                 <br>
                 <ul>
-                    <li>Vérifier que les formulaires ci-dessous sont intégrés dans Synapse.
+                    <li>Vérifier que les formulaires cochés ci-dessous sont intégrés dans Synapse.
                     Si ce n'est pas le cas, ils seront intégrer dans Synapse automatiquement.</li>
                     <li>Lier ces formulaires à cette démarche</li>
                 </ul>
                 <br>
                 <u>Liste des formulaires : </u>
                 <br> <br>
-                <table style="width: 500px">
+                <table style="width: 1000px">
                     <thead>
                     <tr>
-                        <th>Lier ce formulaire</th>
-                        <th>Id du fomulaire Nostra</th>
-                        <th>Intégré dans Synapse</th>
+                        <th style="text-align:center; font-weight: bold;">Lier ce formulaire</th>
+                        <th style="text-align:center; font-weight: bold;">Id</th>
+                        <th style="text-align:center; font-weight: bold;">Nom</th>
+                        <th style="text-align:center; font-weight: bold;">Intégré dans Synapse</th>
                     </tr>
                     </thead>
                     <tbody>
                     @foreach($nostra_forms as $form)
                         <tr>
-                            <td><input type="checkbox" name="fid_{{$form->nostra_id}}" checked="checked" style="margin-right: 10px;"></td>
-                            <td>#{{$form->nostra_id}}</td>
-                            <td>@if(count($form->eform) == 0) Non @else Oui @endif </td>
+                            <td style="text-align:center;"><input type="checkbox" name="fid_{{$form->nostra_id}}" checked="checked" style="margin-right: 10px;"></td>
+                            <td style="text-align:center;">#{{$form->nostra_id}}</td>
+                            <td style="text-align:center;">{{$form->title}}</td>
+                            <td style="text-align:center;">@if(count($form->eform) == 0) Non @else Oui @endif </td>
                         </tr>
                     @endforeach
                     </tbody>

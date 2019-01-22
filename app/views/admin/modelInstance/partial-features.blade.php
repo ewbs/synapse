@@ -4,6 +4,8 @@
  * @var array $features
  */
 	$currentUrl=Request::fullUrl();
+	$currentUrl=str_replace('http://','',$currentUrl);
+	$currentUrl=str_replace('https://','',$currentUrl);
 ?>
 
 <div class="btn-group" role="group">
@@ -14,7 +16,7 @@
 				<?php
 				$submenu_active = false;
 				foreach($feature['sub'] as $sub){
-					if($sub['url'] == $currentUrl) $submenu_active = true;
+					if(strpos($sub['url'],$currentUrl) !== false) $submenu_active = true;
 				}
 				?>
 				<button type="button" class="btn btn-flat btn-default dropdown-toggle {{ $submenu_active ? 'active' : '' }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -22,7 +24,7 @@
 				</button>
 				<ul class="dropdown-menu">
 					@foreach ($feature['sub'] as $sub)
-						<li class="{{$sub['url'] == $currentUrl ? 'active' : ''}}">
+						<li class="{{(strpos($sub['url'],$currentUrl) !== false) ? 'active' : ''}}">
 							<a href="{{$sub['url']}}" title="{{$sub ['label']}}">
 								{{ isset($sub['icon']) ? '<span class="fa fa-'.$sub['icon'].'"></span>' : '' }}
 								{{$sub['label']}}
@@ -32,9 +34,10 @@
 				</ul>
 			</div>
 		@else {{-- élément de menu "normal" --}}
+
 			<a
 					href="{{ $feature['url'] }}"
-					class="btn btn-flat {{ isset($feature['class']) ? $feature['class'] : 'btn-default' }}{{ ($feature['url']==$currentUrl)?' active':'' }}"
+					class="btn btn-flat {{ isset($feature['class']) ? $feature['class'] : 'btn-default' }}{{ (strpos($feature['url'],$currentUrl) !== false)?' active':'' }}"
 					title="{{$feature['label']}}"
 			>
 				<span class="{{ isset($feature['icon']) ? 'fa fa-'.$feature['icon'] : 'btn-primary' }}"></span>
