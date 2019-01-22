@@ -38,3 +38,4 @@ app/storage/
 package-lock.json
 /synapse.iml
 public/phppgadmin/
+/public/phppgadmin/
