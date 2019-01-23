@@ -9,7 +9,7 @@ return array(
 	 | X.Y.Z : Version majeure – Version mineure – Révision
 	 |
 	 */
-	'version' => '5.0.0',
+	'version' => '5.1.0',
 	
 	/*
 	 |--------------------------------------------------------------------------
