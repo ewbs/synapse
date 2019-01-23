@@ -983,7 +983,7 @@ class DemarcheController extends TrashableModelController {
 							'dematerialisation_date' => $form['dematerialisation_date'],
 							'dematerialisation_canal' => $form['dematerialisation_canal'],
 							'dematerialisation_canal_autres' => $form['dematerialisation_canal_autres'],
-							'intervention_ewbs' => $form['intervention_ewbs'] ? 'Oui' : '',
+							'intervention_ewbs' => $form['intervention_ewbs'] ? Eform::interventionEwbs()[$form['intervention_ewbs']] : '',
 							'references_contrat_administration' => $form['references_contrat_administration'],
 							'remarques' => $form['remarques'],
 							'last_modif' => $form['last_modif']
@@ -3064,6 +3064,7 @@ class DemarcheController extends TrashableModelController {
 			->whereNotIn('nostra_id',$eforms_ids)
 			->get();
 		$eformIds = [];
+		$count_integrate_form = 0;
 		foreach ($nostra_forms as $form){
 			if(Input::get('fid_'.$form->nostra_id) === 'on'){
 				if(count($form->eform) == 0){
@@ -3075,6 +3076,7 @@ class DemarcheController extends TrashableModelController {
 				else{
 					$eformIds[] = $form->eform->id;
 				}
+				$count_integrate_form++;
 			}
 		}
 
@@ -3094,7 +3096,10 @@ class DemarcheController extends TrashableModelController {
 				return Redirect::back()->with('error', Lang::get('general.baderror', ['exception' => $e->getMessage()]));
 			}
 		}
-
-		return Redirect::route('demarchesGetView', $demarche->id)->with('success','Tous les formulaires ont été intégrés et liés à la démarche.');
+		if($count_integrate_form === 0){
+			return Redirect::route('demarchesGetView', $demarche->id)->with('success','Bravo, vous avez réussi à intégrer 0 formulaire !<br/>Il faudra en cocher au moins 1 la prochaine fois :D');
+		} else {
+			return Redirect::route('demarchesGetView', $demarche->id)->with('success','Tous les formulaires ont été intégrés et liés à la démarche.');
+		}
 	}
 }

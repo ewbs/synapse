@@ -47,6 +47,8 @@
                 </table>
                 <br>
                 <button type="submit" class="btn btn-primary" id="integrate_form">Intégrer et lier tous les formulaires cochés</button>
+
+                <a class="btn btn-default" href="{{route('demarchesGetView', $demarche->id)}}">Revenir à la démarche</a>
             </form>
         </div>
     </div>
