@@ -1,5 +1,30 @@
 # Release Notes
 
+## 5.1.0 - Restore hope 
+*Ce release de Synapse permet la gestion des données du plan de dématérialisation.*
+
+### Démarches
+- Added : Pouvoir créer une nouvelle démarche dans Synapse indépendamment de Nostra 
+- Added : Possibilité de suppression d'une démarche dans Synapse
+- Added : Flag indiquant l'incorporation d'une démarche du plan démat
+- Added : 4 champs supplémentaires (Volumétrie, Publics cibles, Thématique ABC, Thématique administration)
+- Added : Possibilité d'export des démarches à partir de Synapse avec filtres intégrés
+- Added : Possibilité de lier automatiquement les formulaires liés à une démarche dans Nostra 
+- Added : Possibilité de créer un nouveau formulaire à partir d'une démarche 
+- Changed : possibilité de choisir de n'intégrer qu'une partie des formulaires liés à une démarche dans Nostra
+- Fixed bug : Impossibilité d'effectuer une recherche de démarche via son ID Nostra
+
+### Formulaires 
+- Added : 7 champs supplémentaires (Description, Disponible en ligne, Déposable en ligne, Dématérialisation, Intervention eWBS, Référence Contrat d'administration, Remarques)
+- Added : ajout d'un calendrier pour la date souhaitée pour la dématérialisation 
+- Added : ajout d'un flag "documenté" lorsque le formulaire a été documenté
+- Added : canal de dématérialisation d'une démarche dématérialisée
+- Removed : Champ "Annexe" lié aux formulaires 
+- Changed : interdiction de supprimer un formulaire s'il est lié à une démarche
+
+### Layout
+- Fixed bug : un bouton n'apparaît pas comme sélectionné s'il est activé 
+
 ## 4.3.1 - Back in action 2
 *Ce release de Synapse consolide les données provenant de Nostra.*
 
